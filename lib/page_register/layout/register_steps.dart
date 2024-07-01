@@ -1,3 +1,4 @@
+import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 
@@ -47,6 +48,9 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
 
     stateController.dispose();
     cityController.dispose();
+
+    securityImageController.dispose();
+    securityPhraseController.dispose();
     
     super.dispose();
   }
@@ -55,11 +59,13 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
   Future<void> initParam() async{
     super.initParam();
     setCountryStates();
-    setSecurityImages();
+    setSecurityPhrases().whenComplete(() => randomizeSecurityPhrases() );
+    setSecurityImages().whenComplete(() => randomizeSecurityImages() );
   }
   
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     
     return PopScope(
@@ -123,11 +129,13 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                       itemCount: totalSteps + 1,
                       itemBuilder: (context, index) {
                         print('index : $index');
+                        // return MyWidgets.MyErrorPage(context, isDarkMode);
 
                         if (index == 1) {
                           return RegisterWidgets.MyPage(context, index: 1, onSubmit: () {
                             nextPage(setState);
                           },
+                          phone: args.phone,
 
                           usernameController: usernameController,
                           fullNameController: fullNameController,
@@ -140,6 +148,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           return RegisterWidgets.MyPage(context, index: 2, onSubmit: () {
                             nextPage(setState);
                           },
+                          phone: args.phone,
 
                           address1Controller: address1Controller,
                           address2Controller: address2Controller,
@@ -158,14 +167,72 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                         } else if (index == 3) {
                           return RegisterWidgets.MyPage(context, index: 3, onSubmit: () {
                             nextPage(setState);
-                          }, isDarkMode: isDarkMode);
+                          },
+                          phone: args.phone,
+
+                          viewPhrase: viewPhrase,
+                          imageSelections: imageSelections,
+                          phraseSelections: phraseSelections,
+
+                          securityImages: securityImages,
+                          securityImagesTemp: securityImagesTemp,
+                          securityImagesRandomed: securityImagesRandomed,
+                          securityImageController: securityImageController,
+
+                          securityPhrases: securityPhrases,
+                          securityPhrasesTemp: securityPhrasesTemp,
+                          securityPhrasesRandomed: securityPhrasesRandomed,
+                          securityPhraseController: securityPhraseController,
+
+                          changeViewPhrase: () { setState(() { viewPhrase = !viewPhrase; });},
+                          onPhraseRefresh: () { setState(() {
+                            randomizeSecurityPhrases(onTap: true);
+                            phraseSelections.replaceRange(0, phraseSelections.length, phraseSelections.map((_) => false));
+                          });},
+                          onImageRefresh: () { setState(() {
+                            randomizeSecurityImages(onTap: true);
+                            imageSelections.replaceRange(0, imageSelections.length, imageSelections.map((_) => false));
+                          });},
+                          
+                          isDarkMode: isDarkMode);
                         } else if (index == 4) {
                           return RegisterWidgets.MyPage(context, index: 4, onSubmit: () {
                             FloatingSnackBar(message: 'End', context: context);
-                          }, isDarkMode: isDarkMode);
-                        } else if (index == 5) {
-                          return RegisterWidgets.MyPage(context, index: 5, isDarkMode: isDarkMode);
-                        } else {
+                          },
+                          phone: args.phone,
+                          pageController: pageController,
+
+                          toPage1: () { setState(() { toPage(setState, page: 1); }); },
+                          toPage2: () { setState(() { toPage(setState, page: 2); }); },
+                          toPage3: () { setState(() { toPage(setState, page: 3); }); },
+
+                          viewPersonalInfo: viewPersonalInfo,
+                          viewAddress: viewAddress,
+                          viewSecurity: viewSecurity,
+
+                          securityImageController : securityImageController,
+                          securityPhraseController : securityPhraseController,
+
+                          usernameController : usernameController,
+                          fullNameController : fullNameController,
+                          emailController : emailController,
+                          passwordController : passwordController,
+                          confirmPasswordController : confirmPasswordController,
+
+                          address1Controller : address1Controller,
+                          address2Controller : address2Controller,
+                          address3Controller : address3Controller,
+                          postcodeController : postcodeController,
+
+                          stateController : stateController,
+                          cityController : cityController,
+
+                          changeViewPersonalInfo: () { setState(() { viewPersonalInfo = !viewPersonalInfo; });},
+                          changeViewAddress: () { setState(() { viewAddress = !viewAddress; });},
+                          changeViewSecurity: () { setState(() { viewSecurity = !viewSecurity; });},
+                          
+                          isDarkMode: isDarkMode);
+                        }  else {
                           return MyWidgets.MyErrorPage(context, isDarkMode);
                         }
                       },

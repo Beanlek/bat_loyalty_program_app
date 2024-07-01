@@ -1,3 +1,4 @@
+import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -78,7 +79,14 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
                                 SizedBox(height: 12,),
                                 Text('Enter your phone number to start registration.', style: Theme.of(context).textTheme.bodySmall),
                                 SizedBox(height: 24,),
-                                MyWidgets.MyTextField1(context, 'Phone', phoneController, digitOnly: true),
+                                MyWidgets.MyTextField1(context, 'Phone', phoneController, digitOnly: true, onSubmit: (value) async {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+
+                                  await mainButtonValidation(context).whenComplete(() { setState(() { isLoading = false; }); });
+
+                                }, onChanged: (_) => setState(() { print('Changed!'); mainButtonActive = false; }),),
                             
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
@@ -110,11 +118,15 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
                               ],
                             ),
                         
-                            MyWidgets.MyButton1(context, 150, 'Next', 
+                            MyWidgets.MyButton1(context, 150, 'Next', active: mainButtonActive,
                               () async {
+                                final phone = phoneController.text.trim();
+                                
                                 Navigator.pushNamed(
                                   context,
-                                  RegisterStepsPage.routeName
+                                  RegisterStepsPage.routeName, 
+
+                                  arguments: MyArguments('_', phone: phone)
                                 );
                               }
                             ),

@@ -1,5 +1,6 @@
 import "dart:math";
 
+import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:country_state_city/country_state_city.dart' as country;
@@ -22,6 +23,13 @@ mixin RegisterComponents {
   int activeStep = 1;
   int totalSteps = 4;
   
+  bool mainButtonActive = false;
+
+  bool viewPhrase = true;
+  bool viewPersonalInfo = true;
+  bool viewAddress = true;
+  bool viewSecurity = true;
+  
   List<dynamic> states = [];
   List<String> statesFilters = ['State'];
   List<dynamic> city = [];
@@ -29,12 +37,36 @@ mixin RegisterComponents {
   final TextEditingController stateController = TextEditingController(text: 'State');
   final TextEditingController cityController = TextEditingController(text: 'City');
 
+  List<bool> imageSelections = [false, false, false, false];
+  List<bool> phraseSelections = [false, false, false, false, false];
   List<dynamic> securityImages = [];
   List<dynamic> securityImagesTemp = [];
   List<dynamic> securityImagesRandomed = [];
   List<String> securityPhrases = [];
+  List<String> securityPhrasesTemp = [];
+  List<String> securityPhrasesRandomed = [];
   final TextEditingController securityImageController = TextEditingController();
   final TextEditingController securityPhraseController = TextEditingController();
+
+  Future<void> mainButtonValidation(BuildContext context) async {
+    if (phoneController.text.isNotEmpty) { 
+      await phoneNumberValidation(context).then((valid) {mainButtonActive = valid;});
+    }
+
+    else { mainButtonActive = false; }
+  }
+
+  Future<bool> phoneNumberValidation(BuildContext context) async {
+    bool valid = false;
+
+    await Future.delayed(const Duration(seconds: 1)).then((_) {
+      valid = true;
+
+      if (!valid) FloatingSnackBar(message: 'Your phone number are already registered.', context: context);
+    });
+
+    return valid;
+  }
 
   Future<void> setCountryStates() async {
     await country.getStatesOfCountry('MY').then((_states) {
@@ -50,7 +82,48 @@ mixin RegisterComponents {
     });
   }
 
-  //setSecurityPhrases
+  Future<void> setSecurityPhrases() async {
+    await rootBundle.loadString('assets/security_phrases/SPHRASES.txt').then((_phraseBundle) {
+
+      final phrases = _phraseBundle.split('\n');
+
+      securityPhrases = List<String>.from(phrases);
+      securityPhrasesTemp = List<String>.from(phrases);
+    });
+  }
+
+  void randomizeSecurityPhrases({key, bool? onTap}) {
+    final random = Random();
+    List<String> randomList = [];
+    
+    for (var i = 0; i < 5; i++) {
+      var randomPhrases = securityPhrasesTemp[random.nextInt(securityPhrasesTemp.length)];
+
+      if (i == 0) {
+        randomList.add(randomPhrases);
+      }
+      
+      else {
+        var sameRandom = false;
+        
+        for (var j = 0; j < randomList.length; j++) {
+          if (randomList[j] == randomPhrases) {
+            print("sameRandom break");
+            sameRandom = true;
+            break;
+          }
+        }
+        
+        if (!sameRandom) {randomList.add(randomPhrases);}
+        else {i--;}
+      }
+
+      // print("in localcomponent $i: ${randomList[i]}");
+
+    }
+
+    securityPhrasesRandomed = List<String>.from(randomList);
+  }
 
   //finalSubmit
 
@@ -84,11 +157,35 @@ mixin RegisterComponents {
     });
   }
 
-  void randomizeSecurityImages() {
+  void randomizeSecurityImages({key, bool? onTap}) {
     final random = Random();
     List<dynamic> randomList = [];
     
-    for (var i = 0; i < 5; i++) {randomList.add(securityImagesTemp[random.nextInt(securityImagesTemp.length)]);}
+    for (var i = 0; i < 4; i++) {
+      var randomImage = securityImagesTemp[random.nextInt(securityImagesTemp.length)];
+
+      if (i == 0) {
+        randomList.add(randomImage);
+      }
+      
+      else {
+        var sameRandom = false;
+        
+        for (var j = 0; j < randomList.length; j++) {
+          if (randomList[j] == randomImage) {
+            print("sameRandom break");
+            sameRandom = true;
+            break;
+          }
+        }
+        
+        if (!sameRandom) {randomList.add(randomImage);}
+        else {i--;}
+      }
+
+      // print("in localcomponent $i: ${randomList[i]}");
+
+    }
 
     securityImagesRandomed = List<dynamic>.from(randomList);
   }
@@ -110,6 +207,17 @@ mixin RegisterComponents {
       pageController.animateToPage(
         activeStep,
         duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  void toPage(void Function(void Function()) setState, {key, required int page}) {
+    setState(() {
+      activeStep = page;
+      pageController.animateToPage(
+        activeStep,
+        duration: Duration(milliseconds: 1000),
         curve: Curves.easeInOut,
       );
     });

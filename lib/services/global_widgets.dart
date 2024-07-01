@@ -7,16 +7,20 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 const PLACEHOLDER_ICON = Icon(Icons.abc, color: Colors.transparent);
 
 class MyWidgets {
-  static Widget MyButton1(BuildContext context, double? width, String text, void Function()? onTap) {
+  static Widget MyButton1(BuildContext context, double? width, String text, void Function()? onTap, 
+    {key, bool active = true}
+  ) {
     final _widget = Material(
-      elevation: 3,
+      color: Colors.transparent,
+      elevation: !active ? 0 : 3,
       borderRadius: BorderRadius.circular(100),
       child: Container(
         width: width ?? null,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: Theme.of(context).colorScheme.onTertiary),
-          gradient: LinearGradient(
+          border: Border.all(color: !active ? Theme.of(context).colorScheme.primary.withOpacity(0.5) : Theme.of(context).colorScheme.onTertiary),
+
+          gradient: !active ? null : LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
 
@@ -24,18 +28,20 @@ class MyWidgets {
               MyColors.biruImran,
               MyColors.biruImran2,
             ]
-          )
+          ),
+
+          color: active ? null : Colors.transparent
         ),
         child: ListTile(
           title: Center(
             child: (
               Text(
                 text,
-                style: TextStyle(color: MyColors.myWhite)
+                style: TextStyle(color: !active ? Theme.of(context).colorScheme.primary.withOpacity(0.5) : MyColors.myWhite)
               )
             ),
           ),
-          onTap: onTap,
+          onTap: active ? onTap : null,
         )
       ),
     );
@@ -78,7 +84,7 @@ class MyWidgets {
 
   static Widget MyTextField1(
     BuildContext context, String text, TextEditingController controller,
-    {key, bool digitOnly = false, bool compulsory = false, bool isPassword = false}
+    {key, bool digitOnly = false, bool compulsory = false, bool isPassword = false, void Function(String)? onChanged, void Function(String)? onSubmit}
   ) {
     bool _isPasswordVisible = false;
     final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
@@ -121,6 +127,10 @@ class MyWidgets {
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
               child: TextFormField(
                 controller: controller,
+
+                onChanged: onChanged,
+                onFieldSubmitted: onSubmit,
+                
                 obscureText: isPassword ? !_isPasswordVisible : isPassword,
                 keyboardType: !digitOnly ? null : TextInputType.phone,
                 
@@ -353,15 +363,17 @@ class MyWidgets {
         color: Theme.of(context).primaryColor,
         child: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox.square(
-                dimension: MySize.Width(context, 0.5),
-                child: Icon(Icons.error, color: MyColors.merahImran,)
+                dimension: MySize.Width(context, 0.3),
+                // child: Icon(Icons.error, color: MyColors.merahImran, size: MySize.Width(context, 0.3),)
+                child: Lottie.asset('assets/lotties/error_001.json', fit: BoxFit.contain),
               ),
 
               SizedBox(height: 12,),
 
-              Text('Error loading page. Please contact system admin.', style: Theme.of(context).textTheme.bodyMedium,)
+              Text('Error loading page.\nPlease contact system admin.', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center,)
             ],
           ),
         )
@@ -439,6 +451,8 @@ class MyWidgets {
   
     return _widget;
   }
+
+  
 }
 
 class MySize {
