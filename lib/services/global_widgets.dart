@@ -452,7 +452,41 @@ class MyWidgets {
     return _widget;
   }
 
-  
+// add product here
+
+// static Widget MyProductCard(){
+
+// }
+
+
+}
+
+// for gradient in textfield
+class GradientTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final InputDecoration decoration;
+  final TextStyle textStyle;
+  final Gradient gradient;
+
+  const GradientTextField({
+    Key? key,
+    required this.controller,
+    required this.decoration,
+    required this.textStyle,
+    required this.gradient,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => gradient.createShader(bounds),
+      child: TextField(
+        controller: controller,
+        decoration: decoration,
+        style: textStyle,
+      ),
+    );
+  }
 }
 
 class MySize {

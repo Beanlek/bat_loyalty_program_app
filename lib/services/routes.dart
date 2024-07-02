@@ -4,6 +4,7 @@ import 'package:bat_loyalty_program_app/page_homepage/layout/homepage.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
 import 'package:bat_loyalty_program_app/page_register/layout/register.dart';
 import 'package:bat_loyalty_program_app/page_register/layout/register_steps.dart';
+import 'package:bat_loyalty_program_app/page_track_history/layout/tracking_history.dart';
 
 class MyArguments {
   const MyArguments(
@@ -32,5 +33,6 @@ class MyRoutes {
     LoginPage.routeName: (context) => LoginPage(),
     RegisterPage.routeName: (context) => RegisterPage(),
     RegisterStepsPage.routeName: (context) => RegisterStepsPage(),
+    trackingHistoryPage.routeName: (context) => trackingHistoryPage(),
   };
 }
