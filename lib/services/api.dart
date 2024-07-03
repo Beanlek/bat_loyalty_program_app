@@ -1,8 +1,11 @@
 
 import 'dart:convert';
+import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:dio/dio.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
+import 'package:floating_snackbar/floating_snackbar.dart';
+import 'package:flutter/material.dart';
 
 class Api {
   static Future<bool> checkToken() async {
@@ -67,6 +70,12 @@ class Api {
           MyPrefs.setTokenExpiryTime(tokenExpiryTime, prefs: prefs);
         });
       }
+    } on DioException catch (e) {
+      statusCode = e.response!.statusCode ?? 503;
+      String errMsg = 'Unknown error.';
+
+      if (e.response != null) { errMsg = e.response!.data['errMsg']; }
+      print(errMsg);
     } catch (e) {
       print(e);
       statusCode = 503;
@@ -105,6 +114,45 @@ class Api {
       }
     } catch (e) {
       print('user_self error : $e');
+      statusCode = 503;
+    }
+
+    return statusCode;
+  }
+
+  static Future<int> user_register(BuildContext context, String domainName, 
+    { required Map<String, dynamic> registrationData }
+  ) async {
+    int statusCode = 0;
+
+    registrationData.forEach((key, data) {
+      if (data.isEmpty || data == '') { statusCode = 400; FloatingSnackBar(message: 'Error ${statusCode}. ${key.capitalize()} is empty.', context: context); }
+    }); if ( statusCode == 400 ) { return statusCode; }
+
+    final Dio dio = Dio();
+
+    String url = '${domainName}/api/user/app/register';
+
+    try {
+      final response = await dio.post(
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+        }),
+
+        url,
+        data: { "data": registrationData }
+      );
+
+      statusCode = response.statusCode!;
+
+    } on DioException catch (e) {
+      statusCode = e.response!.statusCode ?? 503;
+      String errMsg = 'Unknown error.';
+
+      if (e.response != null) { errMsg = e.response!.data['errMsg']; }
+      print(errMsg);
+    } catch (e) {
+      print(e);
       statusCode = 503;
     }
 

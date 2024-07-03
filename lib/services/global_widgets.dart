@@ -84,7 +84,8 @@ class MyWidgets {
 
   static Widget MyTextField1(
     BuildContext context, String text, TextEditingController controller,
-    {key, bool digitOnly = false, bool compulsory = false, bool isPassword = false, void Function(String)? onChanged, void Function(String)? onSubmit}
+    { key, bool digitOnly = false, bool compulsory = false, bool isPassword = false, FocusNode? focusNode,
+    void Function(String)? onChanged, void Function(String)? onSubmit }
   ) {
     bool _isPasswordVisible = false;
     final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
@@ -127,6 +128,7 @@ class MyWidgets {
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
               child: TextFormField(
                 controller: controller,
+                focusNode: focusNode,
 
                 onChanged: onChanged,
                 onFieldSubmitted: onSubmit,
@@ -379,6 +381,43 @@ class MyWidgets {
         )
       ),
     );
+  
+    return _widget;
+  }
+
+  static Widget MyErrorTextField(BuildContext context, String text,
+    {key}
+  ) {
+    final Color ERROR_COLORS = MyColors.merahImran;
+    
+    final _widget = Align(alignment: Alignment.centerLeft, 
+      child: Padding(
+        padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+        child: Row(
+          children: [
+            Icon(Icons.error, color: ERROR_COLORS, size: 16,), SizedBox(width: 12,),
+            Text(text, style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              color: ERROR_COLORS,
+              fontWeight: FontWeight.normal
+            )),
+          ],
+        ),
+      ));
+  
+    return _widget;
+  }
+
+  static Widget MyInfoTextField(BuildContext context, String text,
+    {key}
+  ) {
+    final _widget = Align(alignment: Alignment.centerLeft, 
+      child: Padding(
+        padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+        child: Text(text, style: Theme.of(context).textTheme.labelMedium!.copyWith(
+          color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.5),
+          fontWeight: FontWeight.normal
+        )),
+    ));
   
     return _widget;
   }

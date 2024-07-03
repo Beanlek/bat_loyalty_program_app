@@ -262,7 +262,15 @@ class RegisterWidgets {
   static Widget MyPage(BuildContext context, {
     required int index,
     required bool isDarkMode,
+    required bool stepButtonActive,
+    required Map<String, String> errMsgs,
+    required List<bool> pageError,
     required String phone,
+
+    required void Function() stepButtonValidation,
+    
+    void Function()? isLoadingTrue,
+    void Function()? isLoadingFalse,
 
     bool? viewPhrase,
     bool? viewPersonalInfo,
@@ -312,6 +320,17 @@ class RegisterWidgets {
     TextEditingController? address3Controller,
     TextEditingController? postcodeController,
 
+    FocusNode? usernameFocusnode,
+    FocusNode? fullNameFocusnode,
+    FocusNode? emailFocusnode,
+    FocusNode? passwordFocusnode,
+    FocusNode? confirmPasswordFocusnode,
+
+    FocusNode? address1Focusnode,
+    FocusNode? address2Focusnode,
+    FocusNode? address3Focusnode,
+    FocusNode? postcodeFocusnode,
+
     TextEditingController? stateController,
     TextEditingController? cityController,
   }) {
@@ -320,247 +339,253 @@ class RegisterWidgets {
     final ScrollController page3ScrollController = ScrollController();
     final ScrollController page4ScrollController = ScrollController();
 
-    bool isLoading = false;
-
     Widget _widget;
 
     switch (index) {
       case 1:
-        _widget = MyWidgets.MyScroll1( context,
-        height: MySize.Height(context, 0.85),
-          controller: page1ScrollController,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
+        _widget = StatefulBuilder(
+          builder: (context, setState) {
+            return MyWidgets.MyScroll1( context,
+            height: MySize.Height(context, 0.85),
+              controller: page1ScrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    GradientText('Personal Information',
-                      style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w800),
-                      gradient: LinearGradient(colors: [
-                        Theme.of(context).colorScheme.secondary,
-                        Theme.of(context).colorScheme.primary,
-                      ]),
+                    Column(
+                      children: [
+                        GradientText('Personal Information',
+                          style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w800),
+                          gradient: LinearGradient(colors: [
+                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context).colorScheme.primary,
+                          ]),
+                        ),
+                        SizedBox(height: 12,),
+                        Text('Enter your personal information.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
+                        SizedBox(height: 24,),
+                                    
+                        MyWidgets.MyTextField1(context, 'Username', usernameController!, focusNode: usernameFocusnode, compulsory: true,
+                          onChanged: (_) => stepButtonValidation(),
+                          onSubmit: (_) => fullNameFocusnode!.requestFocus(),
+                        ),
+                        !pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['usernameErrorMsg']! ) : SizedBox(),
+                        SizedBox(height: 12,),
+                        MyWidgets.MyTextField1(context, 'Full Name', fullNameController!, focusNode: fullNameFocusnode, compulsory: true,
+                          onChanged: (_) => stepButtonValidation(),
+                          onSubmit: (_) => emailFocusnode!.requestFocus(),
+                        ),
+                        !pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['fullNameErrorMsg']! ) : SizedBox(),
+                        SizedBox(height: 12,),
+                        MyWidgets.MyTextField1(context, 'Email', emailController!, focusNode: emailFocusnode,
+                          onChanged: (_) => stepButtonValidation(),
+                          onSubmit: (_) => passwordFocusnode!.requestFocus(),
+                        ),
+                        !pageError[2] ? MyWidgets.MyErrorTextField(context, errMsgs['emailErrorMsg']! ) : SizedBox(),
+                        SizedBox(height: 12,),
+                        MyWidgets.MyTextField1(context, 'Password', passwordController!, focusNode: passwordFocusnode, compulsory: true, isPassword: true,
+                          onChanged: (_) => stepButtonValidation(),
+                          onSubmit: (_) => confirmPasswordFocusnode!.requestFocus(),
+                        ),
+                        !pageError[3] ? MyWidgets.MyErrorTextField(context, errMsgs['passwordErrorMsg']! ) : SizedBox(),
+                        SizedBox(height: 12,),
+                        MyWidgets.MyTextField1(context, 'Confirm Password', confirmPasswordController!, focusNode: confirmPasswordFocusnode, compulsory: true, isPassword: true,
+                          onChanged: (_) => stepButtonValidation(),
+                          onSubmit: (_) { confirmPasswordFocusnode!.unfocus(); onSubmit!(); },
+                        ),
+                        !pageError[4] ? MyWidgets.MyErrorTextField(context, errMsgs['confirmPasswordErrorMsg']! ) : SizedBox(),
+                      ],
                     ),
-                    SizedBox(height: 12,),
-                    Text('Enter your personal information.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
-                    SizedBox(height: 24,),
-            
-                    MyWidgets.MyTextField1(context, 'Username', usernameController!, compulsory: true),
-                    SizedBox(height: 12,),
-                    MyWidgets.MyTextField1(context, 'Full Name', fullNameController!, compulsory: true),
-                    SizedBox(height: 12,),
-                    MyWidgets.MyTextField1(context, 'Email', emailController!),
-                    SizedBox(height: 12,),
-                    MyWidgets.MyTextField1(context, 'Password', passwordController!, compulsory: true, isPassword: true),
-                    SizedBox(height: 12,),
-                    MyWidgets.MyTextField1(context, 'Confirm Password', confirmPasswordController!, compulsory: true, isPassword: true),
+                
+                    MyWidgets.MyButton1(context, 150, 'Next', active: stepButtonActive,
+                      onSubmit
+                    ),
                   ],
                 ),
-            
-                MyWidgets.MyButton1(context, 150, 'Next', 
-                  onSubmit
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          }
         );
         break;
       case 2:
         _widget = StatefulBuilder(
           builder: (context, setState) {
 
-            return Stack(
-              children: [
-                
-                MyWidgets.MyScroll1( context,
-                height: MySize.Height(context, 1),
-                  controller: page2ScrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            return MyWidgets.MyScroll1( context,
+            height: MySize.Height(context, 1),
+              controller: page2ScrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
                       children: [
-                        Column(
-                          children: [
-                            GradientText('Address',
-                              style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.w800),
-                              gradient: LinearGradient(colors: [
-                                Theme.of(context).colorScheme.secondary,
-                                Theme.of(context).colorScheme.primary,
-                              ]),
-                            ),
-                            SizedBox(height: 12,),
-                            Text('Enter your shipping address.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
-                            SizedBox(height: 24,),
+                        GradientText('Address',
+                          style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.w800),
+                          gradient: LinearGradient(colors: [
+                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context).colorScheme.primary,
+                          ]),
+                        ),
+                        SizedBox(height: 12,),
+                        Text('Enter your shipping address.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
+                        SizedBox(height: 24,),
+                                        
+                        MyWidgets.MyTextField1(context, 'Unit No. / House No.', address1Controller!, focusNode: address1Focusnode, compulsory: true,
+                          onChanged: (_) => stepButtonValidation(),
+                          onSubmit: (_) => address2Focusnode!.requestFocus(),
+                        ),
+                        !pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['address1ErrorMsg']! ) : SizedBox(),
+                        MyWidgets.MyInfoTextField(context, 'Eg: No. 10 1D/KU6'),
+                        SizedBox(height: 12,),
+                        MyWidgets.MyTextField1(context, 'Street Name', address2Controller!, focusNode: address2Focusnode, compulsory: true,
+                          onChanged: (_) => stepButtonValidation(),
+                          onSubmit: (_) => address3Focusnode!.requestFocus(),
+                        ),
+                        !pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['address2ErrorMsg']! ) : SizedBox(),
+                        MyWidgets.MyInfoTextField(context, 'Eg: Jalan Sumazau'),
+                        SizedBox(height: 12,),
+                        MyWidgets.MyTextField1(context, 'Residential Area', address3Controller!, focusNode: address3Focusnode, compulsory: true,
+                          onChanged: (_) => stepButtonValidation(),
+                          onSubmit: (_) => address3Focusnode!.unfocus(),
+                        ),
+                        !pageError[2] ? MyWidgets.MyErrorTextField(context, errMsgs['address3ErrorMsg']! ) : SizedBox(),
+                        MyWidgets.MyInfoTextField(context, 'Eg: Bandar Bukit Raja'),
+                        SizedBox(height: 24,),
+                        
+                        MyWidgets.MyTextField3(context, 'State', selectedFilter: stateController!.text, filters: stateFilters!, onChanged: (String? _filter) async {
+                          isLoadingTrue!();
                     
-                            MyWidgets.MyTextField1(context, 'Unit No. / House No.', address1Controller!, compulsory: true),
-                            Align(alignment: Alignment.centerLeft, 
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
-                                child: Text('Eg: No. 10 1D/KU6', style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.5),
-                                  fontWeight: FontWeight.normal
-                                )),
-                              )),
-                            SizedBox(height: 12,),
-                            MyWidgets.MyTextField1(context, 'Street Name', address2Controller!, compulsory: true),
-                            Align(alignment: Alignment.centerLeft, 
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
-                                child: Text('Eg: Jalan Sumazau', style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.5),
-                                  fontWeight: FontWeight.normal
-                                )),
-                              )),
-                            SizedBox(height: 12,),
-                            MyWidgets.MyTextField1(context, 'Residential Area', address3Controller!, compulsory: true),
-                            Align(alignment: Alignment.centerLeft, 
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
-                                child: Text('Eg: Bandar Bukit Raja', style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.5),
-                                  fontWeight: FontWeight.normal
-                                )),
-                              )),
-                            SizedBox(height: 24,),
+                          if (stateController.text == _filter) {
+                            isLoadingFalse!();
+                    
+                            return;
+                          }
+                    
+                          await Future.delayed(const Duration(milliseconds: 700)).whenComplete(() async{
+                    
+                            if (stateController.text != _filter!) setState((){cityController!.text = 'City';});
                             
-                            MyWidgets.MyTextField3(context, 'State', selectedFilter: stateController!.text, filters: stateFilters!, onChanged: (String? _filter) async {
+                            setState(() {
+                              stateController.text = _filter;
+                              postcodeController!.text = '';
+                              city!.clear();
+                              cityFilters!.clear();
+                              cityFilters.add('City');
+                            });
+                    
+                            if (stateController.text == 'State') {
+                              isLoadingFalse!();
+                    
+                              return;
+                            }
+                                      
+                            var stateChosen = states!.where((_singleState) {
+                              final stateName = _singleState['name'];
+                              
+                              return stateName.contains(stateController.text);
+                            }).toList();
+                                      
+                            print('stateChosen : ${stateChosen}');
+                            var stateCode = stateChosen[0]['isoCode'];
+                                      
+                            await country.getStateCities('MY',stateCode).then((_cities) {
                               setState(() {
-                                isLoading = true;
+                                for (var i = 0; i < _cities.length; i++) {
+                                  var singleCity = _cities[i].toJson();
+                                  var cityName = singleCity['name'];
+                                  
+                                  city!.add(singleCity);
+                                  cityFilters!.add(cityName);
+                                }
                               });
-
-                              if (stateController.text == _filter) {
-                                setState(() {
-                                  isLoading = false;
+                              
+                              isLoadingFalse!();
+            
+                              setState(() {
+                                  stepButtonValidation();
                                 });
-
-                                return;
-                              }
-
-                              await Future.delayed(const Duration(milliseconds: 700)).whenComplete(() async{
-
-                                if (stateController.text != _filter!) setState((){cityController!.text = 'City';});
+                            });
+                          }); 
+                    
+                        },),
+                        !pageError[3] ? MyWidgets.MyErrorTextField(context, errMsgs['stateErrorMsg']! ) : SizedBox(),
+                        SizedBox(height: 12,),
+                        MyWidgets.MyTextField3(context, 'City', selectedFilter: cityController!.text, filters: cityFilters!,
+                          active: stateController.text == 'State' ? false : true, onChanged: (String? _filter) async{
+                            isLoadingTrue!();
+                    
+                            if (cityController.text == _filter) {
+                              isLoadingFalse!();
+                    
+                              return;
+                            }
+                    
+                            await Future.delayed(const Duration(milliseconds: 400)).whenComplete(() async{
+                              if (cityController.text != _filter!) setState((){postcodeController!.text = '';});
+                              
+                              setState(() {
+                                cityController.text = _filter;
+                              });
+                    
+                              var cityChosen = city!.where((_singleCity) {
+                                final cityName = _singleCity['name'];
+                                
+                                return cityName.contains(cityController.text);
+                              }).toList();
+                    
+                              print("lat long : ${cityChosen[0]['latitude']},${cityChosen[0]['longitude']}");
+                    
+                              double latitude = double.parse(cityChosen[0]['latitude']);
+                              double longitude = double.parse(cityChosen[0]['longitude']);
+                    
+                              print('latitude : ${latitude}');
+                              print('longitude : ${longitude}');
+                    
+                              await placemarkFromCoordinates(latitude, longitude).then((_placemarks) {
+                                // print('_placemarks : ${_placemarks.toString()}');
+                                // print('_placemarks.length : ${_placemarks.length.toString()}');
+                                
+                                Placemark singlePlacemark;
+                                String? postcode;
+                    
+                                if (_placemarks.isEmpty) {postcode = '0';} else {
+                                  var _placemarksFiltered = _placemarks.where((_singlePlacemark) => _singlePlacemark.postalCode != null).toList();
+                                  singlePlacemark = _placemarksFiltered.first;
+                    
+                                  postcode = singlePlacemark.postalCode;
+                                }
+                    
+                                print('postcode : ${postcode}');
+                    
+                                isLoadingFalse!();
                                 
                                 setState(() {
-                                  stateController.text = _filter;
-                                  postcodeController!.text = '';
-                                  city!.clear();
-                                  cityFilters!.clear();
-                                  cityFilters.add('City');
+                                  postcodeController!.text = postcode!;
+                                  stepButtonValidation();
                                 });
-
-                                if (stateController.text == 'State') {
-                                  setState(() {
-                                    isLoading = false;
-                                    print('finished...');
-                                  });
-
-                                  return;
-                                }
-                  
-                                var stateChosen = states!.where((_singleState) {
-                                  final stateName = _singleState['name'];
-                                  
-                                  return stateName.contains(stateController.text);
-                                }).toList();
-                  
-                                print('stateChosen : ${stateChosen}');
-                                var stateCode = stateChosen[0]['isoCode'];
-                  
-                                await country.getStateCities('MY',stateCode).then((_cities) {
-                                  setState(() {
-                                    for (var i = 0; i < _cities.length; i++) {
-                                      var singleCity = _cities[i].toJson();
-                                      var cityName = singleCity['name'];
-                                      
-                                      city!.add(singleCity);
-                                      cityFilters!.add(cityName);
-                                    }
-                                  });
-                                  
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                });
-                              }); 
-
-                            },),
-                            SizedBox(height: 12,),
-                            MyWidgets.MyTextField3(context, 'City', selectedFilter: cityController!.text, filters: cityFilters!,
-                              active: stateController.text == 'State' ? false : true, onChanged: (String? _filter) async{
-                                setState(() {
-                                  isLoading = true;
-                                });
-
-                                if (cityController.text == _filter) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-
-                                  return;
-                                }
-
-                                await Future.delayed(const Duration(milliseconds: 400)).whenComplete(() async{
-                                  if (cityController.text != _filter!) setState((){postcodeController!.text = '';});
-                                  
-                                  setState(() {
-                                    cityController.text = _filter;
-                                  });
-
-                                  var cityChosen = city!.where((_singleCity) {
-                                    final cityName = _singleCity['name'];
-                                    
-                                    return cityName.contains(cityController.text);
-                                  }).toList();
-
-                                  print("lat long : ${cityChosen[0]['latitude']},${cityChosen[0]['longitude']}");
-
-                                  double latitude = double.parse(cityChosen[0]['latitude']);
-                                  double longitude = double.parse(cityChosen[0]['longitude']);
-
-                                  print('latitude : ${latitude}');
-                                  print('longitude : ${longitude}');
-
-                                  await placemarkFromCoordinates(latitude, longitude).then((_placemarks) {
-                                    // print('_placemarks : ${_placemarks.toString()}');
-                                    // print('_placemarks.length : ${_placemarks.length.toString()}');
-                                    
-                                    Placemark singlePlacemark;
-                                    String? postcode;
-
-                                    if (_placemarks.isEmpty) {postcode = '0';} else {
-                                      var _placemarksFiltered = _placemarks.where((_singlePlacemark) => _singlePlacemark.postalCode != null).toList();
-                                      singlePlacemark = _placemarksFiltered.first;
-
-                                      postcode = singlePlacemark.postalCode;
-                                    }
-
-                                    print('postcode : ${postcode}');
-
-                                    setState(() {
-                                      postcodeController!.text = postcode!;
-                                      isLoading = false;
-                                    });
-                                  });
-                                });
-                            }),
-                            SizedBox(height: 12,),
-                            MyWidgets.MyTextField1(context, 'PostCode', postcodeController!, digitOnly: true, compulsory: true)
-                          ],
-                        ),
+                              });
+                            });
+                        }),
+                        !pageError[4] ? MyWidgets.MyErrorTextField(context, errMsgs['cityErrorMsg']! ) : SizedBox(),
+                        SizedBox(height: 12,),
                     
-                        MyWidgets.MyButton1(context, 150, 'Next', 
-                          onSubmit
+                        MyWidgets.MyTextField1(context, 'PostCode', postcodeController!, digitOnly: true, focusNode: postcodeFocusnode, compulsory: true,
+                          onChanged: (_) => stepButtonValidation(),
+                          onSubmit: (_) { postcodeFocusnode!.unfocus(); onSubmit!(); },
                         ),
+                        !pageError[5] ? MyWidgets.MyErrorTextField(context, errMsgs['postcodeErrorMsg']! ) : SizedBox(),
                       ],
                     ),
-                  ),
+                
+                    MyWidgets.MyButton1(context, 150, 'Next', active: stepButtonActive,
+                      onSubmit
+                    ),
+                  ],
                 ),
-
-                MyWidgets.MyLoading(context, isLoading, isDarkMode)
-              ],
+              ),
             );
           }
         );
@@ -578,128 +603,136 @@ class RegisterWidgets {
             // print("randomsecurityimages: ${securityImagesRandomed}");
             // print("randomsecurityimages.length: ${securityImagesRandomed!.length}");
 
-            return Stack(
-              children: [
-                
-                MyWidgets.MyScroll1( context,
-                height: widgetHeight,
-                  controller: page3ScrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            return MyWidgets.MyScroll1( context,
+            height: widgetHeight,
+              controller: page3ScrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
                       children: [
-                        Column(
-                          children: [
-                            GradientText('Security',
-                              style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.w800),
-                              gradient: LinearGradient(colors: [
-                                Theme.of(context).colorScheme.secondary,
-                                Theme.of(context).colorScheme.primary,
-                              ]),
-                            ),
-                            SizedBox(height: 12,),
-                            Text('Please choose a security phrase along with\na security image.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
-                            SizedBox(height: 24,),
-                            
-                            Header(context, title: 'Choose a phrase',
-                              trailing: IconButton(onPressed: onPhraseRefresh, icon: Icon(FontAwesomeIcons.arrowsRotate, color: Theme.of(context).colorScheme.primary, size: 16,)),
-                              secondTrailing: IconButton(onPressed: changeViewPhrase, icon: Icon(viewPhrase ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
-                            ),
-                            !viewPhrase ? SizedBox() :
-                            SizedBox(
-                              height: phraseSelectionHeight,
-                              child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: 5,
-                                itemBuilder: (context, index) {
-                                  return Column(
+                        GradientText('Security',
+                          style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.w800),
+                          gradient: LinearGradient(colors: [
+                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context).colorScheme.primary,
+                          ]),
+                        ),
+                        SizedBox(height: 12,),
+                        Text('Please choose a security phrase along with\na security image.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
+                        SizedBox(height: 24,),
+                        
+                        Header(context, title: 'Choose a phrase',
+                          trailing: IconButton(onPressed: onPhraseRefresh, icon: Icon(FontAwesomeIcons.arrowsRotate, color: Theme.of(context).colorScheme.primary, size: 16,)),
+                          secondTrailing: IconButton(onPressed: changeViewPhrase, icon: Icon(viewPhrase ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
+                        ),
+                        !viewPhrase ? SizedBox() :
+                        SizedBox(
+                          height: phraseSelectionHeight,
+                          child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: 5,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  PhraseSelection(context, securityPhrasesRandomed![index], selected: phraseSelections![index], onTap: () {
+                                    var selected = phraseSelections[index];
+                                    print('My phrase $index is tapped!');
+                                    
+                                    setState((){
+                                      securityPhraseController!.text = securityPhrasesRandomed[index];
+                                      for (var i = 0; i < phraseSelections.length; i++) { i != (index) ? phraseSelections[i] = false : null;}
+                    
+                                      phraseSelections[index] = !selected;
+
+                                      if (phraseSelections.every((e) => e == false)) securityPhraseController.clear();
+                                      
+                                      print('phraseSelections : ${phraseSelections}');
+
+                                      stepButtonValidation();
+                                    });
+                                  }),
+                                  SizedBox(height: 12,),
+                                ],
+                              );
+                            }
+                          ),
+                        ),
+                        
+                        Header(context, title: 'Choose an image',
+                          trailing: IconButton(onPressed: onImageRefresh, icon: Icon(FontAwesomeIcons.arrowsRotate, color: Theme.of(context).colorScheme.primary, size: 16,)),
+                        ),
+                        SizedBox(
+                          height: imageSelectionHeight,
+                          child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: 2,
+                            itemBuilder: (context, index) {
+                              final count = index*1;
+                              // print(securityImagesRandomed![index+count]['path']);
+                              // print(securityImagesRandomed![index+1+count]['path']);
+                              
+                              return Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      PhraseSelection(context, securityPhrasesRandomed![index], selected: phraseSelections![index], onTap: () {
-                                        var selected = phraseSelections[index];
-                                        print('My phrase $index is tapped!');
+                                      ImageSelection(context, securityImagesRandomed![index+count]['path'], selected: imageSelections![index+count], isDarkMode, onTap: () {
+                                        var selected = imageSelections[index+count];
+                                        print('My image ${index+count} are tapped : $selected');
                                         
                                         setState((){
-                                          securityPhraseController!.text = securityPhrasesRandomed[index];
-                                          for (var i = 0; i < phraseSelections.length; i++) { i != (index) ? phraseSelections[i] = false : null;}
+                                          securityImageController!.text = securityImagesRandomed[index+count]['path'];
+                                          for (var i = 0; i < imageSelections.length; i++) { i != (index+count) ? imageSelections[i] = false : null;}
+                    
+                                          imageSelections[index+count] = !selected;
 
-                                          phraseSelections[index] = !selected;
-                                          print('phraseSelections : ${phraseSelections}');
+                                          if (imageSelections.every((e) => e == false)) securityImageController.clear();
+                                          
+                                          print('imageSelections : ${imageSelections}');
+
+                                          stepButtonValidation();
                                         });
                                       }),
-                                      SizedBox(height: 12,),
-                                    ],
-                                  );
-                                }
-                              ),
-                            ),
-                            
-                            Header(context, title: 'Choose an image',
-                              trailing: IconButton(onPressed: onImageRefresh, icon: Icon(FontAwesomeIcons.arrowsRotate, color: Theme.of(context).colorScheme.primary, size: 16,)),
-                            ),
-                            SizedBox(
-                              height: imageSelectionHeight,
-                              child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: 2,
-                                itemBuilder: (context, index) {
-                                  final count = index*1;
-                                  // print(securityImagesRandomed![index+count]['path']);
-                                  // print(securityImagesRandomed![index+1+count]['path']);
-                                  
-                                  return Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          ImageSelection(context, securityImagesRandomed![index+count]['path'], selected: imageSelections![index+count], isDarkMode, onTap: () {
-                                            var selected = imageSelections[index+count];
-                                            print('My image ${index+count} are tapped : $selected');
-                                            
-                                            setState((){
-                                              securityImageController!.text = securityImagesRandomed[index+count]['path'];
-                                              for (var i = 0; i < imageSelections.length; i++) { i != (index+count) ? imageSelections[i] = false : null;}
-
-                                              imageSelections[index+count] = !selected;
-                                              print('imageSelections : ${imageSelections}');
-                                            });
-                                          }),
-                                          SizedBox(width: 12,),
-                                          ImageSelection(context, securityImagesRandomed[index+1+count]['path'], selected: imageSelections[index+1+count], isDarkMode, onTap: () {
-                                            var selected = imageSelections[index+1+count];
-                                            print('My image ${index+1+count} are tapped : $selected');
-                                            
-                                            setState((){
-                                              securityImageController!.text = securityImagesRandomed[index+1+count]['path'];
-                                              for (var i = 0; i < imageSelections.length; i++) { i != (index+1+count) ? imageSelections[i] = false : null;}
-
-                                              imageSelections[index+1+count] = !selected;
-                                              print('imageSelections : ${imageSelections}');
-                                            });
-                                          }),
-                                        ],
-                                      ),
-                                      SizedBox(height: 12,),
-                                    ],
-                                  );
-                                }
-                              ),
-                            )
-                          ],
-                        ),
+                                      SizedBox(width: 12,),
+                                      ImageSelection(context, securityImagesRandomed[index+1+count]['path'], selected: imageSelections[index+1+count], isDarkMode, onTap: () {
+                                        var selected = imageSelections[index+1+count];
+                                        print('My image ${index+1+count} are tapped : $selected');
+                                        
+                                        setState((){
+                                          securityImageController!.text = securityImagesRandomed[index+1+count]['path'];
+                                          for (var i = 0; i < imageSelections.length; i++) { i != (index+1+count) ? imageSelections[i] = false : null;}
                     
-                        MyWidgets.MyButton1(context, 150, 'Next', 
-                          onSubmit
-                        ),
+                                          imageSelections[index+1+count] = !selected;
+
+                                          if (imageSelections.every((e) => e == false)) securityImageController.clear();
+                                          
+                                          print('imageSelections : ${imageSelections}');
+
+                                          stepButtonValidation();
+                                        });
+                                      }),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12,),
+                                ],
+                              );
+                            }
+                          ),
+                        )
                       ],
                     ),
-                  ),
+                
+                    MyWidgets.MyButton1(context, 150, 'Next', active: stepButtonActive,
+                      onSubmit
+                    ),
+                  ],
                 ),
-
-                MyWidgets.MyLoading(context, isLoading, isDarkMode)
-              ],
+              ),
             );
           }
         );
@@ -721,79 +754,72 @@ class RegisterWidgets {
             double pageHeight = MySize.Height(context, multiplierTotal);
             print('multiplierTotal : ${multiplierTotal}');
 
-            return Stack(
-              children: [
-                
-                MyWidgets.MyScroll1( context,
-                height: pageHeight,
-                  controller: page4ScrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            return MyWidgets.MyScroll1( context,
+            height: pageHeight,
+              controller: page4ScrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
                       children: [
-                        Column(
-                          children: [
-                            GradientText('Confirmation',
-                              style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.w800),
-                              gradient: LinearGradient(colors: [
-                                Theme.of(context).colorScheme.secondary,
-                                Theme.of(context).colorScheme.primary,
-                              ]),
-                            ),
-                            SizedBox(height: 12,),
-                            Text('Double check your information and you are all set!', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
-                            SizedBox(height: 24,),
-                            
-                            Header(context, title: 'Personal Information',
-                              trailing: IconButton(onPressed: changeViewPersonalInfo, icon: Icon(viewPersonalInfo ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
-                            ),
-                            !viewPersonalInfo ? SizedBox() :
-                            Column(children: [
-                              ConfirmationListTile(context, title: 'Phone No', subtitle: phone, isPhone: true, onEdit: null),
-                              ConfirmationListTile(context, title: 'Username', subtitle: usernameController!.text.trim(), onEdit: toPage1),
-                              ConfirmationListTile(context, title: 'Full Name', subtitle: fullNameController!.text.trim(), onEdit: toPage1),
-                            ],),
-
-                            Divider(color: Theme.of(context).colorScheme.onTertiary,),
-                            
-                            Header(context, title: 'Address Information',
-                              trailing: IconButton(onPressed: changeViewAddress, icon: Icon(viewAddress ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
-                            ),
-                            !viewAddress ? SizedBox() :
-                            Column(children: [
-                              ConfirmationListTile(context, title: 'Unit No. / House No.', subtitle: address1Controller!.text.trim(), onEdit: toPage2),
-                              ConfirmationListTile(context, title: 'Street Name', subtitle: address2Controller!.text.trim(), onEdit: toPage2),
-                              ConfirmationListTile(context, title: 'Residential Area', subtitle: address3Controller!.text.trim(), onEdit: toPage2),
-                              ConfirmationListTile(context, title: 'State', subtitle: stateController!.text.trim(), onEdit: toPage2),
-                              ConfirmationListTile(context, title: 'City', subtitle: cityController!.text.trim(), onEdit: toPage2),
-                              ConfirmationListTile(context, title: 'PostCode', subtitle: postcodeController!.text.trim(), onEdit: toPage2),
-                            ],),
-
-                            Divider(color: Theme.of(context).colorScheme.onTertiary,),
-                            
-                            Header(context, title: 'Security Information',
-                              trailing: IconButton(onPressed: changeViewSecurity, icon: Icon(viewSecurity ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
-                            ),
-                            !viewSecurity ? SizedBox() :
-                            Column(children: [
-                              ConfirmationListTile(context, title: 'Password', subtitle: passwordController!.text.trim(), isPassword: true, onEdit: toPage1),
-                              ConfirmationListTile(context, title: 'Security Image', subtitle: securityImageController!.text.trim(), isImage: true, onEdit: toPage3),
-                              ConfirmationListTile(context, title: 'Security Phrase', subtitle: securityPhraseController!.text.trim(), isPassword: true, onEdit: toPage3),
-                            ],),
-                          ],
+                        GradientText('Confirmation',
+                          style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.w800),
+                          gradient: LinearGradient(colors: [
+                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context).colorScheme.primary,
+                          ]),
                         ),
+                        SizedBox(height: 12,),
+                        Text('Double check your information and you are all set!', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
+                        SizedBox(height: 24,),
+                        
+                        Header(context, title: 'Personal Information',
+                          trailing: IconButton(onPressed: changeViewPersonalInfo, icon: Icon(viewPersonalInfo ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
+                        ),
+                        !viewPersonalInfo ? SizedBox() :
+                        Column(children: [
+                          ConfirmationListTile(context, title: 'Phone No', subtitle: phone, isPhone: true, onEdit: null),
+                          ConfirmationListTile(context, title: 'Username', subtitle: usernameController!.text.trim(), onEdit: toPage1),
+                          ConfirmationListTile(context, title: 'Full Name', subtitle: fullNameController!.text.trim(), onEdit: toPage1),
+                        ],),
                     
-                        MyWidgets.MyButton1(context, 150, 'Next', 
-                          onSubmit
+                        Divider(color: Theme.of(context).colorScheme.onTertiary,),
+                        
+                        Header(context, title: 'Address Information',
+                          trailing: IconButton(onPressed: changeViewAddress, icon: Icon(viewAddress ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
                         ),
+                        !viewAddress ? SizedBox() :
+                        Column(children: [
+                          ConfirmationListTile(context, title: 'Unit No. / House No.', subtitle: address1Controller!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: 'Street Name', subtitle: address2Controller!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: 'Residential Area', subtitle: address3Controller!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: 'State', subtitle: stateController!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: 'City', subtitle: cityController!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: 'PostCode', subtitle: postcodeController!.text.trim(), onEdit: toPage2),
+                        ],),
+                    
+                        Divider(color: Theme.of(context).colorScheme.onTertiary,),
+                        
+                        Header(context, title: 'Security Information',
+                          trailing: IconButton(onPressed: changeViewSecurity, icon: Icon(viewSecurity ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
+                        ),
+                        !viewSecurity ? SizedBox() :
+                        Column(children: [
+                          ConfirmationListTile(context, title: 'Password', subtitle: passwordController!.text.trim(), isPassword: true, onEdit: toPage1),
+                          ConfirmationListTile(context, title: 'Security Image', subtitle: securityImageController!.text.trim(), isImage: true, onEdit: toPage3),
+                          ConfirmationListTile(context, title: 'Security Phrase', subtitle: securityPhraseController!.text.trim(), isPassword: true, onEdit: toPage3),
+                        ],),
                       ],
                     ),
-                  ),
+                
+                    MyWidgets.MyButton1(context, 150, 'Next',
+                      onSubmit
+                    ),
+                  ],
                 ),
-
-                MyWidgets.MyLoading(context, isLoading, isDarkMode)
-              ],
+              ),
             );
           }
         );

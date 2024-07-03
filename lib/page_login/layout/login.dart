@@ -81,9 +81,11 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                                   ]),
                                 ),
                                 SizedBox(height: 24,),
-                                MyWidgets.MyTextField1(context, 'Phone', phoneController, digitOnly: true),
+                                MyWidgets.MyTextField1(context, 'Username or Phone', phoneController, focusNode: phoneFocusnode, onSubmit: (_) => passwordFocusnode.requestFocus(),),
+                                pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['phoneErrorMsg']! ) : SizedBox(),
                                 SizedBox(height: 12,),
-                                MyWidgets.MyTextField1(context, 'Password', passwordController, isPassword: true),
+                                MyWidgets.MyTextField1(context, 'Password', passwordController, focusNode: passwordFocusnode, isPassword: true, onSubmit: (_) => passwordFocusnode.unfocus()),
+                                pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['passwordErrorMsg']! ) : SizedBox(),
                         
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
@@ -117,40 +119,52 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                         
                             MyWidgets.MyButton1(context, 150, 'Log In', 
                               () async {
-                                setState(() {
-                                  isLoading = true;
+                                setState(() { isLoading = true; 
+                                  errMsgs.update('phoneErrorMsg', (value) => 'Please enter your username or phone.');
+                                  errMsgs.update('passwordErrorMsg', (value) => 'Please enter your password.');
                                 });
                         
                                 final String mobile = phoneController.text.trim();
                                 final String password = passwordController.text.trim();
-                        
-                                print('login > mobile : ${mobile}');
-                                print('login > password : ${password}');
-                        
-                                await Api.login(domainName, mobile: mobile, password: password, deviceID: deviceID).then((statusCode) async {
-                                  await MyPrefs.init().then((prefs) async {
-                                    prefs!;
+
+                                setState(() { pageError[0] = mobile.isEmpty; });
+                                setState(() { pageError[1] = password.isEmpty; });
+
+                                if (pageError.every((e) => e == false)) {
+                                  await Api.login(domainName, mobile: mobile, password: password, deviceID: deviceID).then((statusCode) async {
+                                    await MyPrefs.init().then((prefs) async {
+                                      prefs!;
+                                      
+                                      final token = MyPrefs.getToken(prefs: prefs);
+                          
+                                      if (statusCode == 200 && token != null) {
+                                        await Api.user_self(domainName, token);
+                          
+                                        Navigator.pushNamed(
+                                          context,
+                                          Homepage.routeName
+                                        );
+                          
+                                        FloatingSnackBar(message: 'Successfully Log In.', context: context);
+                                      } else if (statusCode == 422) {
+                                        String msg = 'Wrong username or password.';
+                                        
+                                        setState(() { 
+                                          pageError[0] = true;
+                                          pageError[1] = true;
+                                          errMsgs.update('phoneErrorMsg', (value) => msg);
+                                          errMsgs.update('passwordErrorMsg', (value) => msg);
+                                        });
+
+                                        FloatingSnackBar(message: msg, context: context);
+                                      } else {
+                                        FloatingSnackBar(message: 'Unable to Log In. Error ${statusCode}.', context: context);
+                                      }
+                                    });
                                     
-                                    final token = MyPrefs.getToken(prefs: prefs);
-                        
-                                    if (statusCode == 200 && token != null) {
-                                      await Api.user_self(domainName, token);
-                        
-                                      Navigator.pushNamed(
-                                        context,
-                                        Homepage.routeName
-                                      );
-                        
-                                      FloatingSnackBar(message: 'Successfully Log In.', context: context);
-                                    } else {
-                                      FloatingSnackBar(message: 'Unable to Log In. Error ${statusCode}.', context: context);
-                                    }
                                   });
-                                  
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                });
+                                }
+                                setState(() { isLoading = false; });
                               }
                             ),
                           ],
