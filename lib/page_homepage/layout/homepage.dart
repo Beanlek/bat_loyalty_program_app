@@ -1,12 +1,16 @@
 import 'dart:convert';
-import 'package:bat_loyalty_program_app/page_homepage/component/home_components.dart';
+import 'package:bat_loyalty_program_app/page_homepage/component/local_components.dart';
+import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
+import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
 import 'package:bat_loyalty_program_app/page_track_history/layout/tracking_history.dart';
+import 'package:bat_loyalty_program_app/services/api.dart';
+import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
-import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
-
+import 'package:bat_loyalty_program_app/page_homepage/widget/local_widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -17,28 +21,24 @@ class Homepage extends StatefulWidget {
   State<Homepage> createState() => _HomepageState();
 }
 
-class _HomepageState extends State<Homepage> with HomeComponents{
-
-// move in component 
+class _HomepageState extends State<Homepage> with HomeComponents {
+// move in component
   List<String> products = [
     "Product 1",
     "Product 2",
     "Product 3",
-
   ];
   Future<List<dynamic>>? futureProduct;
 
+ 
   final FocusNode searchFocusNode = FocusNode();
 
   bool launchLoading = true;
 
   int loyaltyPoints = 0;
 
-
-
   @override
   void initState() {
-
     loyaltyPoints = 2000;
     initParam().whenComplete(() {
       setState(() {
@@ -78,62 +78,18 @@ class _HomepageState extends State<Homepage> with HomeComponents{
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return PopScope(
-      canPop: true,
+      canPop: false,
       child: launchLoading
           ? MyWidgets.MyLoading2(context, isDarkMode)
           : Scaffold(
-              appBar: AppBar(
-                backgroundColor: Theme.of(context).primaryColor,
-                leading: IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.menu,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                actions: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.language,
-                        color: Theme.of(context).colorScheme.secondary),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(right: 12.0, top: 12, bottom: 12),
-                    child: CircleAvatar(
-                      backgroundColor: MyColors.greyImran2,
-                      child: Icon(
-                        Icons.person,
-                        color: MyColors.greyImran,
-                      ),
-                    ),
-                  ),
-                ],
-                title: Stack(
-                  children: [
-                    SizedBox(
-                      width: MySize.Width(context, 0.3),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Image.asset(
-                          isDarkMode
-                              ? 'assets/logos/logo_bat_v002.png'
-                              : 'assets/logos/logo_bat.png',
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Text(
-                          'Version 0.0.1',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall!
-                              .copyWith(
-                                  fontWeight: FontWeight.normal, fontSize: 8),
-                        ))
-                  ],
+            key: scaffoldKey,
+              appBar: HomeWidgets.MyAppBar(context,isDarkMode,
+                appVersion: appVersion,
+                scaffoldKey: scaffoldKey,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  ProfilePage.routeName,
+                  arguments: MyArguments(token, user: jsonEncode(user)),
                 ),
               ),
               body: Stack(
@@ -217,7 +173,8 @@ class _HomepageState extends State<Homepage> with HomeComponents{
                                               onPressed: () {
                                                 Navigator.pushNamed(
                                                     context,
-                                                    trackingHistoryPage.routeName);
+                                                    trackingHistoryPage
+                                                        .routeName);
                                               },
                                               label: Text('Tracking History',
                                                   style: Theme.of(context)
@@ -277,6 +234,7 @@ class _HomepageState extends State<Homepage> with HomeComponents{
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // title
                                 Text(
                                   'Product Catalogue',
                                   style: Theme.of(context)
@@ -292,7 +250,18 @@ class _HomepageState extends State<Homepage> with HomeComponents{
                                 // search bar
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: TextField(
+                                  child: GradientTextField(
+                                      textStyle: Theme.of(context)
+                                          .textTheme
+                                          .labelLarge!
+                                          .copyWith(
+                                              fontWeight: FontWeight.w500),
+                                      gradient: LinearGradient(colors: [
+                                        Theme.of(context).colorScheme.tertiary,
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onSecondary,
+                                      ]),
                                       controller: searchController,
                                       decoration: InputDecoration(
                                         prefixIcon: IconButton(
@@ -327,24 +296,54 @@ class _HomepageState extends State<Homepage> with HomeComponents{
                                       crossAxisCount: 2, // row
                                       childAspectRatio: 2.5 / 4,
                                       mainAxisSpacing: 20,
-                                      crossAxisSpacing: 20, 
+                                      crossAxisSpacing: 20,
                                     ),
                                     itemCount: 6,
                                     shrinkWrap: true,
                                     physics: const ScrollPhysics(),
-                                    itemBuilder:
-                                        (BuildContext context, int i) {
+                                    itemBuilder: (BuildContext context, int i) {
                                       return Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(24),
-                                          color: Theme.of(context).colorScheme.primaryContainer,
-                                        ),
-                                        
-                                      );
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(24),
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primaryContainer,
+                                          ),
+                                          child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Card(
+                                                    elevation: 0,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSecondary,
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.all(10.0),
+                                                      child:
+                                                          Text('Product Image'),
+                                                    )),
+                                                Text('Product Code'),
+                                                Text('Product Name'),
+                                                Icon(
+                                                    Icons
+                                                        .favorite_border_outlined,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimaryContainer),
+                                              ]));
                                     },
                                   ),
-                                )
+                                ),
 
+                                // floating button
+                                HomeWidgets.MyFloatingButton(
+                                  context,
+                                  60,
+                                  () {},
+                                )
                               ],
                             ),
                           ),
@@ -354,7 +353,50 @@ class _HomepageState extends State<Homepage> with HomeComponents{
                   ),
                 ],
               ),
-            ),
+              drawer: HomeWidgets.MyDrawer(context, isDarkMode,
+                  appVersion: appVersion,
+                  domainName: domainName,
+                  items: [
+                    HomeWidgets.Item(context,
+                        icon: FontAwesomeIcons.userAlt,
+                        label: 'Profile',
+                        onTap: () => Navigator.pushNamed(
+                            context, ProfilePage.routeName,
+                            arguments:
+                                MyArguments(token, user: jsonEncode(user)))),
+                    Divider(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onTertiary
+                          .withOpacity(0.5),
+                    ),
+                    HomeWidgets.Item(context,
+                        icon: FontAwesomeIcons.history,
+                        label: 'Tracking History',
+                        onTap: () => Navigator.pushNamed(
+                          context, trackingHistoryPage.routeName,
+                        ) ),
+                    HomeWidgets.Item(context,
+                        icon: FontAwesomeIcons.images,
+                        label: 'Images Status',
+                        onTap: () => false),
+                    Divider(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onTertiary
+                          .withOpacity(0.5),
+                    ),
+                    HomeWidgets.Item(context,
+                        icon: FontAwesomeIcons.gear,
+                        label: 'Settings',
+                        onTap: () => false),
+                    HomeWidgets.Item(context,
+                        icon: FontAwesomeIcons.signOut,
+                        label: 'Log Out', onTap: () async {
+                      await Api.logout().whenComplete(() =>
+                          Navigator.pushNamed(context, LoginPage.routeName));
+                    }),
+                  ])),
     );
   }
 }

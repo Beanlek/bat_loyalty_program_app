@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
 
-mixin HomeComponents {
+mixin TrackComponents {
   final TextEditingController searchController = TextEditingController();
 }

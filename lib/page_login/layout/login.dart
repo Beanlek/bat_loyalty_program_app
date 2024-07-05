@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
@@ -26,11 +28,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
 
   @override
   void initState() {
-    initParam().whenComplete(() {
-      setState(() {
-        launchLoading = false;
-      });
-    });
+    initParam().whenComplete(() { setState(() { launchLoading = false; }); });
     
     super.initState();
   }
@@ -45,12 +43,38 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
   }
 
   @override
+  Future<void> initParam() async {
+    super.initParam();
+
+    await MyPrefs.init().then((prefs) {
+      prefs!;
+
+      final allDomainString = MyPrefs.getAllDomain(prefs: prefs)!;
+      final Map<String, dynamic> allDomain = jsonDecode(allDomainString);
+
+      allDomain.forEach((key, value) => domainList.add(value));
+    });
+
+    print('domainName : $domainName');
+  }
+
+  @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     
     return PopScope(
       canPop: false,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : Scaffold(
+
+        floatingActionButton: MyWidgets.ToChangeEnv( context, domainNow: domainName, domainList: domainList, onChanged: (value) async { value!;
+          setState(() { isLoading = true; });
+        
+          await MyPrefs.init().then((prefs) { prefs!;
+            MyPrefs.setDomainName(value, prefs: prefs);
+            setState(() { isLoading = false; domainName = value; });
+          });
+        } ),
+        
         body: 
         
         Stack(
@@ -61,7 +85,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                 children: [
                   SizedBox(height: MySize.Height(context, 0.05),),
                   MyWidgets.MyLogoHeader(context, isDarkMode, appVersion: appVersion),
-                  SizedBox(height: MySize.Height(context, 0.1),),
+                  SizedBox(height: MySize.Height(context, 0.08),),
 
                   Expanded(
                     child: MyWidgets.MyScroll1( context,
@@ -81,9 +105,11 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                                   ]),
                                 ),
                                 SizedBox(height: 24,),
-                                MyWidgets.MyTextField1(context, 'Phone', phoneController, digitOnly: true),
+                                MyWidgets.MyTextField1(context, 'Username or Phone', phoneController, focusNode: phoneFocusnode, onSubmit: (_) => passwordFocusnode.requestFocus(),),
+                                pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['phoneErrorMsg']! ) : SizedBox(),
                                 SizedBox(height: 12,),
-                                MyWidgets.MyTextField1(context, 'Password', passwordController, isPassword: true),
+                                MyWidgets.MyTextField1(context, 'Password', passwordController, focusNode: passwordFocusnode, isPassword: true, onSubmit: (_) => passwordFocusnode.unfocus()),
+                                pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['passwordErrorMsg']! ) : SizedBox(),
                         
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
@@ -117,40 +143,52 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                         
                             MyWidgets.MyButton1(context, 150, 'Log In', 
                               () async {
-                                setState(() {
-                                  isLoading = true;
+                                setState(() { isLoading = true; 
+                                  errMsgs.update('phoneErrorMsg', (value) => 'Please enter your username or phone.');
+                                  errMsgs.update('passwordErrorMsg', (value) => 'Please enter your password.');
                                 });
                         
                                 final String mobile = phoneController.text.trim();
                                 final String password = passwordController.text.trim();
-                        
-                                print('login > mobile : ${mobile}');
-                                print('login > password : ${password}');
-                        
-                                await Api.login(domainName, mobile: mobile, password: password, deviceID: deviceID).then((statusCode) async {
-                                  await MyPrefs.init().then((prefs) async {
-                                    prefs!;
+
+                                setState(() { pageError[0] = mobile.isEmpty; });
+                                setState(() { pageError[1] = password.isEmpty; });
+
+                                if (pageError.every((e) => e == false)) {
+                                  await Api.login(domainName, mobile: mobile, password: password, deviceID: deviceID).then((statusCode) async {
+                                    await MyPrefs.init().then((prefs) async {
+                                      prefs!;
+                                      
+                                      final token = MyPrefs.getToken(prefs: prefs);
+                          
+                                      if (statusCode == 200 && token != null) {
+                                        await Api.user_self(domainName, token);
+                          
+                                        Navigator.pushNamed(
+                                          context,
+                                          Homepage.routeName
+                                        );
+                          
+                                        FloatingSnackBar(message: 'Successfully Log In.', context: context);
+                                      } else if (statusCode == 422) {
+                                        String msg = 'Wrong username or password.';
+                                        
+                                        setState(() { 
+                                          pageError[0] = true;
+                                          pageError[1] = true;
+                                          errMsgs.update('phoneErrorMsg', (value) => msg);
+                                          errMsgs.update('passwordErrorMsg', (value) => msg);
+                                        });
+
+                                        FloatingSnackBar(message: msg, context: context);
+                                      } else {
+                                        FloatingSnackBar(message: 'Unable to Log In. Error ${statusCode}.', context: context);
+                                      }
+                                    });
                                     
-                                    final token = MyPrefs.getToken(prefs: prefs);
-                        
-                                    if (statusCode == 200 && token != null) {
-                                      await Api.user_self(domainName, token);
-                        
-                                      Navigator.pushNamed(
-                                        context,
-                                        Homepage.routeName
-                                      );
-                        
-                                      FloatingSnackBar(message: 'Successfully Log In.', context: context);
-                                    } else {
-                                      FloatingSnackBar(message: 'Unable to Log In. Error ${statusCode}.', context: context);
-                                    }
                                   });
-                                  
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                });
+                                }
+                                setState(() { isLoading = false; });
                               }
                             ),
                           ],
@@ -158,7 +196,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                       ),
                     ),
                   ),
-
+                  Text('Running on ${domainName}', style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w300, fontSize: 10),),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: MyWidgets.MyFooter1(context),
