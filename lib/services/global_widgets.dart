@@ -615,10 +615,9 @@ class MyWidgets {
 // add product here
 // static Widget MyProductCard(){
 // }
-
 }
 
-// for breadcrumb 
+// for breadcrumb
 class Breadcrumb extends StatelessWidget {
   final List<String> paths;
 
@@ -704,65 +703,76 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShaderMask(
-      shaderCallback: (bounds) => gradient.createShader(bounds),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12.0),
-                  child: imageUrl,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              Text(
-                title,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(fontWeight: FontWeight.w500,fontSize: 16),
-              ),
-              const SizedBox(height: 4.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '$points pts',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(fontWeight: FontWeight.w300,fontSize: 14),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.0),
+                    color: Theme.of(context).colorScheme.onTertiary,
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.favorite_outline_rounded,
-                      color: Theme.of(context).colorScheme.onTertiary,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: imageUrl,
+                  ),
+                )
+              ],
+            ),
+            ShaderMask(
+              shaderCallback: (bounds) => gradient.createShader(bounds),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8.0),
+                  Column(
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            fontWeight: FontWeight.w500, fontSize: 16),
                       ),
-                    onPressed: onLoveIconTap,
+                      const SizedBox(height: 4.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '$points pts',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(
+                                    fontWeight: FontWeight.w300, fontSize: 14),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.favorite_outline_rounded,
+                              color: Theme.of(context).colorScheme.onTertiary,
+                            ),
+                            onPressed: onLoveIconTap,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// search bar 
+// search bar
 
 class GradientSearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -813,7 +823,6 @@ class GradientSearchBar extends StatelessWidget {
     );
   }
 }
-
 
 class MySize {
   static double Height(BuildContext context, double multiplier) {

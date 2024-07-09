@@ -255,7 +255,6 @@ class _HomepageState extends State<Homepage> with HomeComponents {
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                     colors: [
-
                                       Theme.of(context).colorScheme.tertiary,
                                       Theme.of(context).colorScheme.onPrimary,
                                     ],
@@ -289,8 +288,8 @@ class _HomepageState extends State<Homepage> with HomeComponents {
                                           points: 1000,
                                           onLoveIconTap: () {},
                                           gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
+                                            begin: Alignment.centerLeft,
+                                            end: Alignment.centerRight,
                                             colors: [
                                               Theme.of(context)
                                                   .colorScheme

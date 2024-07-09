@@ -3,6 +3,7 @@ import 'package:bat_loyalty_program_app/page_track_history/component/local_compo
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -85,8 +86,7 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                     ),
                   ],
                 ),
-                body: 
-                Expanded(
+                body: Expanded(
                   child: MyWidgets.MyScroll1(
                     context,
                     controller: scrollController,
@@ -101,11 +101,11 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                               children: [
                                 // show page path
                                 Breadcrumb(paths: paths),
-                    
+
                                 SizedBox(
                                   height: 12,
                                 ),
-                                        
+
                                 GradientSearchBar(
                                   controller: searchController,
                                   gradient: LinearGradient(
@@ -115,11 +115,11 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                     ],
                                   ),
                                 ),
-                                
+
                                 SizedBox(
                                   height: 12,
                                 ),
-                    
+
                                 // product detail card
                                 Container(
                                   padding: EdgeInsets.all(10),
@@ -152,11 +152,11 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                           ),
                                         ],
                                       ),
-                    
+
                                       SizedBox(
                                         width: 12,
                                       ),
-                    
+
                                       // Column for product details
                                       Expanded(
                                         child: Column(
@@ -171,39 +171,51 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                    
+
                                             SizedBox(
                                               height: 8,
                                             ),
-                    
+
                                             // copy code
                                             Row(children: [
-                                              Icon(
-                                                FontAwesomeIcons.copy,
-                                                // Icons.copy_rounded,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Clipboard.setData(ClipboardData(
+                                                      text:"1A2B 3C1A 2B3C 1A2B"));
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                        content: Text(
+                                                            'Copied to clipboard')),
+                                                  );
+                                                },
+                                                child: Icon(
+                                                  FontAwesomeIcons.copy,
+                                                  // Icons.copy_rounded,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                ),
                                               ),
                                               SizedBox(
                                                 width: 10,
                                               ),
-                                              
                                               Expanded(
                                                 child: Text(
-                                                '1A2B 3C1A 2B3C 1A2B',
-                                                style: TextStyle(
-                                                  fontSize: 14,
+                                                  '1A2B 3C1A 2B3C 1A2B',
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                            ),
                                             ]),
-                    
+
                                             SizedBox(
                                               height: 8,
                                             ),
-                    
+
                                             // redeemed
                                             Text(
                                               'Redeemed On',
@@ -214,7 +226,7 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                                     .onPrimaryContainer,
                                               ),
                                             ),
-                    
+
                                             // date
                                             Text(
                                               '5/7/2024 3:00 PM',
@@ -225,14 +237,27 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                           ],
                                         ),
                                       ),
-                                     
-                                     SizedBox(width: 12,),
+
+                                      SizedBox(
+                                        width: 12,
+                                      ),
                                       // Column to show product points
                                       Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
+                                              Container(
+                                                width: 5,
+                                                height: 2,
+                                                color: Colors.red,
+                                              ),
+
+                                              SizedBox(
+                                                width: 7,
+                                              ),
+
                                               FaIcon(FontAwesomeIcons.database,
                                                   color: Colors.red),
                                               //Icon(Icons.price_check, color: Colors.red),
@@ -253,8 +278,6 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                     ],
                                   ),
                                 ),
-                    
-                                 
                               ],
                             ),
                           ),
