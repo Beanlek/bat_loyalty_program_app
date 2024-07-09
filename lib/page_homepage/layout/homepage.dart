@@ -30,7 +30,6 @@ class _HomepageState extends State<Homepage> with HomeComponents {
   ];
   Future<List<dynamic>>? futureProduct;
 
- 
   final FocusNode searchFocusNode = FocusNode();
 
   bool launchLoading = true;
@@ -82,8 +81,10 @@ class _HomepageState extends State<Homepage> with HomeComponents {
       child: launchLoading
           ? MyWidgets.MyLoading2(context, isDarkMode)
           : Scaffold(
-            key: scaffoldKey,
-              appBar: HomeWidgets.MyAppBar(context,isDarkMode,
+              key: scaffoldKey,
+              appBar: HomeWidgets.MyAppBar(
+                context,
+                isDarkMode,
                 appVersion: appVersion,
                 scaffoldKey: scaffoldKey,
                 onTap: () => Navigator.pushNamed(
@@ -248,39 +249,17 @@ class _HomepageState extends State<Homepage> with HomeComponents {
                                 ),
 
                                 // search bar
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: GradientTextField(
-                                      textStyle: Theme.of(context)
-                                          .textTheme
-                                          .labelLarge!
-                                          .copyWith(
-                                              fontWeight: FontWeight.w500),
-                                      gradient: LinearGradient(colors: [
-                                        Theme.of(context).colorScheme.tertiary,
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onSecondary,
-                                      ]),
-                                      controller: searchController,
-                                      decoration: InputDecoration(
-                                        prefixIcon: IconButton(
-                                          icon: Icon(Icons.search),
-                                          onPressed: () {},
-                                        ),
-                                        suffixIcon: IconButton(
-                                          icon: Icon(Icons.tune_rounded),
-                                          onPressed: () {},
-                                        ),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(24.0),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        filled: true,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 0.0, horizontal: 20.0),
-                                      )),
+                                GradientSearchBar(
+                                  controller: searchController,
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+
+                                      Theme.of(context).colorScheme.tertiary,
+                                      Theme.of(context).colorScheme.onPrimary,
+                                    ],
+                                  ),
                                 ),
 
                                 SizedBox(
@@ -302,38 +281,25 @@ class _HomepageState extends State<Homepage> with HomeComponents {
                                     shrinkWrap: true,
                                     physics: const ScrollPhysics(),
                                     itemBuilder: (BuildContext context, int i) {
-                                      return Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(24),
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primaryContainer,
+                                      return ProductCard(
+                                          imageUrl: Image.asset(
+                                            'assets/images_examples/headphone.jpeg',
                                           ),
-                                          child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Card(
-                                                    elevation: 0,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSecondary,
-                                                    child: Padding(
-                                                      padding:
-                                                          EdgeInsets.all(10.0),
-                                                      child:
-                                                          Text('Product Image'),
-                                                    )),
-                                                Text('Product Code'),
-                                                Text('Product Name'),
-                                                Icon(
-                                                    Icons
-                                                        .favorite_border_outlined,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onPrimaryContainer),
-                                              ]));
+                                          title: "Headphone",
+                                          points: 1000,
+                                          onLoveIconTap: () {},
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .tertiary,
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary,
+                                            ],
+                                          ));
                                     },
                                   ),
                                 ),
@@ -374,8 +340,9 @@ class _HomepageState extends State<Homepage> with HomeComponents {
                         icon: FontAwesomeIcons.history,
                         label: 'Tracking History',
                         onTap: () => Navigator.pushNamed(
-                          context, trackingHistoryPage.routeName,
-                        ) ),
+                              context,
+                              trackingHistoryPage.routeName,
+                            )),
                     HomeWidgets.Item(context,
                         icon: FontAwesomeIcons.images,
                         label: 'Images Status',

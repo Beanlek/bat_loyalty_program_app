@@ -3,6 +3,8 @@ import 'package:bat_loyalty_program_app/page_track_history/component/local_compo
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class trackingHistoryPage extends StatefulWidget {
   const trackingHistoryPage({super.key});
@@ -74,150 +76,192 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Image.asset(
                               isDarkMode
-                                  ? 'assets/logos/logo_bat_v002.png'
-                                  : 'assets/logos/logo_bat.png',
+                                  ? 'assets/logos/bat-logo-white.png'
+                                  : 'assets/logos/bat-logo-default.png',
                             ),
                           ),
                         ),
-                        Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Text(
-                              'Version 0.0.1',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelSmall!
-                                  .copyWith(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 8),
-                            ))
                       ],
                     ),
                   ],
                 ),
-                body: Stack(
-                  children: [
-                    SizedBox.expand(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // show page path
-                            Breadcrumb(paths: paths),
-
-                            SizedBox(
-                              height: 12,
-                            ),
-
-                            // search bar
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: GradientTextField(
-                                  textStyle: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge!
-                                      .copyWith(fontWeight: FontWeight.w500),
-                                  gradient: LinearGradient(colors: [
-                                    Theme.of(context).colorScheme.tertiary,
-                                    Theme.of(context).colorScheme.onSecondary,
-                                  ]),
-                                  controller: searchController,
-                                  decoration: InputDecoration(
-                                    prefixIcon: IconButton(
-                                      icon: Icon(Icons.search),
-                                      onPressed: () {},
-                                    ),
-                                    suffixIcon: IconButton(
-                                      icon: Icon(Icons.tune_rounded),
-                                      onPressed: () {},
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(24.0),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    filled: true,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 0.0, horizontal: 20.0),
-                                  )
+                body: 
+                Expanded(
+                  child: MyWidgets.MyScroll1(
+                    context,
+                    controller: scrollController,
+                    child: Stack(
+                      children: [
+                        SizedBox.expand(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // show page path
+                                Breadcrumb(paths: paths),
+                    
+                                SizedBox(
+                                  height: 12,
                                 ),
-                            ),
-
-                            SizedBox(
-                              height: 12,
-                            ),
-
-                            // product detail card
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              child: Row(
-                                children: [
-
-
-                                  // Column to show image
-                                  Column(
+                                        
+                                GradientSearchBar(
+                                  controller: searchController,
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Theme.of(context).colorScheme.tertiary,
+                                      Theme.of(context).colorScheme.onPrimary,
+                                    ],
+                                  ),
+                                ),
+                                
+                                SizedBox(
+                                  height: 12,
+                                ),
+                    
+                                // product detail card
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  child: Row(
                                     children: [
-                                      //Image.asset(imagePath),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(24),
-                                          border: Border.all(
-                                              color: const Color.fromARGB(255, 88, 65, 65), width: 1),
+                                      // Column to show image
+                                      Column(
+                                        children: [
+                                          //Image.asset(imagePath),
+                                          Container(
+                                            width: 100,
+                                            height: 100,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(24),
+                                              border: Border.all(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  width: 1),
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(23),
+                                              child: Image.asset(
+                                                'assets/images_examples/headphone.jpeg', // Replace with your image path
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                    
+                                      SizedBox(
+                                        width: 12,
+                                      ),
+                    
+                                      // Column for product details
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            //title
+                                            Text(
+                                              'Headphone',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                    
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                    
+                                            // copy code
+                                            Row(children: [
+                                              Icon(
+                                                FontAwesomeIcons.copy,
+                                                // Icons.copy_rounded,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              
+                                              Expanded(
+                                                child: Text(
+                                                '1A2B 3C1A 2B3C 1A2B',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            ]),
+                    
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                    
+                                            // redeemed
+                                            Text(
+                                              'Redeemed On',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimaryContainer,
+                                              ),
+                                            ),
+                    
+                                            // date
+                                            Text(
+                                              '5/7/2024 3:00 PM',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        child: Text("image")
+                                      ),
+                                     
+                                     SizedBox(width: 12,),
+                                      // Column to show product points
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              FaIcon(FontAwesomeIcons.database,
+                                                  color: Colors.red),
+                                              //Icon(Icons.price_check, color: Colors.red),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                '1200 Pts',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
                                       ),
                                     ],
                                   ),
-                                  // Column for product details
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'productName',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          'productDescription',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                        Text(
-                                          'productDate',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  // Column to show product points
-                                  Column(
-                                    children: [
-                                      Text(
-                                        'Points: 1000',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.green,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                ),
+                    
+                                 
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    )
-                  ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ));
   }

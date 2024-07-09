@@ -91,5 +91,6 @@ flutter:
     - assets/fonts/
     - assets/logos/
     - assets/lotties/
+    - assets/images_examples/
     - assets/security_images/
     - assets/security_phrases/

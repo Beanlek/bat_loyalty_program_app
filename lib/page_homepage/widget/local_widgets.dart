@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
 
 class HomeWidgets {
- static Widget MyDrawer(BuildContext context, bool isDarkMode,
-    {key, required String appVersion, required String domainName, required List<Widget> items}
-  ) {
+  static Widget MyDrawer(BuildContext context, bool isDarkMode,
+      {key,
+      required String appVersion,
+      required String domainName,
+      required List<Widget> items}) {
     final _widget = Drawer(
       width: MySize.Width(context, 0.6),
       backgroundColor: Theme.of(context).primaryColor,
-
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24.0,  24.0, 12 , 24.0),
+        padding: const EdgeInsets.fromLTRB(24.0, 24.0, 12, 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -19,53 +20,85 @@ class HomeWidgets {
               child: Padding(
                 padding: const EdgeInsets.only(top: 32.0, left: 10, right: 44),
                 child: Image.asset(
-                  isDarkMode ?
-                  'assets/logos/bat-logo-white.png' :
-                  'assets/logos/bat-logo-default.png',
+                  isDarkMode
+                      ? 'assets/logos/bat-logo-white.png'
+                      : 'assets/logos/bat-logo-default.png',
                 ),
               ),
             ),
-
-            SizedBox(height: 12,),
-            Text('Version ${appVersion}\nDomain ${domainName}', style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w300, fontSize: 8),),
-            SizedBox(height: 24,),
-
-            Column( crossAxisAlignment: CrossAxisAlignment.start, children: items, )
+            SizedBox(
+              height: 12,
+            ),
+            Text(
+              'Version ${appVersion}\nDomain ${domainName}',
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall!
+                  .copyWith(fontWeight: FontWeight.w300, fontSize: 8),
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: items,
+            )
           ],
         ),
       ),
     );
-  
+
     return _widget;
   }
 
-    static Widget Item(BuildContext context,
-    {key, required IconData icon, required String label, void Function()? onTap}
-  ) {
+  static Widget Item(BuildContext context,
+      {key,
+      required IconData icon,
+      required String label,
+      void Function()? onTap}) {
     final Color ITEM_COLOR = Theme.of(context).colorScheme.onTertiary;
-    
-    final _widget = ListTile(
-      leading: Icon(icon, color: ITEM_COLOR, size: 16,),
-      title: Text(label, style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: ITEM_COLOR, fontWeight: FontWeight.w500)),
 
+    final _widget = ListTile(
+      leading: Icon(
+        icon,
+        color: ITEM_COLOR,
+        size: 16,
+      ),
+      title: Text(label,
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(color: ITEM_COLOR, fontWeight: FontWeight.w500)),
       dense: true,
       contentPadding: EdgeInsets.zero,
-
       onTap: onTap,
     );
-  
+
     return _widget;
   }
 
   static PreferredSizeWidget MyAppBar(BuildContext context, bool isDarkMode,
-    {key, required String appVersion, required GlobalKey<ScaffoldState> scaffoldKey, void Function()? onTap}
-  ) {
+      {key,
+      required String appVersion,
+      required GlobalKey<ScaffoldState> scaffoldKey,
+      void Function()? onTap}) {
     final _widget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
-      leading: IconButton(onPressed: () { scaffoldKey.currentState!.openDrawer(); }, icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.secondary,),),
+      leading: IconButton(
+        onPressed: () {
+          scaffoldKey.currentState!.openDrawer();
+        },
+        icon: Icon(
+          Icons.menu,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+      ),
       actions: [
-        IconButton(onPressed: () {}, icon: Icon(Icons.language, color: Theme.of(context).colorScheme.secondary),),
-    
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.language,
+              color: Theme.of(context).colorScheme.secondary),
+        ),
         Padding(
           padding: const EdgeInsets.only(right: 12.0, top: 12, bottom: 12),
           child: InkWell(
@@ -80,7 +113,6 @@ class HomeWidgets {
           ),
         ),
       ],
-    
       title: Stack(
         children: [
           SizedBox(
@@ -88,26 +120,28 @@ class HomeWidgets {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Image.asset(
-                isDarkMode ?
-                'assets/logos/bat-logo-white.png' :
-                'assets/logos/bat-logo-default.png',
+                isDarkMode
+                    ? 'assets/logos/bat-logo-white.png'
+                    : 'assets/logos/bat-logo-default.png',
               ),
             ),
           ),
           Positioned(
-            bottom: 7,
-            right: 0,
-            child: Text(appVersion,
-              style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.normal, fontSize: 8),
-            )
-          )
+              bottom: 7,
+              right: 0,
+              child: Text(
+                appVersion,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall!
+                    .copyWith(fontWeight: FontWeight.normal, fontSize: 8),
+              ))
         ],
       ),
     );
-  
+
     return _widget;
   }
-
 
   static Widget MyFloatingButton(
       BuildContext context, double? width, void Function()? onTap,
@@ -123,8 +157,7 @@ class HomeWidgets {
               border: Border.all(
                   color: !active
                       ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                      : Theme.of(context).colorScheme.onTertiary
-                      ),
+                      : Theme.of(context).colorScheme.onTertiary),
               gradient: !active
                   ? null
                   : LinearGradient(
