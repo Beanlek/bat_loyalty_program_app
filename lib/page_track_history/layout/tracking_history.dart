@@ -1,29 +1,28 @@
 import 'dart:convert';
 import 'package:bat_loyalty_program_app/page_track_history/component/local_components.dart';
+import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
+import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class trackingHistoryPage extends StatefulWidget {
-  const trackingHistoryPage({super.key});
+class TrackingHistoryPage extends StatefulWidget {
+  const TrackingHistoryPage({super.key});
 
   static const routeName = '/tracking_history';
 
   @override
-  State<trackingHistoryPage> createState() => _trackingHistoryPageState();
+  State<TrackingHistoryPage> createState() => _TrackingHistoryPageState();
 }
 
-class _trackingHistoryPageState extends State<trackingHistoryPage>
-    with TrackComponents {
-  bool launchLoading = true;
+class _TrackingHistoryPageState extends State<TrackingHistoryPage>
+    with TrackComponents , MyComponents{
 
   int loyaltyPoints = 0;
 
   @override
   void initState() {
-    loyaltyPoints = 2000;
     initParam().whenComplete(() {
       setState(() {
         launchLoading = false;
@@ -32,18 +31,12 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
     super.initState();
   }
 
-  late String domainName;
-  late String appVersion;
-  late String deviceID;
-  late Map<String, dynamic> user = {};
-
+  @override
   Future<void> initParam() async {
+    super.initParam();
+    
     await MyPrefs.init().then((prefs) {
       prefs!;
-
-      domainName = MyPrefs.getDomainName(prefs: prefs)!;
-      appVersion = MyPrefs.getAppVersion(prefs: prefs) ?? 'N/A';
-      deviceID = MyPrefs.getDeviceID(prefs: prefs) ?? 'N/A';
       final _user = MyPrefs.getUser(prefs: prefs) ?? 'N/A';
       user = jsonDecode(_user);
     });
@@ -51,60 +44,33 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
 
   @override
   Widget build(BuildContext context) {
-    final List<String> paths = ['Home', 'Tracking History'];
+    final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    if (!launchLoading) setPath(prevPath: args.prevPath, routeName: TrackingHistoryPage.routeName);
 
     return PopScope(
         child: launchLoading
             ? MyWidgets.MyLoading2(context, isDarkMode)
             : Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  title: Text(
-                    'Tracking History',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(fontWeight: FontWeight.normal),
-                  ),
-                  actions: [
-                    Stack(
-                      children: [
-                        SizedBox(
-                          width: MySize.Width(context, 0.3),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Image.asset(
-                              isDarkMode
-                                  ? 'assets/logos/bat-logo-white.png'
-                                  : 'assets/logos/bat-logo-default.png',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Tracking History', appVersion: appVersion),
+
                 body: 
-                Expanded(
-                  child: MyWidgets.MyScroll1(
-                    context,
-                    controller: scrollController,
-                    child: Stack(
-                      children: [
-                        SizedBox.expand(
-                          child: Padding(
+
+                Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths)),
+
+                          Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // show page path
-                                Breadcrumb(paths: paths),
-                    
-                                SizedBox(
-                                  height: 12,
-                                ),
                                         
                                 GradientSearchBar(
                                   controller: searchController,
@@ -119,7 +85,7 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                 SizedBox(
                                   height: 12,
                                 ),
-                    
+                                        
                                 // product detail card
                                 Container(
                                   padding: EdgeInsets.all(10),
@@ -152,11 +118,11 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                           ),
                                         ],
                                       ),
-                    
+                                        
                                       SizedBox(
                                         width: 12,
                                       ),
-                    
+                                        
                                       // Column for product details
                                       Expanded(
                                         child: Column(
@@ -171,11 +137,11 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                    
+                                        
                                             SizedBox(
                                               height: 8,
                                             ),
-                    
+                                        
                                             // copy code
                                             Row(children: [
                                               Icon(
@@ -199,11 +165,11 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                               ),
                                             ),
                                             ]),
-                    
+                                        
                                             SizedBox(
                                               height: 8,
                                             ),
-                    
+                                        
                                             // redeemed
                                             Text(
                                               'Redeemed On',
@@ -214,7 +180,7 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                                     .onPrimaryContainer,
                                               ),
                                             ),
-                    
+                                        
                                             // date
                                             Text(
                                               '5/7/2024 3:00 PM',
@@ -253,15 +219,17 @@ class _trackingHistoryPageState extends State<trackingHistoryPage>
                                     ],
                                   ),
                                 ),
-                    
+                                        
                                  
                               ],
                             ),
                           ),
-                        )
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+
+                    MyWidgets.MyLoading(context, isLoading, isDarkMode)
+                  ],
                 ),
               ));
   }

@@ -110,36 +110,36 @@ class HomeWidgets {
   }
 
   static Widget MyFloatingButton(
-      BuildContext context, double? width, void Function()? onTap,
-      {key, bool active = true}) {
+      BuildContext context, double? dimension,
+      {key, bool active = true, void Function()? onTap}) {
     final _widget = Material(
       color: Colors.transparent,
       elevation: !active ? 0 : 3,
       borderRadius: BorderRadius.circular(100),
-      child: Container(
-          width: width ?? null,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                  color: !active
-                      ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                      : Theme.of(context).colorScheme.onTertiary),
-              gradient: !active
-                  ? null
-                  : LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                          MyColors.biruImran2,
-                          MyColors.biruImran,
-                        ]),
-              color: active ? null : Colors.transparent),
-          child: ListTile(
-            title: Center(
-              child: (Icon(Icons.camera_alt_rounded, color: MyColors.myWhite)),
-            ),
-            onTap: active ? onTap : null,
-          )),
+      child: SizedBox.square(
+        dimension: dimension ?? 60,
+        child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                    color: !active
+                        ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                        : Theme.of(context).colorScheme.onTertiary),
+                gradient: !active
+                    ? null
+                    : LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                            MyColors.biruImran2,
+                            MyColors.biruImran,
+                          ]),
+                color: active ? null : Colors.transparent),
+            child: InkWell(
+              onTap: active ? onTap : null,
+              child: Icon(Icons.camera_alt_rounded, color: MyColors.myWhite),
+            )),
+      ),
     );
 
     return _widget;

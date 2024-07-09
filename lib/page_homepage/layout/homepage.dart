@@ -3,6 +3,7 @@ import 'package:bat_loyalty_program_app/page_homepage/component/local_components
 import 'package:bat_loyalty_program_app/page_homepage/widget/local_widgets.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
+import 'package:bat_loyalty_program_app/page_track_history/layout/tracking_history.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
@@ -113,7 +114,8 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
                               mainAxisAlignment: MainAxisAlignment.end,
                               crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history),
+                                  MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history,
+                                    onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
                                   MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image),
                                 ],
                               )),
@@ -133,6 +135,60 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
                           Text('Product Catalogue', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
 
                           //Search Bar
+                          GradientSearchBar(
+                            controller: searchController,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+
+                                Theme.of(context).colorScheme.tertiary,
+                                Theme.of(context).colorScheme.onPrimary,
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(
+                            height: 12,
+                          ),
+
+                          // product list
+                          Expanded(
+                            child: GridView.builder(
+                              padding: const EdgeInsets.all(15),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2, // row
+                                childAspectRatio: 2.5 / 4,
+                                mainAxisSpacing: 20,
+                                crossAxisSpacing: 20,
+                              ),
+                              itemCount: 6,
+                              shrinkWrap: true,
+                              physics: const ScrollPhysics(),
+                              itemBuilder: (BuildContext context, int i) {
+                                return ProductCard(
+                                    imageUrl: Image.asset(
+                                      'assets/images_examples/headphone.jpeg',
+                                    ),
+                                    title: "Headphone",
+                                    points: 1000,
+                                    onLoveIconTap: () {},
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .tertiary,
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                      ],
+                                    ));
+                              },
+                            ),
+                          ),
 
                         ],
                       ),
@@ -144,6 +200,8 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
           ],
         ),
 
+        floatingActionButton: HomeWidgets.MyFloatingButton( context, 60, onTap: () {}),
+
         drawer: HomeWidgets.MyDrawer(context, isDarkMode, appVersion: appVersion, domainName: domainName, 
           items: [
             HomeWidgets.Item(context, icon: FontAwesomeIcons.userAlt, label: 'Profile',
@@ -154,7 +212,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
             Divider(color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5),),
 
             HomeWidgets.Item(context, icon: FontAwesomeIcons.history, label: 'Tracking History',
-              onTap: () => false),
+              onTap: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
             HomeWidgets.Item(context, icon: FontAwesomeIcons.images, label: 'Images Status',
               onTap: () => false),
 

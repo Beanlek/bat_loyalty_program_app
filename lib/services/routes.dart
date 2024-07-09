@@ -47,6 +47,6 @@ class MyRoutes {
     ProfilePage.routeName: (context) => ProfilePage(),
 
     Dummy.routeName: (context) => Dummy(),
-    trackingHistoryPage.routeName: (context) => trackingHistoryPage(),
+    TrackingHistoryPage.routeName: (context) => TrackingHistoryPage(),
   };
 }

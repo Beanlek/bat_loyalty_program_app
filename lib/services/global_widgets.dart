@@ -312,63 +312,6 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyDropDown(BuildContext context, String text,
-      {key,
-      required String selectedFilter,
-      required List<String> filters,
-      bool active = true,
-      void Function(String?)? onChanged}) {
-    final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
-
-    final _widget = StatefulBuilder(builder: (context, setState) {
-      return Material(
-        elevation: 0,
-        borderRadius: BorderRadius.circular(24),
-        child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Theme.of(context).colorScheme.tertiary,
-                      Theme.of(context).colorScheme.onPrimary,
-                    ])),
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 24),
-              child: DropdownButtonFormField(
-                  elevation: 5,
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(borderSide: BorderSide.none)),
-                  icon: Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: DATA_COLOR.withOpacity(active ? 1 : 0.5),
-                  ),
-                  iconSize: 18,
-                  dropdownColor: Theme.of(context).colorScheme.onSecondary,
-                  value: selectedFilter,
-                  items: filters
-                      .map((filter) => DropdownMenuItem<String>(
-                            alignment: AlignmentDirectional.centerStart,
-                            value: filter,
-                            child: Text(
-                              filter,
-                              style: TextStyle(
-                                  color:
-                                      DATA_COLOR.withOpacity(active ? 1 : 0.5),
-                                  fontWeight: FontWeight.normal),
-                            ),
-                          ))
-                      .toList(),
-                  onChanged: active ? onChanged : null),
-            )),
-      );
-    });
-
-    return _widget;
-  }
-
   static Widget MyDropDown(
     BuildContext context, String text,
     {key, required String selectedFilter, required List<String> filters, bool active = true, void Function(String?)? onChanged}
@@ -592,28 +535,6 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyErrorTextField(BuildContext context, String text,
-    {key}
-  ) {
-    final Color ERROR_COLORS = MyColors.merahImran;
-    
-    final _widget = Align(alignment: Alignment.centerLeft, 
-      child: Padding(
-        padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
-        child: Row(
-          children: [
-            Icon(Icons.error, color: ERROR_COLORS, size: 16,), SizedBox(width: 12,),
-            Text(text, style: Theme.of(context).textTheme.labelMedium!.copyWith(
-              color: ERROR_COLORS,
-              fontWeight: FontWeight.normal
-            )),
-          ],
-        ),
-      ));
-  
-    return _widget;
-  }
-
   static Widget MyInfoTextField(BuildContext context, String text,
     {key}
   ) {
@@ -625,127 +546,6 @@ class MyWidgets {
           fontWeight: FontWeight.normal
         )),
     ));
-  
-    return _widget;
-  }
-
-  static Widget ToChangeEnv(BuildContext context,
-    {key, required String domainNow, required List<String> domainList, required void Function(String?)? onChanged }
-  ) {
-    final _widget = FloatingActionButton(
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-
-      onPressed: () {
-        showModalBottomSheet(context: context, builder: (context) {
-
-          return Container(
-            width: double.infinity,
-            height: MySize.Height(context, 0.25),
-            
-            decoration: BoxDecoration( color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadiusDirectional.only(topStart: Radius.circular(24), topEnd: Radius.circular(24)), ),
-
-            child: Padding( padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24.0),
-              child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                GradientText('Environment Change',
-                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.w800),
-                  gradient: LinearGradient(colors: [
-                    Theme.of(context).colorScheme.secondary,
-                    Theme.of(context).colorScheme.primary,
-                  ]),
-                ),
-
-                SizedBox(height: 24,),
-
-                MyDropDown(context, '_', selectedFilter: domainNow, filters: domainList, onChanged: onChanged,)
-              ],),
-            ),
-          );
-        });
-      },
-      
-      child: Icon( FontAwesomeIcons.userGear, color: Theme.of(context).colorScheme.onTertiary, ),
-    );
-  
-    return _widget;
-  }
-
-  static Widget MyErrorTextField(BuildContext context, String text,
-    {key}
-  ) {
-    final Color ERROR_COLORS = MyColors.merahImran;
-    
-    final _widget = Align(alignment: Alignment.centerLeft, 
-      child: Padding(
-        padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
-        child: Row(
-          children: [
-            Icon(Icons.error, color: ERROR_COLORS, size: 16,), SizedBox(width: 12,),
-            Text(text, style: Theme.of(context).textTheme.labelMedium!.copyWith(
-              color: ERROR_COLORS,
-              fontWeight: FontWeight.normal
-            )),
-          ],
-        ),
-      ));
-  
-    return _widget;
-  }
-
-  static Widget MyInfoTextField(BuildContext context, String text,
-    {key}
-  ) {
-    final _widget = Align(alignment: Alignment.centerLeft, 
-      child: Padding(
-        padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
-        child: Text(text, style: Theme.of(context).textTheme.labelMedium!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.5),
-          fontWeight: FontWeight.normal
-        )),
-    ));
-  
-    return _widget;
-  }
-
-  static Widget ToChangeEnv(BuildContext context,
-    {key, required String domainNow, required List<String> domainList, required void Function(String?)? onChanged }
-  ) {
-    final _widget = FloatingActionButton(
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-
-      onPressed: () {
-        showModalBottomSheet(context: context, builder: (context) {
-
-          return Container(
-            width: double.infinity,
-            height: MySize.Height(context, 0.25),
-            
-            decoration: BoxDecoration( color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadiusDirectional.only(topStart: Radius.circular(24), topEnd: Radius.circular(24)), ),
-
-            child: Padding( padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24.0),
-              child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                GradientText('Environment Change',
-                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.w800),
-                  gradient: LinearGradient(colors: [
-                    Theme.of(context).colorScheme.secondary,
-                    Theme.of(context).colorScheme.primary,
-                  ]),
-                ),
-
-                SizedBox(height: 24,),
-
-                MyDropDown(context, '_', selectedFilter: domainNow, filters: domainList, onChanged: onChanged,)
-              ],),
-            ),
-          );
-        });
-      },
-      
-      child: Icon( FontAwesomeIcons.userGear, color: Theme.of(context).colorScheme.onTertiary, ),
-    );
   
     return _widget;
   }
@@ -999,6 +799,131 @@ class GradientWidget extends StatelessWidget {
         Rect.fromLTWH(0, 0, bounds.width, bounds.height),
       ),
       child: widget,
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  final Image imageUrl;
+  final String title;
+  final int points;
+  final VoidCallback onLoveIconTap;
+  final Gradient gradient;
+
+  const ProductCard({
+    super.key,
+    required this.imageUrl,
+    required this.title,
+    required this.points,
+    required this.onLoveIconTap,
+    required this.gradient,
+  });
+
+// letak stack atas gmbr bawah container
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12.0),
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: imageUrl,
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(fontWeight: FontWeight.w500,fontSize: 16),
+            ),
+            const SizedBox(height: 4.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '$points pts',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(fontWeight: FontWeight.w300,fontSize: 14),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.favorite_outline_rounded,
+                    color: Theme.of(context).colorScheme.onTertiary,
+                    ),
+                  onPressed: onLoveIconTap,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GradientSearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final Gradient gradient;
+
+  const GradientSearchBar({
+    super.key,
+    required this.controller,
+    required this.gradient,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(24.0),
+        ),
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            prefixIcon: IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {},
+            ),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.tune_rounded),
+              onPressed: () {},
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24.0),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Colors.transparent, // Ensure fill color is transparent
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 0.0,
+              horizontal: 20.0,
+            ),
+          ),
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+        ),
+      ),
     );
   }
 }
