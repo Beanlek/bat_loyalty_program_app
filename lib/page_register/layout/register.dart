@@ -47,6 +47,7 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
     return PopScope(
       canPop: false,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : Scaffold(
+        
         body:
     
         Stack(

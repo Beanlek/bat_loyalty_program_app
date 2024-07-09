@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
@@ -26,11 +28,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
 
   @override
   void initState() {
-    initParam().whenComplete(() {
-      setState(() {
-        launchLoading = false;
-      });
-    });
+    initParam().whenComplete(() { setState(() { launchLoading = false; }); });
     
     super.initState();
   }
@@ -45,12 +43,38 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
   }
 
   @override
+  Future<void> initParam() async {
+    super.initParam();
+
+    await MyPrefs.init().then((prefs) {
+      prefs!;
+
+      final allDomainString = MyPrefs.getAllDomain(prefs: prefs)!;
+      final Map<String, dynamic> allDomain = jsonDecode(allDomainString);
+
+      allDomain.forEach((key, value) => domainList.add(value));
+    });
+
+    print('domainName : $domainName');
+  }
+
+  @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     
     return PopScope(
       canPop: false,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : Scaffold(
+
+        floatingActionButton: MyWidgets.ToChangeEnv( context, domainNow: domainName, domainList: domainList, onChanged: (value) async { value!;
+          setState(() { isLoading = true; });
+        
+          await MyPrefs.init().then((prefs) { prefs!;
+            MyPrefs.setDomainName(value, prefs: prefs);
+            setState(() { isLoading = false; domainName = value; });
+          });
+        } ),
+        
         body: 
         
         Stack(
@@ -61,7 +85,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                 children: [
                   SizedBox(height: MySize.Height(context, 0.05),),
                   MyWidgets.MyLogoHeader(context, isDarkMode, appVersion: appVersion),
-                  SizedBox(height: MySize.Height(context, 0.1),),
+                  SizedBox(height: MySize.Height(context, 0.08),),
 
                   Expanded(
                     child: MyWidgets.MyScroll1( context,
@@ -172,7 +196,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                       ),
                     ),
                   ),
-
+                  Text('Running on ${domainName}', style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w300, fontSize: 10),),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: MyWidgets.MyFooter1(context),

@@ -1,11 +1,12 @@
-
 import 'dart:convert';
-import 'package:bat_loyalty_program_app/services/global_components.dart';
-import 'package:dio/dio.dart';
 
-import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
-import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'package:floating_snackbar/floating_snackbar.dart';
+import 'package:bat_loyalty_program_app/services/global_components.dart';
+import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 
 class Api {
   static Future<bool> checkToken() async {
@@ -15,7 +16,7 @@ class Api {
     bool hadToken = false;
     DateTime tokenExpiryTimeParsed;
 
-    await MyPrefs.init().then((prefs) {
+    await MyPrefs.init().then((prefs) async {
       prefs!;
 
       token = MyPrefs.getToken(prefs: prefs);
@@ -31,6 +32,32 @@ class Api {
     });
 
     return hadToken;
+  }
+
+  static Future<void> setAllDomain() async {
+    Map<String, dynamic> allDomainMap = {};
+
+    await MyPrefs.init().then((prefs) async {
+      prefs!;
+      await dotenv.load(fileName: ".env");
+      final DOMAIN_LOCAL = dotenv.env['DOMAIN_LOCAL']!;
+      final DOMAIN_MASTER = dotenv.env['DOMAIN_MASTER']!;
+      final DOMAIN_DEV = dotenv.env['DOMAIN_DEV']!;
+
+      allDomainMap.putIfAbsent('local', () => DOMAIN_LOCAL);
+      allDomainMap.putIfAbsent('master', () => DOMAIN_MASTER);
+      allDomainMap.putIfAbsent('dev', () => DOMAIN_DEV);
+
+      MyPrefs.setAllDomain(jsonEncode(allDomainMap), prefs: prefs);
+    });
+  }
+
+  static Future<void> logout() async {
+    await MyPrefs.init().then((prefs) async {
+      prefs!;
+
+      prefs.remove('token');
+    });
   }
 
   static Future<int> login(String domainName, 
@@ -71,8 +98,10 @@ class Api {
         });
       }
     } on DioException catch (e) {
-      statusCode = e.response!.statusCode ?? 503;
-      String errMsg = 'Unknown error.';
+      if (e.response != null) { statusCode = e.response!.statusCode ?? 503; }
+      else { statusCode = 503; }
+      
+      String errMsg = 'Unknown error. $e';
 
       if (e.response != null) { errMsg = e.response!.data['errMsg']; }
       print(errMsg);

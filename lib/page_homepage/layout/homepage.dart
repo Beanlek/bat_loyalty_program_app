@@ -1,9 +1,17 @@
 import 'dart:convert';
+import 'package:bat_loyalty_program_app/page_homepage/component/local_components.dart';
+import 'package:bat_loyalty_program_app/page_homepage/widget/local_widgets.dart';
+import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
+import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
+import 'package:bat_loyalty_program_app/services/api.dart';
+import 'package:bat_loyalty_program_app/services/global_components.dart';
+import 'package:bat_loyalty_program_app/services/routes.dart';
+import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
-import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -14,22 +22,12 @@ class Homepage extends StatefulWidget {
   State<Homepage> createState() => _HomepageState();
 }
 
-class _HomepageState extends State<Homepage> {
-  final TextEditingController searchController = TextEditingController();
-  final FocusNode searchFocusNode = FocusNode();
-
-  bool launchLoading = true;
-
-  int loyaltyPoints = 0;
+class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
 
   @override
   void initState() {
     loyaltyPoints = 2000;
-    initParam().whenComplete(() {
-      setState(() {
-        launchLoading = false;
-      });
-    });
+    initParam().whenComplete(() { setState(() { launchLoading = false; }); });
     
     super.initState();
   }
@@ -41,19 +39,23 @@ class _HomepageState extends State<Homepage> {
     super.dispose();
   }
 
-  late String domainName;
-  late String appVersion;
-  late String deviceID;
-  late Map<String, dynamic> user = {};
+  @override
+  Future<void> initParam() async{
+    super.initParam();
 
-  Future<void> initParam() async {
-    await MyPrefs.init().then((prefs) {
+    await MyPrefs.init().then((prefs) async {
       prefs!;
+
+      await Api.checkToken().then((res) {
+        if (res) token = MyPrefs.getToken(prefs: prefs)!;
+        
+        if (!res) {
+          FloatingSnackBar(message: 'Session time out.', context: context);
+          Navigator.pushNamed( context, LoginPage.routeName );
+        }
+      });
       
-      domainName = MyPrefs.getDomainName(prefs: prefs)!;
-      appVersion = MyPrefs.getAppVersion(prefs: prefs) ?? 'N/A';
-      deviceID = MyPrefs.getDeviceID(prefs: prefs) ?? 'N/A';
-      final _user = MyPrefs.getUser(prefs: prefs) ?? 'N/A';
+      final _user = MyPrefs.getUser(prefs: prefs) ?? '{}';
       user = jsonDecode(_user);
     });
   }
@@ -63,52 +65,12 @@ class _HomepageState extends State<Homepage> {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return PopScope(
-      canPop: true,
+      canPop: false,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : Scaffold(
-
-        appBar:
         
-        AppBar(
-          backgroundColor: Theme.of(context).primaryColor,
-          leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.secondary,),),
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.language, color: Theme.of(context).colorScheme.secondary),),
-        
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0, top: 12, bottom: 12),
-              child: CircleAvatar(
-                backgroundColor: MyColors.greyImran2,
-                child: Icon(
-                  Icons.person,
-                  color: MyColors.greyImran,
-                ),
-              ),
-            ),
-          ],
-        
-          title: Stack(
-            children: [
-              SizedBox(
-                width: MySize.Width(context, 0.3),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Image.asset(
-                    isDarkMode ?
-                    'assets/logos/logo_bat_v002.png' :
-                    'assets/logos/logo_bat.png',
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Text('Version 0.0.1',
-                  style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.normal, fontSize: 8),
-                )
-              )
-            ],
-          ),
-        ),
+        key: scaffoldKey,
+        appBar: HomeWidgets.MyAppBar(context, isDarkMode, appVersion: appVersion, scaffoldKey: scaffoldKey,
+          onTap: () => Navigator.pushNamed( context, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user)))),
 
         body: 
         
@@ -151,35 +113,8 @@ class _HomepageState extends State<Homepage> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(
-                                    height: 35,
-                                    child: TextButton.icon(
-                                      onPressed: () {
-                                    
-                                      },
-                                      label: Text('Tracking History', style: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500,
-                                        color: Theme.of(context).colorScheme.primary
-                                      )),
-                                      icon: Icon(Icons.history, size: MySize.Width(context, 0.05),
-                                        color: Theme.of(context).colorScheme.primary
-                                        // color: IconTheme.of(context).color
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 35,
-                                    child: TextButton.icon(
-                                      onPressed: () {
-                                    
-                                      },
-                                      label: Text('Images Status', style: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500,
-                                        color: Theme.of(context).colorScheme.primary
-                                      )),
-                                      icon: Icon(Icons.image, size: MySize.Width(context, 0.05), 
-                                        color: Theme.of(context).colorScheme.primary
-                                      ),
-                                    ),
-                                  ),
+                                  MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history),
+                                  MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image),
                                 ],
                               )),
                             ],
@@ -208,6 +143,34 @@ class _HomepageState extends State<Homepage> {
             ),
           ],
         ),
+
+        drawer: HomeWidgets.MyDrawer(context, isDarkMode, appVersion: appVersion, domainName: domainName, 
+          items: [
+            HomeWidgets.Item(context, icon: FontAwesomeIcons.userAlt, label: 'Profile',
+              onTap: () => Navigator.pushNamed( context, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user)))),
+            HomeWidgets.Item(context, icon: FontAwesomeIcons.storeAlt, label: 'Manage Outlets',
+              onTap: () => false),
+
+            Divider(color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5),),
+
+            HomeWidgets.Item(context, icon: FontAwesomeIcons.history, label: 'Tracking History',
+              onTap: () => false),
+            HomeWidgets.Item(context, icon: FontAwesomeIcons.images, label: 'Images Status',
+              onTap: () => false),
+
+            Divider(color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5),),
+
+            HomeWidgets.Item(context, icon: FontAwesomeIcons.gear, label: 'Settings',
+              onTap: () => false),
+            HomeWidgets.Item(context, icon: FontAwesomeIcons.signOut, label: 'Log Out',
+              onTap: () async {
+                await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Logging Out',
+                  subtitle: 'You are logging out. Proceed?', warning: 'Once logged out, all progress will not be saved.'),).then((res) async {
+                    if (res) await Api.logout().whenComplete(() => Navigator.pushNamed( context, LoginPage.routeName ));
+                  });
+              }),
+          ]
+        )
       ),
     );
   }

@@ -8,6 +8,7 @@ mixin LoginComponents {
   final FocusNode passwordFocusnode = FocusNode();
 
   List<bool> pageError = [false, false];
+  List<String> domainList = [];
 
   Map<String, String> errMsgs = {
     "phoneErrorMsg" : "",

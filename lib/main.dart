@@ -1,5 +1,5 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
@@ -8,21 +8,27 @@ import 'package:bat_loyalty_program_app/services/api.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await dotenv.load(fileName: ".env");
-  String domainName = dotenv.env['DOMAIN_LOCAL']!;
   
+  await Api.setAllDomain();
   String initRoute = '/login';
+  String? domainName;
 
   await Api.checkToken().then((res) async {
     await MyPrefs.init().then((prefs) {
       prefs!;
+      
+      final allDomainString = MyPrefs.getAllDomain(prefs: prefs)!;
+      Map<String, dynamic> allDomain = jsonDecode(allDomainString);
 
-      MyPrefs.setDomainName(domainName, prefs: prefs);
+      print("allDomain['master'] : ${allDomain['master']}");
+      domainName = MyPrefs.getDomainName(prefs: prefs) ?? allDomain['master'];
+      print("domainName : ${domainName}");
+
+      MyPrefs.setDomainName(domainName!, prefs: prefs);
       MyPrefs.setAppVersion(prefs: prefs);
       MyPrefs.setDeviceID(prefs: prefs);
 
-      // if (res) initRoute = '/homepage';
+      if (res) initRoute = '/homepage';
     });
   });
 

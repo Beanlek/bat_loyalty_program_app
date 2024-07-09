@@ -46,6 +46,13 @@ class MyPrefs {
     return prefs.getString('domainName');
   }
 
+  static void setAllDomain(String allDomain, {required SharedPreferences prefs}) {
+    prefs.setString('allDomain', allDomain);
+  }
+  static String? getAllDomain({required SharedPreferences prefs}) {
+    return prefs.getString('allDomain');
+  }
+
   static void setUser(String user, {required SharedPreferences prefs}) {
     prefs.setString('user', user);
   }

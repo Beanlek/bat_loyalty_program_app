@@ -322,6 +322,70 @@ class MyWidgets {
   
     return _widget;
   }
+
+  static Widget MyDropDown(
+    BuildContext context, String text,
+    {key, required String selectedFilter, required List<String> filters, bool active = true, void Function(String?)? onChanged}
+  ) {
+    final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
+    
+    final _widget = StatefulBuilder(
+      builder: (context, setState) {
+
+        return Material(
+          elevation: 0,
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+        
+                colors: [
+                  Theme.of(context).colorScheme.tertiary,
+                  Theme.of(context).colorScheme.onPrimary,
+                ]
+              )
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 24),
+              child: DropdownButtonFormField(
+                elevation: 5,
+                isExpanded: true,
+
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none
+                  )
+                ),
+
+                icon: Icon(Icons.arrow_forward_ios_rounded, color: DATA_COLOR.withOpacity(active ? 1 : 0.5),),
+                iconSize: 18,
+                
+                dropdownColor: Theme.of(context).colorScheme.onSecondary,
+
+                value: selectedFilter,
+                items: filters.map((filter) => DropdownMenuItem<String>(
+                  alignment: AlignmentDirectional.centerStart,
+                  value: filter,
+
+                  child: Text(
+                    filter,
+                    style: TextStyle(color: DATA_COLOR.withOpacity(active ? 1 : 0.5), fontWeight: FontWeight.normal),
+                  ),
+                )).toList(),
+
+                onChanged: active ? onChanged : null
+              ),
+            )
+          ),
+        );
+      }
+    );
+  
+    return _widget;
+  }
   
   static Widget MyLoading(BuildContext context, bool isLoading, bool isDarkMode) {
     final _widget = isLoading ? Container(
@@ -422,24 +486,66 @@ class MyWidgets {
     return _widget;
   }
 
+  static Widget ToChangeEnv(BuildContext context,
+    {key, required String domainNow, required List<String> domainList, required void Function(String?)? onChanged }
+  ) {
+    final _widget = FloatingActionButton(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+
+      onPressed: () {
+        showModalBottomSheet(context: context, builder: (context) {
+
+          return Container(
+            width: double.infinity,
+            height: MySize.Height(context, 0.25),
+            
+            decoration: BoxDecoration( color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadiusDirectional.only(topStart: Radius.circular(24), topEnd: Radius.circular(24)), ),
+
+            child: Padding( padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24.0),
+              child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                GradientText('Environment Change',
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.w800),
+                  gradient: LinearGradient(colors: [
+                    Theme.of(context).colorScheme.secondary,
+                    Theme.of(context).colorScheme.primary,
+                  ]),
+                ),
+
+                SizedBox(height: 24,),
+
+                MyDropDown(context, '_', selectedFilter: domainNow, filters: domainList, onChanged: onChanged,)
+              ],),
+            ),
+          );
+        });
+      },
+      
+      child: Icon( FontAwesomeIcons.userGear, color: Theme.of(context).colorScheme.onTertiary, ),
+    );
+  
+    return _widget;
+  }
+
   static Widget MyLogoHeader(BuildContext context, bool isDarkMode, {required String appVersion }) {
     final _widget = Stack(
       children: [
         SizedBox(
-          width: MySize.Width(context, 0.45),
+          width: MySize.Width(context, 0.4),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Image.asset(
               isDarkMode ?
-              'assets/logos/logo_bat_v002.png' :
-              'assets/logos/logo_bat.png',
+              'assets/logos/bat-logo-white.png' :
+              'assets/logos/bat-logo-default.png',
             ),
           ),
         ),
         Positioned(
-          bottom: 0,
-          right: 0,
-          child: Text('Version ${appVersion}',
+          bottom: 8,
+          right: 6,
+          child: Text(appVersion,
             style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.normal),
           )
         )
@@ -491,7 +597,123 @@ class MyWidgets {
     return _widget;
   }
 
+  static Widget MyTileButton(BuildContext context, String label,
+    { key, Color? color, void Function()? onPressed, IconData? icon, double? iconSize}
+  ) {
+    final _widget = SizedBox(
+      height: 35,
+      child: TextButton.icon(
+        onPressed: onPressed,
+        label: Text(label, style: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500,
+          color: color ?? Theme.of(context).colorScheme.primary
+        )),
+        icon: Icon(icon ?? Icons.abc, size: iconSize ?? MySize.Width(context, 0.05),
+          color: color ?? Theme.of(context).colorScheme.primary
+        ),
+      ),
+    );
   
+    return _widget;
+  }
+
+  static Widget MyLogoBar(BuildContext context, bool isDarkMode,
+    {key, required String appVersion}
+  ) {
+    final _widget = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Stack(
+        children: [
+          SizedBox(
+            width: MySize.Width(context, 0.2),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Image.asset(
+                isDarkMode ?
+                'assets/logos/bat-logo-white.png' :
+                'assets/logos/bat-logo-default.png',
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 7,
+            right: 0,
+            child: Text(appVersion,
+              style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.normal, fontSize: 8),
+            )
+          )
+        ],
+      ),
+    );
+  
+    return _widget;
+  }
+
+  static PreferredSizeWidget MyAppBar(BuildContext context, bool isDarkMode, String title,
+    {key, required String appVersion}
+  ) {
+    final Color DATA_COLOR = Theme.of(context).colorScheme.secondary;
+    
+    final _widget = AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
+
+      leading: IconButton(onPressed: () => Navigator.pop(context, true), icon: Icon(Icons.arrow_back, color: DATA_COLOR,)),
+      leadingWidth: MySize.Width(context, 0.15),
+      
+      title: Text( title, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.normal, color: DATA_COLOR), ),
+
+      actions: [ MyLogoBar(context, isDarkMode, appVersion: appVersion) ],
+    );
+  
+    return _widget;
+  }
+}
+
+class PopUps {
+  static Color CONFIRM_COLOR = MyColors.hijauImran;
+  static Color CONFIRM_TEXT_COLOR = MyColors.hijauImran2;
+  static Color WARNING_COLOR = MyColors.merahImran;
+
+  static AlertDialog Default(BuildContext context, String title,
+    {key, required String subtitle, String? warning, String? confirmText, String? cancelText}
+  ) {
+    final Color BACKGROUND_COLOR = Theme.of(context).primaryColor;
+
+    final _dialog = AlertDialog(
+      backgroundColor: BACKGROUND_COLOR,
+      
+      content: Column( crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+        Align( alignment: Alignment.center, child: Text(title, style: Theme.of(context).textTheme.titleMedium!.copyWith( fontWeight: FontWeight.bold),)),
+        SizedBox(height: 12,),
+
+        Text(subtitle),
+
+        warning == null ? SizedBox() : Padding(padding: EdgeInsets.only(top: 12), child: 
+          Row( mainAxisSize: MainAxisSize.min, children: [ Icon(FontAwesomeIcons.warning, color: WARNING_COLOR, size: 12,), SizedBox(width: 12,),
+            Expanded( child: Text( warning, style: Theme.of(context).textTheme.bodySmall!.copyWith( color: WARNING_COLOR ),)),
+          ],)
+        ),
+      ],),
+
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actions: [
+        SizedBox(
+          child: TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text( cancelText ?? "Cancel" ),
+          ),
+        ),
+        Container( height: 40,
+          decoration: BoxDecoration( borderRadius: BorderRadius.circular(12), color: CONFIRM_COLOR.withOpacity(0.3) ),
+          child: TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text( confirmText ?? "Confirm", style: Theme.of(context).textTheme.bodyMedium!.copyWith( color: CONFIRM_TEXT_COLOR) ),
+          ),
+        ),
+      ],
+    );
+  
+    return _dialog;
+  }
 }
 
 class MySize {
@@ -556,6 +778,44 @@ class GradientWidget extends StatelessWidget {
         Rect.fromLTWH(0, 0, bounds.width, bounds.height),
       ),
       child: widget,
+    );
+  }
+}
+
+// for breadcrumb
+class Breadcrumb extends StatelessWidget {
+  final List<String> paths;
+
+  const Breadcrumb({super.key, required this.paths});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: paths.map((path) => Row(
+        children: [
+          GestureDetector(
+            onTap: () {
+              if (path == paths.last) { return; }
+              else {
+                int index = paths.indexOf(path);
+                for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context); }
+              }
+            },
+            child: Text(
+              path,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .copyWith(fontWeight: FontWeight.normal),
+            ),
+          ),
+          if (path != paths.last)
+            Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
+        ],
+      )).toList(),
     );
   }
 }

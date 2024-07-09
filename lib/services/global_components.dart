@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -26,6 +27,11 @@ mixin MyComponents {
   bool isLoading = false;
   bool launchLoading = true;
 
+  DateFormat? monthYear;
+
+  String currentPath = '';
+  List<String> paths = [];
+
   late String domainName;
   late String appVersion;
   late String deviceID;
@@ -37,6 +43,20 @@ mixin MyComponents {
       domainName = MyPrefs.getDomainName(prefs: prefs)!;
       appVersion = MyPrefs.getAppVersion(prefs: prefs) ?? 'N/A';
       deviceID = MyPrefs.getDeviceID(prefs: prefs) ?? 'N/A';
+
+      monthYear = DateFormat('MMMM yyyy');
     });
+  }
+
+  void setPath({key, required String prevPath, required String routeName}) {
+    currentPath = '';
+    paths.clear();
+
+    currentPath = prevPath + routeName;
+
+    final splitted = currentPath.split('/');
+    for (var path in splitted) { if (path != '' ) paths.add(path.capitalize()); }
+
+    print('${routeName} : ${paths}');
   }
 }
