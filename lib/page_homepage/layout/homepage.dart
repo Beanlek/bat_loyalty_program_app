@@ -15,7 +15,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
-  
+
   static const routeName = '/homepage';
 
   @override
@@ -35,7 +35,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
   @override
   void dispose() {
     searchController.dispose();
-    
+
     super.dispose();
   }
 

@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/page_register/layout/register_steps.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
-
 import 'package:bat_loyalty_program_app/page_register/component/local_components.dart';
-
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 

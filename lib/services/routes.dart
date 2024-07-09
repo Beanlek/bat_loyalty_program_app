@@ -6,6 +6,7 @@ import 'package:bat_loyalty_program_app/page_homepage/layout/homepage.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
 import 'package:bat_loyalty_program_app/page_register/layout/register.dart';
 import 'package:bat_loyalty_program_app/page_register/layout/register_steps.dart';
+import 'package:bat_loyalty_program_app/page_track_history/layout/tracking_history.dart';
 
 class MyArguments {
   const MyArguments(
@@ -46,5 +47,6 @@ class MyRoutes {
     ProfilePage.routeName: (context) => ProfilePage(),
 
     Dummy.routeName: (context) => Dummy(),
+    trackingHistoryPage.routeName: (context) => trackingHistoryPage(),
   };
 }

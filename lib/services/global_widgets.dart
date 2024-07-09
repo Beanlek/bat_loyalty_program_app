@@ -7,123 +7,115 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 const PLACEHOLDER_ICON = Icon(Icons.abc, color: Colors.transparent);
 
 class MyWidgets {
-  static Widget MyButton1(BuildContext context, double? width, String text, void Function()? onTap, 
-    {key, bool active = true}
-  ) {
+  static Widget MyButton1(
+      BuildContext context, double? width, String text, void Function()? onTap,
+      {key, bool active = true}) {
     final _widget = Material(
       color: Colors.transparent,
       elevation: !active ? 0 : 3,
       borderRadius: BorderRadius.circular(100),
       child: Container(
-        width: width ?? null,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: !active ? Theme.of(context).colorScheme.primary.withOpacity(0.5) : Theme.of(context).colorScheme.onTertiary),
-
-          gradient: !active ? null : LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-
-            colors: [
-              MyColors.biruImran,
-              MyColors.biruImran2,
-            ]
-          ),
-
-          color: active ? null : Colors.transparent
-        ),
-        child: ListTile(
-          title: Center(
-            child: (
-              Text(
-                text,
-                style: TextStyle(color: !active ? Theme.of(context).colorScheme.primary.withOpacity(0.5) : MyColors.myWhite)
-              )
+          width: width ?? null,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(
+                  color: !active
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                      : Theme.of(context).colorScheme.onTertiary),
+              gradient: !active
+                  ? null
+                  : LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                          MyColors.biruImran,
+                          MyColors.biruImran2,
+                        ]),
+              color: active ? null : Colors.transparent),
+          child: ListTile(
+            title: Center(
+              child: (Text(text,
+                  style: TextStyle(
+                      color: !active
+                          ? Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.5)
+                          : MyColors.myWhite))),
             ),
-          ),
-          onTap: active ? onTap : null,
-        )
-      ),
+            onTap: active ? onTap : null,
+          )),
     );
 
     return _widget;
   }
 
-  static Widget MyButton2(BuildContext context, double? width, String text, void Function()? onTap) {
+  static Widget MyButton2(BuildContext context, double? width, String text,
+      void Function()? onTap) {
     final _widget = Material(
       elevation: 3,
       borderRadius: BorderRadius.circular(100),
       child: Container(
-        width: width ?? null,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-
-            colors: [
-              MyColors.biruImran3,
-              MyColors.biruImran4,
-            ]
-          )
-        ),
-        child: ListTile(
-          title: (
-            Text(
-              text,
-              style: TextStyle(color: MyColors.biruImran5)
-            )
-          ),
-          onTap: onTap,
-        )
-      ),
+          width: width ?? null,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    MyColors.biruImran3,
+                    MyColors.biruImran4,
+                  ])),
+          child: ListTile(
+            title: (Text(text, style: TextStyle(color: MyColors.biruImran5))),
+            onTap: onTap,
+          )),
     );
 
     return _widget;
   }
 
   static Widget MyTextField1(
-    BuildContext context, String text, TextEditingController controller,
-    { key, bool digitOnly = false, bool compulsory = false, bool isPassword = false, FocusNode? focusNode,
-    void Function(String)? onChanged, void Function(String)? onSubmit }
-  ) {
+      BuildContext context, String text, TextEditingController controller,
+      {key,
+      bool digitOnly = false,
+      bool compulsory = false,
+      bool isPassword = false,
+      FocusNode? focusNode,
+      void Function(String)? onChanged,
+      void Function(String)? onSubmit}) {
     bool _isPasswordVisible = false;
     final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
-    
-    final _widget = StatefulBuilder(
-      builder: (context, setState) {
 
-        IconButton obscureIconButton() {
-          return IconButton(
-            iconSize: MySize.Width(context, 0.05),
-            icon: Icon(
-              _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-            ),
-            onPressed: () {
-              setState(() {
-                _isPasswordVisible = !_isPasswordVisible;
-                print('_isPasswordVisible : ${_isPasswordVisible}');
-              });
-            },
-          );
-        }
+    final _widget = StatefulBuilder(builder: (context, setState) {
+      IconButton obscureIconButton() {
+        return IconButton(
+          iconSize: MySize.Width(context, 0.05),
+          icon: Icon(
+            _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+          ),
+          onPressed: () {
+            setState(() {
+              _isPasswordVisible = !_isPasswordVisible;
+              print('_isPasswordVisible : ${_isPasswordVisible}');
+            });
+          },
+        );
+      }
 
-        return Material(
-          elevation: 0,
-          borderRadius: BorderRadius.circular(100),
-          child: Container(
+      return Material(
+        elevation: 0,
+        borderRadius: BorderRadius.circular(100),
+        child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-        
-                colors: [
-                  Theme.of(context).colorScheme.tertiary,
-                  Theme.of(context).colorScheme.onPrimary,
-                ]
-              )
-            ),
+                borderRadius: BorderRadius.circular(100),
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).colorScheme.tertiary,
+                      Theme.of(context).colorScheme.onPrimary,
+                    ])),
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
               child: TextFormField(
@@ -132,194 +124,248 @@ class MyWidgets {
 
                 onChanged: onChanged,
                 onFieldSubmitted: onSubmit,
-                
                 obscureText: isPassword ? !_isPasswordVisible : isPassword,
                 keyboardType: !digitOnly ? null : TextInputType.phone,
-                
-                style: TextStyle(color: DATA_COLOR, fontWeight: FontWeight.w500),
+                style:
+                    TextStyle(color: DATA_COLOR, fontWeight: FontWeight.w500),
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  border: InputBorder.none,
-                  errorBorder: InputBorder.none,
-        
-                  hintText: text,
-                  hintStyle: TextStyle(color: DATA_COLOR, fontWeight: FontWeight.normal),
-        
-                  suffixIconColor: DATA_COLOR,
-                  suffixIcon:
-
-                  (compulsory && isPassword) ? SizedBox(
-                    width: MySize.Width(context, 0.17),
-                    child: Row(
-                      children: [
-                        obscureIconButton(),
-                        Icon(FontAwesomeIcons.asterisk, size: 12,)
-                      ],
-                    ),
-                  ) :
-
-                  compulsory ? Icon(FontAwesomeIcons.asterisk, size: 12,) :
-
-                  !isPassword ? PLACEHOLDER_ICON :
-                  obscureIconButton()
-                ),
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    border: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    hintText: text,
+                    hintStyle: TextStyle(
+                        color: DATA_COLOR, fontWeight: FontWeight.normal),
+                    suffixIconColor: DATA_COLOR,
+                    suffixIcon: (compulsory && isPassword)
+                        ? SizedBox(
+                            width: MySize.Width(context, 0.17),
+                            child: Row(
+                              children: [
+                                obscureIconButton(),
+                                Icon(
+                                  FontAwesomeIcons.asterisk,
+                                  size: 12,
+                                )
+                              ],
+                            ),
+                          )
+                        : compulsory
+                            ? Icon(
+                                FontAwesomeIcons.asterisk,
+                                size: 12,
+                              )
+                            : !isPassword
+                                ? PLACEHOLDER_ICON
+                                : obscureIconButton()),
               ),
-            )
-          ),
-        );
-      }
-    );
-  
+            )),
+      );
+    });
+
     return _widget;
   }
 
-  static Widget MyTextField2(
-    BuildContext context, String text, TextEditingController controller, FocusNode focusNode,
-    {key, required bool isDark, double? width, void Function()? onFilter, void Function()? onSearch}
-  ) {
+  static Widget MyTextField2(BuildContext context, String text,
+      TextEditingController controller, FocusNode focusNode,
+      {key,
+      required bool isDark,
+      double? width,
+      void Function()? onFilter,
+      void Function()? onSearch}) {
     final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
-    
-    final _widget = StatefulBuilder(
-      builder: (context, setState) {
-        return Material(
-          elevation: 0,
-          borderRadius: BorderRadius.circular(100),
-          child: Container(
+
+    final _widget = StatefulBuilder(builder: (context, setState) {
+      return Material(
+        elevation: 0,
+        borderRadius: BorderRadius.circular(100),
+        child: Container(
             width: width ?? null,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-        
-                colors: [
-                  MyColors.biruImran3,
-                  MyColors.biruImran4,
-                ]
-              )
-            ),
+                borderRadius: BorderRadius.circular(100),
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      MyColors.biruImran3,
+                      MyColors.biruImran4,
+                    ])),
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
               child: TextFormField(
                 focusNode: focusNode,
                 controller: controller,
-                
-                style: TextStyle(color: DATA_COLOR, fontWeight: FontWeight.w500),
+                style:
+                    TextStyle(color: DATA_COLOR, fontWeight: FontWeight.w500),
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  border: !isDark ? InputBorder.none :
-                  OutlineInputBorder(borderSide: BorderSide(color: MyColors.myWhite)),
-                  errorBorder: InputBorder.none,
-        
-                  hintText: text,
-                  hintStyle: TextStyle(color: DATA_COLOR.withOpacity(0.5), fontWeight: FontWeight.w300),
-        
-                  suffixIconColor: DATA_COLOR,
-                  suffixIcon:
-                  IconButton(
-                    iconSize: MySize.Width(context, 0.05),
-                    icon: Icon(
-                      Icons.tune_rounded,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    border: !isDark
+                        ? InputBorder.none
+                        : OutlineInputBorder(
+                            borderSide: BorderSide(color: MyColors.myWhite)),
+                    errorBorder: InputBorder.none,
+                    hintText: text,
+                    hintStyle: TextStyle(
+                        color: DATA_COLOR.withOpacity(0.5),
+                        fontWeight: FontWeight.w300),
+                    suffixIconColor: DATA_COLOR,
+                    suffixIcon: IconButton(
+                      iconSize: MySize.Width(context, 0.05),
+                      icon: Icon(
+                        Icons.tune_rounded,
+                      ),
+                      onPressed: onFilter,
                     ),
-                    onPressed: onFilter,
-                  ),
-        
-                  prefixIconColor: DATA_COLOR,
-                  prefixIcon:
-                  IconButton(
-                    iconSize: MySize.Width(context, 0.05),
-                    icon: Icon(
-                      Icons.search_rounded,
-                    ),
-                    onPressed: onSearch,
-                  )
-                ),
+                    prefixIconColor: DATA_COLOR,
+                    prefixIcon: IconButton(
+                      iconSize: MySize.Width(context, 0.05),
+                      icon: Icon(
+                        Icons.search_rounded,
+                      ),
+                      onPressed: onSearch,
+                    )),
               ),
-            )
-          ),
-        );
-      }
-    );
-  
+            )),
+      );
+    });
+
     return _widget;
   }
 
-  static Widget MyTextField3(
-    BuildContext context, String text,
-    {key, required String selectedFilter, required List<String> filters, bool active = true, void Function(String?)? onChanged}
-  ) {
+  static Widget MyTextField3(BuildContext context, String text,
+      {key,
+      required String selectedFilter,
+      required List<String> filters,
+      bool active = true,
+      void Function(String?)? onChanged}) {
     final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
-    
-    final _widget = StatefulBuilder(
-      builder: (context, setState) {
 
-        return Material(
-          elevation: 0,
-          borderRadius: BorderRadius.circular(100),
-          child: Container(
+    final _widget = StatefulBuilder(builder: (context, setState) {
+      return Material(
+        elevation: 0,
+        borderRadius: BorderRadius.circular(100),
+        child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-        
-                colors: [
-                  Theme.of(context).colorScheme.tertiary,
-                  Theme.of(context).colorScheme.onPrimary,
-                ]
-              )
-            ),
+                borderRadius: BorderRadius.circular(100),
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).colorScheme.tertiary,
+                      Theme.of(context).colorScheme.onPrimary,
+                    ])),
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 24),
               child: DropdownButtonFormField(
-                elevation: 5,
-                isExpanded: true,
+                  elevation: 5,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(borderSide: BorderSide.none)),
 
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none
-                  )
-                ),
-
-                // icon: Icon(Icons.arrow_forward_ios_rounded, color: DATA_COLOR,),
-                icon: SizedBox(
-                  // width: MySize.Width(context, 0.17),
-                  child: Row(
-                    children: [
-                      Icon(Icons.arrow_forward_ios_rounded, color: DATA_COLOR.withOpacity(active ? 1 : 0.5),),
-                      SizedBox(width: 12,),
-                      Icon(FontAwesomeIcons.asterisk, color: DATA_COLOR, size: 12,),
-                      SizedBox(width: 6,),
-                    ],
+                  // icon: Icon(Icons.arrow_forward_ios_rounded, color: DATA_COLOR,),
+                  icon: SizedBox(
+                    // width: MySize.Width(context, 0.17),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: DATA_COLOR.withOpacity(active ? 1 : 0.5),
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Icon(
+                          FontAwesomeIcons.asterisk,
+                          color: DATA_COLOR,
+                          size: 12,
+                        ),
+                        SizedBox(
+                          width: 6,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                iconSize: 18,
-                
-                dropdownColor: Theme.of(context).colorScheme.onSecondary,
+                  iconSize: 18,
+                  dropdownColor: Theme.of(context).colorScheme.onSecondary,
+                  value: selectedFilter,
+                  items: filters
+                      .map((filter) => DropdownMenuItem<String>(
+                            alignment: AlignmentDirectional.centerStart,
+                            value: filter,
+                            child: Text(
+                              filter,
+                              style: TextStyle(
+                                  color:
+                                      DATA_COLOR.withOpacity(active ? 1 : 0.5),
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: active ? onChanged : null),
+            )),
+      );
+    });
 
-                value: selectedFilter,
-                items: filters.map((filter) => DropdownMenuItem<String>(
-                  alignment: AlignmentDirectional.centerStart,
-                  value: filter,
+    return _widget;
+  }
 
-                  child: Text(
-                    filter,
-                    style: TextStyle(color: DATA_COLOR.withOpacity(active ? 1 : 0.5), fontWeight: FontWeight.normal),
+  static Widget MyDropDown(BuildContext context, String text,
+      {key,
+      required String selectedFilter,
+      required List<String> filters,
+      bool active = true,
+      void Function(String?)? onChanged}) {
+    final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
+
+    final _widget = StatefulBuilder(builder: (context, setState) {
+      return Material(
+        elevation: 0,
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).colorScheme.tertiary,
+                      Theme.of(context).colorScheme.onPrimary,
+                    ])),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 24),
+              child: DropdownButtonFormField(
+                  elevation: 5,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(borderSide: BorderSide.none)),
+                  icon: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: DATA_COLOR.withOpacity(active ? 1 : 0.5),
                   ),
-                )).toList(),
+                  iconSize: 18,
+                  dropdownColor: Theme.of(context).colorScheme.onSecondary,
+                  value: selectedFilter,
+                  items: filters
+                      .map((filter) => DropdownMenuItem<String>(
+                            alignment: AlignmentDirectional.centerStart,
+                            value: filter,
+                            child: Text(
+                              filter,
+                              style: TextStyle(
+                                  color:
+                                      DATA_COLOR.withOpacity(active ? 1 : 0.5),
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: active ? onChanged : null),
+            )),
+      );
+    });
 
-                onChanged: active ? onChanged : null
-              ),
-            )
-          ),
-        );
-      }
-    );
-  
     return _widget;
   }
 
@@ -407,43 +453,219 @@ class MyWidgets {
   static Widget MyLoading2(BuildContext context, bool isDarkMode) {
     final _widget = Scaffold(
       body: Container(
-        color: Theme.of(context).primaryColor,
-        child: Center(
-          child: SizedBox.square(
-            dimension: MySize.Width(context, 0.5),
-            child: GradientWidget(Lottie.asset('assets/lotties/loading_002.json', fit: BoxFit.contain), gradient: LinearGradient(colors: [
-                    Theme.of(context).colorScheme.secondary,
-                    Theme.of(context).colorScheme.primary,
-            ]),),
-          ),
-        )
-      ),
+          color: Theme.of(context).primaryColor,
+          child: Center(
+            child: SizedBox.square(
+              dimension: MySize.Width(context, 0.5),
+              child: GradientWidget(
+                Lottie.asset('assets/lotties/loading_002.json',
+                    fit: BoxFit.contain),
+                gradient: LinearGradient(colors: [
+                  Theme.of(context).colorScheme.secondary,
+                  Theme.of(context).colorScheme.primary,
+                ]),
+              ),
+            ),
+          )),
     );
-  
+
     return _widget;
   }
 
   static Widget MyErrorPage(BuildContext context, bool isDarkMode) {
     final _widget = Scaffold(
       body: Container(
-        color: Theme.of(context).primaryColor,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          color: Theme.of(context).primaryColor,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox.square(
+                  dimension: MySize.Width(context, 0.3),
+                  // child: Icon(Icons.error, color: MyColors.merahImran, size: MySize.Width(context, 0.3),)
+                  child: Lottie.asset('assets/lotties/error_001.json',
+                      fit: BoxFit.contain),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Text(
+                  'Error loading page.\nPlease contact system admin.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
+                )
+              ],
+            ),
+          )),
+    );
+
+    return _widget;
+  }
+
+  static Widget MyErrorTextField(BuildContext context, String text, {key}) {
+    final Color ERROR_COLORS = MyColors.merahImran;
+
+    final _widget = Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+          child: Row(
             children: [
-              SizedBox.square(
-                dimension: MySize.Width(context, 0.3),
-                // child: Icon(Icons.error, color: MyColors.merahImran, size: MySize.Width(context, 0.3),)
-                child: Lottie.asset('assets/lotties/error_001.json', fit: BoxFit.contain),
+              Icon(
+                Icons.error,
+                color: ERROR_COLORS,
+                size: 16,
               ),
-
-              SizedBox(height: 12,),
-
-              Text('Error loading page.\nPlease contact system admin.', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center,)
+              SizedBox(
+                width: 12,
+              ),
+              Text(text,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: ERROR_COLORS, fontWeight: FontWeight.normal)),
             ],
           ),
-        )
+        ));
+
+    return _widget;
+  }
+
+  static Widget ToChangeEnv(BuildContext context,
+      {key,
+      required String domainNow,
+      required List<String> domainList,
+      required void Function(String?)? onChanged}) {
+    final _widget = FloatingActionButton(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      onPressed: () {
+        showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return Container(
+                width: double.infinity,
+                height: MySize.Height(context, 0.25),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadiusDirectional.only(
+                      topStart: Radius.circular(24),
+                      topEnd: Radius.circular(24)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 32.0, horizontal: 24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      GradientText(
+                        'Environment Change',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall!
+                            .copyWith(fontWeight: FontWeight.w800),
+                        gradient: LinearGradient(colors: [
+                          Theme.of(context).colorScheme.secondary,
+                          Theme.of(context).colorScheme.primary,
+                        ]),
+                      ),
+                      SizedBox(
+                        height: 24,
+                      ),
+                      MyDropDown(
+                        context,
+                        '_',
+                        selectedFilter: domainNow,
+                        filters: domainList,
+                        onChanged: onChanged,
+                      )
+                    ],
+                  ),
+                ),
+              );
+            });
+      },
+      child: Icon(
+        FontAwesomeIcons.userGear,
+        color: Theme.of(context).colorScheme.onTertiary,
       ),
+    );
+
+    return _widget;
+  }
+
+  static Widget MyErrorTextField(BuildContext context, String text,
+    {key}
+  ) {
+    final Color ERROR_COLORS = MyColors.merahImran;
+    
+    final _widget = Align(alignment: Alignment.centerLeft, 
+      child: Padding(
+        padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+        child: Row(
+          children: [
+            Icon(Icons.error, color: ERROR_COLORS, size: 16,), SizedBox(width: 12,),
+            Text(text, style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              color: ERROR_COLORS,
+              fontWeight: FontWeight.normal
+            )),
+          ],
+        ),
+      ));
+  
+    return _widget;
+  }
+
+  static Widget MyInfoTextField(BuildContext context, String text,
+    {key}
+  ) {
+    final _widget = Align(alignment: Alignment.centerLeft, 
+      child: Padding(
+        padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+        child: Text(text, style: Theme.of(context).textTheme.labelMedium!.copyWith(
+          color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.5),
+          fontWeight: FontWeight.normal
+        )),
+    ));
+  
+    return _widget;
+  }
+
+  static Widget ToChangeEnv(BuildContext context,
+    {key, required String domainNow, required List<String> domainList, required void Function(String?)? onChanged }
+  ) {
+    final _widget = FloatingActionButton(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+
+      onPressed: () {
+        showModalBottomSheet(context: context, builder: (context) {
+
+          return Container(
+            width: double.infinity,
+            height: MySize.Height(context, 0.25),
+            
+            decoration: BoxDecoration( color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadiusDirectional.only(topStart: Radius.circular(24), topEnd: Radius.circular(24)), ),
+
+            child: Padding( padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24.0),
+              child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                GradientText('Environment Change',
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.w800),
+                  gradient: LinearGradient(colors: [
+                    Theme.of(context).colorScheme.secondary,
+                    Theme.of(context).colorScheme.primary,
+                  ]),
+                ),
+
+                SizedBox(height: 24,),
+
+                MyDropDown(context, '_', selectedFilter: domainNow, filters: domainList, onChanged: onChanged,)
+              ],),
+            ),
+          );
+        });
+      },
+      
+      child: Icon( FontAwesomeIcons.userGear, color: Theme.of(context).colorScheme.onTertiary, ),
     );
   
     return _widget;
@@ -528,7 +750,8 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyLogoHeader(BuildContext context, bool isDarkMode, {required String appVersion }) {
+  static Widget MyLogoHeader(BuildContext context, bool isDarkMode,
+      {required String appVersion}) {
     final _widget = Stack(
       children: [
         SizedBox(
@@ -551,49 +774,53 @@ class MyWidgets {
         )
       ],
     );
-  
+
     return _widget;
   }
 
   static Widget MyFooter1(BuildContext context) {
     final _widget = Column(
       children: [
-        Divider(color: Theme.of(context).colorScheme.onTertiary,),
-        SizedBox(height: 12,),
-        Text.rich(style: Theme.of(context).textTheme.bodySmall,
-          TextSpan(text: 'Need any help? ',
-            children: [
-              TextSpan(text: 'Contact Us.', style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),)
-            ]
-          )
-        )
+        Divider(
+          color: Theme.of(context).colorScheme.onTertiary,
+        ),
+        SizedBox(
+          height: 12,
+        ),
+        Text.rich(
+            style: Theme.of(context).textTheme.bodySmall,
+            TextSpan(text: 'Need any help? ', children: [
+              TextSpan(
+                text: 'Contact Us.',
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
+              )
+            ]))
       ],
     );
-  
+
     return _widget;
   }
 
-  static Widget MyScroll1(BuildContext context, {required ScrollController controller, required Widget child, double? height}) {
+  static Widget MyScroll1(BuildContext context,
+      {required ScrollController controller,
+      required Widget child,
+      double? height}) {
     final _widget = RawScrollbar(
       controller: controller,
       thumbVisibility: true,
       thumbColor: Theme.of(context).colorScheme.secondary,
       radius: Radius.circular(100),
       thickness: 3,
-    
       child: SingleChildScrollView(
-        controller: controller,
-        child: SizedBox(
-          width: MySize.Width(context, 1),
-          height: height ?? MySize.Height(context, 0.6),
-        
-          child: child
-        )
-      ),
+          controller: controller,
+          child: SizedBox(
+              width: MySize.Width(context, 1),
+              height: height ?? MySize.Height(context, 0.6),
+              child: child)),
     );
-  
+
     return _widget;
   }
 
@@ -732,14 +959,11 @@ class MySize {
 
 class GradientText extends StatelessWidget {
   const GradientText(
-    this.text,
-    {
-      super.key,
-      
-      required this.gradient,
-      this.style,
-    }
-  );
+    this.text, {
+    super.key,
+    required this.gradient,
+    this.style,
+  });
 
   final String text;
   final TextStyle? style;
@@ -759,13 +983,10 @@ class GradientText extends StatelessWidget {
 
 class GradientWidget extends StatelessWidget {
   const GradientWidget(
-    this.widget,
-    {
-      super.key,
-      
-      required this.gradient,
-    }
-  );
+    this.widget, {
+    super.key,
+    required this.gradient,
+  });
 
   final Widget widget;
   final Gradient gradient;
