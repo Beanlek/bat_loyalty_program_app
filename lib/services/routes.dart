@@ -1,4 +1,5 @@
 import 'package:bat_loyalty_program_app/dummy.dart';
+import 'package:bat_loyalty_program_app/page_imagestatus/layout/imagestatus.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
 import 'package:flutter/material.dart';
 
@@ -47,6 +48,7 @@ class MyRoutes {
     ProfilePage.routeName: (context) => ProfilePage(),
 
     Dummy.routeName: (context) => Dummy(),
+    ImageStatusPage.routeName: (context) => ImageStatusPage(),
     TrackingHistoryPage.routeName: (context) => TrackingHistoryPage(),
   };
 }

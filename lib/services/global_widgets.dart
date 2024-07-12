@@ -550,6 +550,60 @@ class MyWidgets {
     return _widget;
   }
 
+  static Widget MyInfoTextField2(BuildContext context, String text, {key} ) {
+    final Color INFO_COLORS = Theme.of(context).colorScheme.onTertiary;
+
+    final _widget = Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+          child: Row(
+            children: [
+              Icon(
+                Icons.info,
+                color: INFO_COLORS,
+                size: 16,
+              ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(text,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: INFO_COLORS, fontWeight: FontWeight.normal)),
+            ],
+          ),
+        ));
+
+    return _widget;
+  }
+
+  static Widget MySuccessTextField(BuildContext context, String text, {key} ) {
+    final Color SUCCESS_COLORS = MyColors.hijauImran2;
+
+    final _widget = Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+          child: Row(
+            children: [
+              Icon(
+                Icons.check,
+                color: SUCCESS_COLORS,
+                size: 16,
+              ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(text,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: SUCCESS_COLORS, fontWeight: FontWeight.normal)),
+            ],
+          ),
+        ));
+
+    return _widget;
+  }
+
   static Widget MyLogoHeader(BuildContext context, bool isDarkMode,
       {required String appVersion}) {
     final _widget = Stack(
@@ -619,6 +673,19 @@ class MyWidgets {
               width: MySize.Width(context, 1),
               height: height ?? MySize.Height(context, 0.6),
               child: child)),
+    );
+
+    return _widget;
+  }
+
+  static Widget MyScrollBar1(BuildContext context, {required ScrollController controller, required Widget child} ) {
+    final _widget = RawScrollbar(
+      controller: controller,
+      thumbVisibility: true,
+      thumbColor: Theme.of(context).colorScheme.secondary,
+      radius: Radius.circular(100),
+      thickness: 3,
+      child: child
     );
 
     return _widget;

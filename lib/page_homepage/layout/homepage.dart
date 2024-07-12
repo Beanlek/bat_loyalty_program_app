@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:bat_loyalty_program_app/page_homepage/component/local_components.dart';
 import 'package:bat_loyalty_program_app/page_homepage/widget/local_widgets.dart';
+import 'package:bat_loyalty_program_app/page_imagestatus/layout/imagestatus.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
 import 'package:bat_loyalty_program_app/page_track_history/layout/tracking_history.dart';
@@ -116,7 +117,8 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
                                 children: [
                                   MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history,
                                     onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
-                                  MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image),
+                                  MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image,
+                                    onPressed: () => Navigator.pushNamed( context, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
                                 ],
                               )),
                             ],
@@ -163,7 +165,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
                                 mainAxisSpacing: 20,
                                 crossAxisSpacing: 20,
                               ),
-                              itemCount: 6,
+                              itemCount: 4,
                               shrinkWrap: true,
                               physics: const ScrollPhysics(),
                               itemBuilder: (BuildContext context, int i) {
@@ -214,7 +216,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
             HomeWidgets.Item(context, icon: FontAwesomeIcons.history, label: 'Tracking History',
               onTap: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
             HomeWidgets.Item(context, icon: FontAwesomeIcons.images, label: 'Images Status',
-              onTap: () => false),
+              onTap: () => Navigator.pushNamed( context, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
 
             Divider(color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5),),
 
@@ -224,7 +226,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
               onTap: () async {
                 await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Logging Out',
                   subtitle: 'You are logging out. Proceed?', warning: 'Once logged out, all progress will not be saved.'),).then((res) async {
-                    if (res) await Api.logout().whenComplete(() => Navigator.pushNamed( context, LoginPage.routeName ));
+                    if (res ?? false) await Api.logout().whenComplete(() => Navigator.pushNamed( context, LoginPage.routeName ));
                   });
               }),
           ]

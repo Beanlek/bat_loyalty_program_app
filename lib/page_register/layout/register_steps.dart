@@ -59,7 +59,8 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
 
   @override
   Future<void> initParam() async{
-    super.initParam();
+    super.initParam().whenComplete((){ setAccountList(domainName, setState); });
+
     setCountryStates();
     setSecurityPhrases().whenComplete(() => randomizeSecurityPhrases() );
     setSecurityImages().whenComplete(() => randomizeSecurityImages() );
@@ -142,7 +143,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                             final password = passwordController.text.trim();
                             final confirmPassword = confirmPasswordController.text.trim();
 
-                            await usernameValidation(context, snackBar: false).then((valid) => setState(() { page1Error[0] = valid; }));
+                            await usernameValidation(context, domainName, snackBar: false).then((valid) => setState(() { page1Error[0] = valid; }));
                             await inputValidation(context, 'fullName', pattern: RegisterComponents.REGEX_NAME, data: name, snackBar: false).then((valid) => setState(() { page1Error[1] = valid; }));
                             if (email.isNotEmpty || email != '') await inputValidation(context, 'email', pattern: RegisterComponents.REGEX_EMAIL, data: email, snackBar: false).then((valid) => setState(() { page1Error[2] = valid; }));
                             await inputValidation(context, 'password', pattern: RegisterComponents.REGEX_PASSWORD, data: password, snackBar: false).then((valid) => setState(() { page1Error[3] = valid; }));
@@ -261,9 +262,34 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           isDarkMode: isDarkMode);
                         } else if (index == 4) {
                           return RegisterWidgets.MyPage(context, index: 4, onSubmit: () async {
+                            nextPage(setState);
+                          },
+                          phone: args.phone,
+                          errMsgs: errMsgs,
+                          pageError: page4Error,
+                          stepButtonActive: step4ButtonActive,
+                          stepButtonValidation: () { step4ButtonValidation(setState); },
+                          pageController: pageController,
+
+                          isLoadingTrue: () { setState(() => isLoading = true); },
+                          isLoadingFalse: () { setState(() => isLoading = false); },
+
+                          accounts: accounts,
+                          accountFilters: accountFilters,
+                          accountController: accountController,
+
+                          outlets: outlets,
+                          outletFilters: outletFilters,
+                          outletController: outletController,
+
+                          setOutletList: () { setOutletList(domainName, setState); },
+                          
+                          isDarkMode: isDarkMode);
+                        } else if (index == 5) {
+                          return RegisterWidgets.MyPage(context, index: 5, onSubmit: () async {
                             setState(() { isLoading = true; phoneController.text = args.phone; });
                             
-                            await registrationDataValidation(context).then((valid) async {
+                            await registrationDataValidation(context, domainName).then((valid) async {
                               if (valid) {
                                 await Api.user_register(context, domainName, registrationData: registrationData).then((statusCode) {
                                   print({ statusCode });
@@ -301,9 +327,11 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           toPage1: () { setState(() { toPage(setState, page: 1); }); },
                           toPage2: () { setState(() { toPage(setState, page: 2); }); },
                           toPage3: () { setState(() { toPage(setState, page: 3); }); },
+                          toPage4: () { setState(() { toPage(setState, page: 4); }); },
 
                           viewPersonalInfo: viewPersonalInfo,
                           viewAddress: viewAddress,
+                          viewOutlet: viewOutlet,
                           viewSecurity: viewSecurity,
 
                           securityImageController : securityImageController,
@@ -323,8 +351,12 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           stateController : stateController,
                           cityController : cityController,
 
+                          accountController : accountController,
+                          outletController : outletController,
+
                           changeViewPersonalInfo: () { setState(() { viewPersonalInfo = !viewPersonalInfo; });},
                           changeViewAddress: () { setState(() { viewAddress = !viewAddress; });},
+                          changeViewOutlet: () { setState(() { viewOutlet = !viewOutlet; });},
                           changeViewSecurity: () { setState(() { viewSecurity = !viewSecurity; });},
                           
                           isDarkMode: isDarkMode);

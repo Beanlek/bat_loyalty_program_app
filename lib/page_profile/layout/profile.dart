@@ -134,6 +134,10 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
                                 
                                   SizedBox(height: 16,),
                                   
+                                  ProfileWidgets.InfoTile(context, 'Outlets', subtitle: "outlet[0]['id']\noutlet[1]['id']"),
+
+                                  SizedBox(height: 16,),
+                                  
                                   ProfileWidgets.InfoTile(context, 'Shipping\nAddress', subtitle:
                                     '${user['address1']}, ${user['address2']},\n${user['address3']}, ${user['postcode']},\n${user['city']}, ${user['state']}'
                                   ),

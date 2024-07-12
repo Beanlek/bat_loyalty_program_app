@@ -35,6 +35,7 @@ mixin MyComponents {
   late String domainName;
   late String appVersion;
   late String deviceID;
+  late String token;
 
   Future<void> initParam() async {
     await MyPrefs.init().then((prefs) {
@@ -43,6 +44,7 @@ mixin MyComponents {
       domainName = MyPrefs.getDomainName(prefs: prefs)!;
       appVersion = MyPrefs.getAppVersion(prefs: prefs) ?? 'N/A';
       deviceID = MyPrefs.getDeviceID(prefs: prefs) ?? 'N/A';
+      token = MyPrefs.getToken(prefs: prefs) ?? 'N/A';
 
       monthYear = DateFormat('MMMM yyyy');
     });
