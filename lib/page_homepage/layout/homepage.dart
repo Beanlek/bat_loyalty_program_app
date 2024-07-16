@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:bat_loyalty_program_app/page_homepage/component/local_components.dart';
-import 'package:bat_loyalty_program_app/page_homepage/layout/homepage.preview.dart';
+import 'package:bat_loyalty_program_app/page_homepage/layout/homepage_preview.dart';
 import 'package:bat_loyalty_program_app/page_homepage/widget/local_widgets.dart';
 import 'package:bat_loyalty_program_app/page_imagestatus/layout/imagestatus.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';

@@ -1,5 +1,5 @@
 import 'package:bat_loyalty_program_app/dummy.dart';
-import 'package:bat_loyalty_program_app/page_homepage/layout/homepage.preview.dart';
+import 'package:bat_loyalty_program_app/page_homepage/layout/homepage_preview.dart';
 import 'package:bat_loyalty_program_app/page_imagestatus/layout/imagestatus.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
 import 'package:flutter/material.dart';
