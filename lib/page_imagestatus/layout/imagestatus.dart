@@ -1,4 +1,5 @@
 import 'package:bat_loyalty_program_app/page_imagestatus/component/local_components.dart';
+import 'package:bat_loyalty_program_app/page_imagestatus/widget/local_widgets.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
@@ -16,7 +17,7 @@ class ImageStatusPage extends StatefulWidget {
 class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusComponents, MyComponents {
   @override
   void initState() {
-    initParam().whenComplete(() { setState(() { launchLoading = false; }); });
+    initParam(context).whenComplete(() { setState(() { launchLoading = false; }); });
   
     super.initState();
   }
@@ -32,8 +33,6 @@ class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusCompo
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: ImageStatusPage.routeName);
-
-    final imageDimension = MySize.Width(context, 0.3);
     
     return PopScope(
       canPop: true,
@@ -65,59 +64,13 @@ class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusCompo
                     child: MyWidgets.MyScrollBar1( context, controller: mainScrollController,
                       child: ListView.builder( controller: mainScrollController,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
-                        // itemCount: sections.length,
-                        itemCount: 2,
+                        itemCount: receipts.length,
                         physics: AlwaysScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          // return Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start,
-                          //   children: [ sections[index] ],
-                          // );
+                          List<Map<dynamic, dynamic>> receipt = receipts.values.elementAt(index);
+                          String date = receipts.keys.elementAt(index);
                           
-                          return Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Today', style: Theme.of(context).textTheme.bodyMedium,),
-                              SizedBox(height: 12,),
-
-                              GridView.builder(
-                                padding: const EdgeInsets.only(right: 12, bottom: 12),
-                                shrinkWrap: true, physics: NeverScrollableScrollPhysics(),
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount( crossAxisCount: 3,
-                                  mainAxisSpacing: 8, crossAxisSpacing: 8,
-                                ),
-
-                                itemCount: 4,
-                                itemBuilder: (context, index) {
-                                  // return Container(width: imageDimension, height: imageDimension, color: Colors.amber, child: Text('Image'));
-                        // done
-                                  return InkWell(
-                                    onTap: () {},
-                                    child: Material(
-                                      elevation: 0,
-                                      borderRadius: BorderRadius.circular(8),
-                                      color: Colors.transparent,
-                                      child: Container(
-                                        height: imageDimension,
-                                        width: imageDimension,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: Theme.of(context).colorScheme.primary),
-                                          color: Colors.transparent
-                                        ),
-                                        child: Center(child: SizedBox.square( dimension: imageDimension,
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
-                                            child: Image.asset(receipts[1][index], fit: BoxFit.cover,)),
-                                        )
-                                        )
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              
-                              SizedBox(height: 12,),
-                            ],
-                          );
+                          return ImageStatusWidgets.ReceiptSections(context, date, receipt: receipt, userId: args.username);
                         },
                       ),
                     ),

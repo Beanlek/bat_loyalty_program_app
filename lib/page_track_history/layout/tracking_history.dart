@@ -23,7 +23,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
 
   @override
   void initState() {
-    initParam().whenComplete(() {
+    initParam(context).whenComplete(() {
       setState(() {
         launchLoading = false;
       });
@@ -32,8 +32,8 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
   }
 
   @override
-  Future<void> initParam() async {
-    super.initParam();
+  Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
+    super.initParam(context);
     
     await MyPrefs.init().then((prefs) {
       prefs!;

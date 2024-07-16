@@ -9,7 +9,7 @@ import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 
 class Api {
-  static Future<bool> checkToken() async {
+  static Future<bool> checkToken(String domainName, {key, bool main = false}) async {
     String? token;
     String? tokenExpiryTime;
     
@@ -27,6 +27,12 @@ class Api {
 
         if (DateTime.now().isBefore(tokenExpiryTimeParsed)) {
           hadToken = true;
+
+          if (!main) {
+          await user_self(domainName, token!).then((res) {
+            print(res);
+            if (res != 200) hadToken = false;
+          }); }
         }
       }
     });
@@ -283,12 +289,14 @@ class Api {
         });
       }
     } on DioException catch (e) {
-      if (e.response != null) { statusCode = e.response!.statusCode ?? 503; }
-      else { statusCode = 503; }
-      
       String errMsg = 'Unknown error. $e';
 
-      if (e.response != null) { errMsg = e.response!.data['errMsg']; }
+      if (e.response != null) {
+        statusCode = e.response!.statusCode ?? 503;
+        
+        errMsg = e.response!.data; 
+
+      } else { statusCode = 503; }
       print(errMsg);
     } catch (e) {
       print(e);

@@ -13,7 +13,7 @@ void main() async {
   String initRoute = '/login';
   String? domainName;
 
-  await Api.checkToken().then((res) async {
+  await Api.checkToken('_', main: true).then((res) async {
     await MyPrefs.init().then((prefs) {
       prefs!;
       

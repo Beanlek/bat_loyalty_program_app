@@ -1,3 +1,4 @@
+import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -692,13 +693,13 @@ class MyWidgets {
   }
 
   static Widget MyTileButton(BuildContext context, String label,
-    { key, Color? color, void Function()? onPressed, IconData? icon, double? iconSize}
+    { key, Color? color, void Function()? onPressed, IconData? icon, double? iconSize, TextStyle? textStyle}
   ) {
     final _widget = SizedBox(
       height: 35,
       child: TextButton.icon(
         onPressed: onPressed,
-        label: Text(label, style: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500,
+        label: Text(label, style: (textStyle ?? Theme.of(context).textTheme.bodySmall)!.copyWith(fontWeight: FontWeight.w500,
           color: color ?? Theme.of(context).colorScheme.primary
         )),
         icon: Icon(icon ?? Icons.abc, size: iconSize ?? MySize.Width(context, 0.05),
@@ -1015,7 +1016,7 @@ class Breadcrumb extends StatelessWidget {
               }
             },
             child: Text(
-              path,
+              path.clean(),
               style: Theme.of(context)
                   .textTheme
                   .titleMedium!

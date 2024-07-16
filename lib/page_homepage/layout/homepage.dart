@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:bat_loyalty_program_app/page_homepage/component/local_components.dart';
+import 'package:bat_loyalty_program_app/page_homepage/layout/homepage.preview.dart';
 import 'package:bat_loyalty_program_app/page_homepage/widget/local_widgets.dart';
 import 'package:bat_loyalty_program_app/page_imagestatus/layout/imagestatus.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
@@ -8,7 +9,7 @@ import 'package:bat_loyalty_program_app/page_track_history/layout/tracking_histo
 import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
-import 'package:floating_snackbar/floating_snackbar.dart';
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
@@ -29,7 +30,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
   @override
   void initState() {
     loyaltyPoints = 2000;
-    initParam().whenComplete(() { setState(() { launchLoading = false; }); });
+    initParam(context).whenComplete(() { setState(() { launchLoading = false; }); });
     
     super.initState();
   }
@@ -42,21 +43,10 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
   }
 
   @override
-  Future<void> initParam() async{
-    super.initParam();
+  Future<void> initParam(BuildContext context, {key, bool needToken = true}) async{
+    super.initParam(context);
 
-    await MyPrefs.init().then((prefs) async {
-      prefs!;
-
-      await Api.checkToken().then((res) {
-        if (res) token = MyPrefs.getToken(prefs: prefs)!;
-        
-        if (!res) {
-          FloatingSnackBar(message: 'Session time out.', context: context);
-          Navigator.pushNamed( context, LoginPage.routeName );
-        }
-      });
-      
+    await MyPrefs.init().then((prefs) async { prefs!;
       final _user = MyPrefs.getUser(prefs: prefs) ?? '{}';
       user = jsonDecode(_user);
     });
@@ -78,131 +68,159 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
         
         Stack(
           children: [
-            SizedBox.expand(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: MySize.Height(context, 0.135),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Loyalty Points', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
-                          Expanded(child: Row(
-                            children: [
-                              Expanded(child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(user['id']!, style: Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.normal),),
-                                  Text.rich(
-                                    TextSpan(text: loyaltyPoints.toString(), style: Theme.of(context).textTheme.displayMedium!.copyWith(fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).colorScheme.outlineVariant),
-                                        children: [
-                                          TextSpan(text: ' pts', style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500,
-                                          color: Theme.of(context).colorScheme.outlineVariant
+            CustomMaterialIndicator(
+              edgeOffset: 10, backgroundColor: Colors.transparent, elevation: 0,
+              onRefresh: () async { setState(() { isLoading = true; }); await refreshPage(context).whenComplete(() => setState(() { isLoading = false; })); },
+              
+              indicatorBuilder: (context, controller) => Icon(FontAwesomeIcons.rotateRight, size: MySize.Width(context, 0.08),),
+              child: SizedBox.expand(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: MySize.Height(context, 0.135),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Loyalty Points', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
+                            Expanded(child: Row(
+                              children: [
+                                Expanded(child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(user['id']!, style: Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.normal),),
+                                    Text.rich(
+                                      TextSpan(text: loyaltyPoints.toString(), style: Theme.of(context).textTheme.displayMedium!.copyWith(fontWeight: FontWeight.bold,
+                                          color: Theme.of(context).colorScheme.outlineVariant),
+                                          children: [
+                                            TextSpan(text: ' pts', style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500,
+                                            color: Theme.of(context).colorScheme.outlineVariant
+                                          )
                                         )
-                                      )
-                                    ])
-                                  )
-                                ],
-                              )),
-                              Expanded(child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history,
-                                    onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
-                                  MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image,
-                                    onPressed: () => Navigator.pushNamed( context, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
-                                ],
-                              )),
-                            ],
-                          )),
-                        ],
-                      )
-                    ),
-
-                    SizedBox(height: 12,),
-
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Product Catalogue', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
-
-                          //Search Bar
-                          GradientSearchBar(
-                            controller: searchController,
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-
-                                Theme.of(context).colorScheme.tertiary,
-                                Theme.of(context).colorScheme.onPrimary,
+                                      ])
+                                    )
+                                  ],
+                                )),
+                                Expanded(child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history,
+                                      onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
+                                    MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image,
+                                      onPressed: () => Navigator.pushNamed( context, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
+                                  ],
+                                )),
                               ],
-                            ),
-                          ),
-
-                          SizedBox(
-                            height: 12,
-                          ),
-
-                          // product list
-                          Expanded(
-                            child: GridView.builder(
-                              padding: const EdgeInsets.all(15),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2, // row
-                                childAspectRatio: 2.5 / 4,
-                                mainAxisSpacing: 20,
-                                crossAxisSpacing: 20,
-                              ),
-                              itemCount: 4,
-                              shrinkWrap: true,
-                              physics: const ScrollPhysics(),
-                              itemBuilder: (BuildContext context, int i) {
-                                return ProductCard(
-                                    imageUrl: Image.asset(
-                                      'assets/images_examples/headphone.jpeg',
-                                    ),
-                                    title: "Headphone",
-                                    points: 1000,
-                                    onLoveIconTap: () {},
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .tertiary,
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
-                                      ],
-                                    ));
-                              },
-                            ),
-                          ),
-
-                        ],
+                            )),
+                          ],
+                        )
                       ),
-                    )
-                  ],
+              
+                      SizedBox(height: 12,),
+              
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Product Catalogue', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
+              
+                            //Search Bar
+                            GradientSearchBar(
+                              controller: searchController,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+              
+                                  Theme.of(context).colorScheme.tertiary,
+                                  Theme.of(context).colorScheme.onPrimary,
+                                ],
+                              ),
+                            ),
+              
+                            SizedBox(
+                              height: 12,
+                            ),
+              
+                            // product list
+                            Expanded(
+                              child: GridView.builder(
+                                padding: const EdgeInsets.all(15),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2, // row
+                                  childAspectRatio: 2.5 / 4,
+                                  mainAxisSpacing: 20,
+                                  crossAxisSpacing: 20,
+                                ),
+                                itemCount: 12,
+                                shrinkWrap: true,
+                                physics: const ScrollPhysics(),
+                                itemBuilder: (BuildContext context, int i) {
+                                  return ProductCard(
+                                      imageUrl: Image.asset(
+                                        'assets/images_examples/headphone.jpeg',
+                                      ),
+                                      title: "Headphone",
+                                      points: 1000,
+                                      onLoveIconTap: () {},
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                        ],
+                                      ));
+                                },
+                              ),
+                            ),
+              
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
+            
+            MyWidgets.MyLoading(context, isLoading, isDarkMode)
           ],
         ),
 
-        floatingActionButton: HomeWidgets.MyFloatingButton( context, 60, onTap: () {}),
+        floatingActionButton: HomeWidgets.MyFloatingButton( context, 60, onTap: () async { setState(() { isLoading = true; });
+
+          do {
+            await takeImage().then((taken) async {
+              Object? submit;
+              setState(() => imageTaken = taken);
+
+              if (imageTaken || imageRetake) {
+                submit = await Navigator.pushNamed( context, HomepagePreview.routeName , arguments: MyArguments(token,
+                  prevPath: "/home", receiptImage: receiptImage, username: user['id'],
+                ));
+
+                if (submit == true) { setState(() { isLoading = true; imageRetake = false; }); await refreshPage(context).whenComplete(() => setState(() { isLoading = false; })); }
+                else if (submit == 'retake') { setState(() { imageRetake = true; }); }
+                else { setState(() { imageRetake = false; }); }
+              } else { setState(() { imageRetake = false; }); }
+            });
+          } while (imageRetake);
+
+          setState(() { isLoading = false; });
+        }),
 
         drawer: HomeWidgets.MyDrawer(context, isDarkMode, appVersion: appVersion, domainName: domainName, 
           items: [

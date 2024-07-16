@@ -21,7 +21,7 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
 
   @override
   void initState() {
-    initParam().whenComplete(() {
+    initParam(context, needToken: false).whenComplete(() {
       setState(() {
         launchLoading = false;
       });

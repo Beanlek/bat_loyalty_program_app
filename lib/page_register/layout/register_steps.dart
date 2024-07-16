@@ -23,7 +23,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
 
   @override
   void initState() {
-    initParam().whenComplete(() {
+    initParam(context, needToken: false).whenComplete(() {
       setState(() {
         launchLoading = false;
       });
@@ -58,8 +58,8 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
   }
 
   @override
-  Future<void> initParam() async{
-    super.initParam().whenComplete((){ setAccountList(domainName, setState); });
+  Future<void> initParam(BuildContext context, {key, bool needToken = true}) async{
+    super.initParam(context, needToken: false).whenComplete((){ setAccountList(domainName, setState); });
 
     setCountryStates();
     setSecurityPhrases().whenComplete(() => randomizeSecurityPhrases() );
