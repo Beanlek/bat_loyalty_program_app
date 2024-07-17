@@ -142,6 +142,57 @@ mixin RegisterComponents {
     else { mainButtonActive = false; }
   }
 
+  void disposeAll() {
+    pageController.dispose();
+
+    usernameController.dispose();
+    fullNameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+
+    address1Controller.dispose();
+    address2Controller.dispose();
+    address3Controller.dispose();
+    postcodeController.dispose();
+
+    phoneFocusnode.dispose();
+    usernameFocusnode.dispose();
+    fullNameFocusnode.dispose();
+    emailFocusnode.dispose();
+    passwordFocusnode.dispose();
+    confirmPasswordFocusnode.dispose();
+
+    address1Focusnode.dispose();
+    address2Focusnode.dispose();
+    address3Focusnode.dispose();
+    postcodeFocusnode.dispose();
+
+    accountController.dispose();
+    outletController.dispose();
+
+    stateController.dispose();
+    cityController.dispose();
+
+    securityImageController.dispose();
+    securityPhraseController.dispose();
+  }
+
+  void unfocusAllNode() {
+    phoneFocusnode.unfocus();
+    usernameFocusnode.unfocus();
+    fullNameFocusnode.unfocus();
+    emailFocusnode.unfocus();
+    passwordFocusnode.unfocus();
+    confirmPasswordFocusnode.unfocus();
+
+    address1Focusnode.unfocus();
+    address2Focusnode.unfocus();
+    address3Focusnode.unfocus();
+    postcodeFocusnode.unfocus();
+  }
+
   void step1ButtonValidation(void Function(void Function()) setState) {
     if (
       usernameController.text.isNotEmpty &&

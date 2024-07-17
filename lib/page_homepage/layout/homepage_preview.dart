@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:amplify_core/amplify_core.dart';
 import 'package:bat_loyalty_program_app/page_homepage/component/local_components.dart';
+import 'package:bat_loyalty_program_app/services/awss3.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
@@ -76,12 +78,33 @@ class _HomepagePreviewState extends State<HomepagePreview> with HomeComponents, 
                           onPressed: () async {
                             setState(() { isLoading = true; });
                             
-                            await Future.delayed( Duration(milliseconds: 700 )).whenComplete(() {
-                              Navigator.pop(context, true);
+                            try {
+                              await AwsS3.uploadImageReceipt(
+                                userId: args.username,
+                                receipt: receiptImage
+                              ).then((res) {
+                                if (res == true) {
+                                  Navigator.pop(context, true);
+                                  
+                                  FloatingSnackBar(message: 'Receipt submitted!', context: context);
+                                  setState(() { isLoading = false; });
+                                } else {
+                                  FloatingSnackBar(message: 'Error. ${res}', context: context);
+                                  setState(() { isLoading = false; });
+                                }
+                              });
+                            } catch (e) {
+                              safePrint(e);
+                              FloatingSnackBar(message: 'Error. ${e}', context: context);
+                            }
+                            
+                            // await Future.delayed( Duration(milliseconds: 700 )).whenComplete(() {
+                            //   Navigator.pop(context, true);
                               
-                              FloatingSnackBar(message: 'Receipt submitted!', context: context);
-                              setState(() { isLoading = false; });
-                            });
+                            //   FloatingSnackBar(message: 'Receipt submitted!', context: context);
+                            //   setState(() { isLoading = false; });
+                            // });
+                            
                           }),
                       ],
                     ),

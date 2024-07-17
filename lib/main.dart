@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bat_loyalty_program_app/services/awss3.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
@@ -9,6 +10,7 @@ import 'package:bat_loyalty_program_app/services/api.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  await AwsS3.configure();
   await Api.setAllDomain();
   String initRoute = '/login';
   String? domainName;

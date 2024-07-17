@@ -846,7 +846,7 @@ class RegisterWidgets {
       case 5:
         _widget = StatefulBuilder(
           builder: (context, setState) {
-            double multiplier = 1.7;
+            double multiplier = 1.8;
             double multiplierPersonalInfo = 0;
             double multiplierAddress = 0;
             double multiplierOutlet = 0;
@@ -914,7 +914,7 @@ class RegisterWidgets {
                         Header(context, title: 'Outlet Information',
                           trailing: IconButton(onPressed: changeViewOutlet, icon: Icon(viewOutlet ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
                         ),
-                        !viewAddress ? SizedBox() :
+                        !viewOutlet ? SizedBox() :
                         Column(children: [
                           ConfirmationListTile(context, title: 'Company', subtitle: accountController!.text.trim(), onEdit: toPage4),
                           ConfirmationListTile(context, title: 'Outlet', subtitle: outletController!.text.trim(), onEdit: toPage4),
@@ -934,7 +934,7 @@ class RegisterWidgets {
                       ],
                     ),
                 
-                    MyWidgets.MyButton1(context, 150, 'Register',
+                    MyWidgets.MyButton1(context, 150, 'Register', active: stepButtonActive,
                       onSubmit
                     ),
                   ],

@@ -132,6 +132,8 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
 
                                   arguments: MyArguments('_', phone: phone)
                                 );
+
+                                unfocusAllNode();
                               }
                             ),
                           ],

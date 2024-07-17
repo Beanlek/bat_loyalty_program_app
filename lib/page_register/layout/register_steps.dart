@@ -35,24 +35,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
   @override
   void dispose() {
     mainScrollController.dispose();
-    pageController.dispose();
-
-    usernameController.dispose();
-    fullNameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-
-    address1Controller.dispose();
-    address2Controller.dispose();
-    address3Controller.dispose();
-    postcodeController.dispose();
-
-    stateController.dispose();
-    cityController.dispose();
-
-    securityImageController.dispose();
-    securityPhraseController.dispose();
+    disposeAll();
     
     super.dispose();
   }
@@ -98,6 +81,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           children: [
                             IconButton(onPressed: () {
                               // print('steps.dart activeStep: $activeStep');
+                              unfocusAllNode();
                               if (activeStep == 1) {
                                 Navigator.pop(context);
                                 return;
@@ -114,7 +98,8 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                                 children: RegisterWidgets.MySteps(context, activeStep: activeStep, totalSteps: totalSteps),
                               )
                             ),
-                            IconButton(onPressed: () {}, icon: PLACEHOLDER_ICON),
+                            !finalButtonActive || activeStep == totalSteps ? IconButton(onPressed: () {}, icon: PLACEHOLDER_ICON) :
+                            IconButton(onPressed: () { unfocusAllNode(); toPage(setState, page: 5); }, icon: Icon(Icons.arrow_forward_rounded)),
                           ],
                         ),
                     
@@ -150,6 +135,8 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                             await inputValidation(context, 'confirmPassword', pattern: RegisterComponents.REGEX_PASSWORD, data: confirmPassword, password: true, snackBar: false).then((valid) => setState(() { page1Error[4] = valid; isLoading = false; }));
                             
                             page1Error.every((e) => e == true) ? nextPage(setState) : null;
+
+                            unfocusAllNode();
                           },
                           phone: args.phone,
                           errMsgs: errMsgs,
@@ -189,6 +176,8 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                             await inputValidation(context, 'postcode', pattern: RegisterComponents.REGEX_POSTCODE, data: postcode, snackBar: false).then((valid) => setState(() { page2Error[5] = valid; isLoading = false;}));
                             
                             page2Error.every((e) => e == true) ? nextPage(setState) : null;
+
+                            unfocusAllNode();
                           },
                           phone: args.phone,
                           errMsgs: errMsgs,
@@ -221,6 +210,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                         } else if (index == 3) {
                           return RegisterWidgets.MyPage(context, index: 3, onSubmit: () {
                             nextPage(setState);
+                            unfocusAllNode();
                           },
                           phone: args.phone,
                           errMsgs: errMsgs,
@@ -263,6 +253,8 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                         } else if (index == 4) {
                           return RegisterWidgets.MyPage(context, index: 4, onSubmit: () async {
                             nextPage(setState);
+                            setState(() => finalButtonActive = true);
+                            unfocusAllNode();
                           },
                           phone: args.phone,
                           errMsgs: errMsgs,
@@ -287,32 +279,42 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           isDarkMode: isDarkMode);
                         } else if (index == 5) {
                           return RegisterWidgets.MyPage(context, index: 5, onSubmit: () async {
-                            setState(() { isLoading = true; phoneController.text = args.phone; });
+                            await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Registering New Cashier',
+                              confirmText: 'Register',
+                              cancelText: 'Back',
+                              subtitle: 'Make sure your information are correct before registering.',
+                              warning: 'Once registered, some information cannot be editted.'),).then((res) async {
+                                if (res ?? false) {
+                                  setState(() { isLoading = true; phoneController.text = args.phone; });
                             
-                            await registrationDataValidation(context, domainName).then((valid) async {
-                              if (valid) {
-                                await Api.user_register(context, domainName, registrationData: registrationData).then((statusCode) {
-                                  print({ statusCode });
+                                  await registrationDataValidation(context, domainName).then((valid) async {
+                                    if (valid) {
+                                      await Api.user_register(context, domainName, registrationData: registrationData).then((statusCode) {
+                                        print({ statusCode });
 
-                                  if (statusCode == 200) {
-                                    setState(() { isLoading = false; });
+                                        if (statusCode == 200) {
+                                          setState(() { isLoading = false; });
 
-                                    FloatingSnackBar(message: 'Account successfully registered! Log in to proceed.', context: context);
+                                          FloatingSnackBar(message: 'Account successfully registered! Log in to proceed.', context: context);
 
-                                    Navigator.pushNamed(
-                                      context,
-                                      LoginPage.routeName
-                                    );
-                                  } else if (statusCode == 422) {
-                                    FloatingSnackBar(message: 'Error ${statusCode}. Phone or Username already existed.', context: context);
-                                  } else {
-                                    FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
-                                  }
-                                  
-                                  setState(() { isLoading = false; });
-                                });
+                                          Navigator.pushNamed(
+                                            context,
+                                            LoginPage.routeName
+                                          );
+                                        } else if (statusCode == 422) {
+                                          FloatingSnackBar(message: 'Error ${statusCode}. Phone or Username already existed.', context: context);
+                                        } else {
+                                          FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                        }
+                                        
+                                        setState(() { isLoading = false; });
+                                      });
+                                    }
+                                  });
+                                }
                               }
-                            });
+                            );
+                            unfocusAllNode();
                           },
                           phone: args.phone,
                           errMsgs: errMsgs,

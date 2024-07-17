@@ -54,7 +54,7 @@ mixin MyComponents {
       prefs!;
       
       domainName = MyPrefs.getDomainName(prefs: prefs)!;
-      appVersion = MyPrefs.getAppVersion(prefs: prefs) ?? 'N/A';
+      appVersion = MyPrefs.getAppVersion(prefs: prefs) ?? '';
       deviceID = MyPrefs.getDeviceID(prefs: prefs) ?? 'N/A';
       token = MyPrefs.getToken(prefs: prefs) ?? 'N/A';
 

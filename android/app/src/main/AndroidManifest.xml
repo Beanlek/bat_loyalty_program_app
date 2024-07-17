@@ -4,9 +4,9 @@
     <uses-feature android:name="android.hardware.camera" />
     
     <application
-        android:label="bat_loyalty_program_app"
+        android:label="BAT Loyalty"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

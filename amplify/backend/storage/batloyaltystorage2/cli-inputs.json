@@ -1,0 +1,18 @@
+{
+  "resourceName": "batloyaltystorage2",
+  "policyUUID": "fb8e55b0",
+  "bucketName": "batloyalty-bucket-dev",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}
