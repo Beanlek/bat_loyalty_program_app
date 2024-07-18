@@ -78,6 +78,9 @@ class MyTheme {
 
       outline: MyColors.biruSelect,
       outlineVariant: MyColors.hijauImran3,
+      
+      filterbutton: MyColors.hijauImran,
+      filterbutton1: MyColors.hijauImran2,
     ),
   );
 
@@ -134,6 +137,9 @@ class MyTheme {
 
       outline: MyColors.biruImran3,
       outlineVariant: MyColors.hijauImran2,
+
+      filterbutton: MyColors.biruImran3,
+      filterbutton1: MyColors.biruImran2,
     ),
   );
 }

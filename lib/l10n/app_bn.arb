@@ -1,0 +1,9 @@
+{
+  "@@locale": "bn",
+  "language": "Bengali",
+  "@language":{
+    "description": "বাংলা ভাষা"
+  },   
+  "loyalty_points": "আনুগত্য পয়েন্ট",  
+  "tracking_history":"ট্র্যাকিং ইতিহাস"
+}

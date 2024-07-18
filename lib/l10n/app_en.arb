@@ -1,0 +1,9 @@
+{
+  "@@locale": "en",
+  "language": "English",
+  "@language":{
+    "description": "selected language"
+  },   
+  "loyalty_points": "Loyalty Points",  
+  "tracking_history":"Tracking History"
+}

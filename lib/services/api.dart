@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bat_loyalty_program_app/model/product.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,7 +13,7 @@ class Api {
   static Future<bool> checkToken() async {
     String? token;
     String? tokenExpiryTime;
-    
+
     bool hadToken = false;
     DateTime tokenExpiryTimeParsed;
 
@@ -23,7 +24,8 @@ class Api {
       tokenExpiryTime = MyPrefs.getTokenExpiryTime(prefs: prefs);
 
       if (token != null && tokenExpiryTime != null) {
-        tokenExpiryTimeParsed = DateTime.parse(tokenExpiryTime!).add(Duration(hours: int.parse('-4')));
+        tokenExpiryTimeParsed = DateTime.parse(tokenExpiryTime!)
+            .add(Duration(hours: int.parse('-4')));
 
         if (DateTime.now().isBefore(tokenExpiryTimeParsed)) {
           hadToken = true;
@@ -60,9 +62,10 @@ class Api {
     });
   }
 
-  static Future<int> login(String domainName, 
-    {required String mobile, required String password, required String deviceID}
-  ) async {
+  static Future<int> login(String domainName,
+      {required String mobile,
+      required String password,
+      required String deviceID}) async {
     int statusCode = 0;
 
     final Dio dio = Dio();
@@ -74,13 +77,8 @@ class Api {
         options: Options(headers: {
           'Content-Type': 'application/json',
         }),
-
         url,
-        data: {
-          "mobile": mobile,
-          "password": password,
-          "device_id": deviceID
-        },
+        data: {"mobile": mobile, "password": password, "device_id": deviceID},
       );
 
       statusCode = response.statusCode!;
@@ -92,18 +90,23 @@ class Api {
 
         await MyPrefs.init().then((prefs) {
           prefs!;
-          
+
           MyPrefs.setToken(token, prefs: prefs);
           MyPrefs.setTokenExpiryTime(tokenExpiryTime, prefs: prefs);
         });
       }
     } on DioException catch (e) {
-      if (e.response != null) { statusCode = e.response!.statusCode ?? 503; }
-      else { statusCode = 503; }
-      
+      if (e.response != null) {
+        statusCode = e.response!.statusCode ?? 503;
+      } else {
+        statusCode = 503;
+      }
+
       String errMsg = 'Unknown error. $e';
 
-      if (e.response != null) { errMsg = e.response!.data['errMsg']; }
+      if (e.response != null) {
+        errMsg = e.response!.data['errMsg'];
+      }
       print(errMsg);
     } catch (e) {
       print(e);
@@ -126,7 +129,6 @@ class Api {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         }),
-
         url,
       );
 
@@ -137,7 +139,7 @@ class Api {
 
         await MyPrefs.init().then((prefs) {
           prefs!;
-          
+
           MyPrefs.setUser(jsonEncode(user), prefs: prefs);
         });
       }
@@ -149,14 +151,21 @@ class Api {
     return statusCode;
   }
 
-  static Future<int> user_register(BuildContext context, String domainName, 
-    { required Map<String, dynamic> registrationData }
-  ) async {
+  static Future<int> user_register(BuildContext context, String domainName,
+      {required Map<String, dynamic> registrationData}) async {
     int statusCode = 0;
 
     registrationData.forEach((key, data) {
-      if (data.isEmpty || data == '') { statusCode = 400; FloatingSnackBar(message: 'Error ${statusCode}. ${key.capitalize()} is empty.', context: context); }
-    }); if ( statusCode == 400 ) { return statusCode; }
+      if (data.isEmpty || data == '') {
+        statusCode = 400;
+        FloatingSnackBar(
+            message: 'Error ${statusCode}. ${key.capitalize()} is empty.',
+            context: context);
+      }
+    });
+    if (statusCode == 400) {
+      return statusCode;
+    }
 
     final Dio dio = Dio();
 
@@ -164,21 +173,20 @@ class Api {
 
     try {
       final response = await dio.post(
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-        }),
-
-        url,
-        data: { "data": registrationData }
-      );
+          options: Options(headers: {
+            'Content-Type': 'application/json',
+          }),
+          url,
+          data: {"data": registrationData});
 
       statusCode = response.statusCode!;
-
     } on DioException catch (e) {
       statusCode = e.response!.statusCode ?? 503;
       String errMsg = 'Unknown error.';
 
-      if (e.response != null) { errMsg = e.response!.data['errMsg']; }
+      if (e.response != null) {
+        errMsg = e.response!.data['errMsg'];
+      }
       print(errMsg);
     } catch (e) {
       print(e);
@@ -186,5 +194,49 @@ class Api {
     }
 
     return statusCode;
+  }
+
+  // make api to get all products
+  static Future<List<Product>> fetchProducts(
+      String domainName, String token) async {
+    String url = '${domainName}/api/product/app/list';   
+   // print('url : $url');
+    final Dio dio = Dio();
+    int statusCode = 0;    
+    try {
+      final response = await dio.get(
+        url,
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+        
+      );
+
+      statusCode = response.statusCode!;
+     // print('statusCode fetch product : ${statusCode}');
+      if (statusCode == 200) {
+
+        //  print('response.data type: ${response.data.runtimeType}');
+        // print('response.data: ${response.data}');
+
+        // Cast the response data to List<Map<String, dynamic>>
+        if (response.data is List) {
+          List<Product> products = (response.data as List)
+              .map((productJson) => Product.fromJson(productJson as Map<String, dynamic>))
+              .toList();
+          return products;
+        } else {
+          throw Exception('Unexpected data format');
+        }              
+
+      } else {
+        print(statusCode);
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      print('Errorrr: $e');
+      throw Exception('Failed to load the products');
+    }
   }
 }

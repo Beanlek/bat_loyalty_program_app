@@ -1,5 +1,8 @@
-import 'package:bat_loyalty_program_app/services/global_widgets.dart';
+import 'package:bat_loyalty_program_app/l10n/l10n.dart';
+import 'package:bat_loyalty_program_app/streams/general_stream.dart';
 import 'package:flutter/material.dart';
+
+import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
 
 class HomeWidgets {
@@ -81,7 +84,8 @@ class HomeWidgets {
       {key,
       required String appVersion,
       required GlobalKey<ScaffoldState> scaffoldKey,
-      void Function()? onTap}) {
+      void Function()? onTap,
+      required Locale selectedLocal}) {
     final _widget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
       leading: IconButton(
@@ -95,7 +99,14 @@ class HomeWidgets {
       ),
       actions: [
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Locale newLocale = selectedLocal.languageCode == 'en'
+                ? const Locale('bn')
+                : const Locale('en');
+            GeneralStreams.languageStream.add(newLocale);
+            //  Locale newLocale = L10n.locals.firstWhere((element) => element != selectedLocal);
+            //GeneralStreams.languageStream.add(L10n.locals.firstWhere((element) => element != selectedLocal));
+          },
           icon: Icon(Icons.language,
               color: Theme.of(context).colorScheme.secondary),
         ),
@@ -143,37 +154,36 @@ class HomeWidgets {
     return _widget;
   }
 
-  static Widget MyFloatingButton(
-      BuildContext context, double? width, void Function()? onTap,
-      {key, bool active = true}) {
+  static Widget MyFloatingButton(BuildContext context, double? dimension,
+      {key, bool active = true, void Function()? onTap}) {
     final _widget = Material(
       color: Colors.transparent,
       elevation: !active ? 0 : 3,
       borderRadius: BorderRadius.circular(100),
-      child: Container(
-          width: width ?? null,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                  color: !active
-                      ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                      : Theme.of(context).colorScheme.onTertiary),
-              gradient: !active
-                  ? null
-                  : LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                          MyColors.biruImran2,
-                          MyColors.biruImran,
-                        ]),
-              color: active ? null : Colors.transparent),
-          child: ListTile(
-            title: Center(
-              child: (Icon(Icons.camera_alt_rounded, color: MyColors.myWhite)),
-            ),
-            onTap: active ? onTap : null,
-          )),
+      child: SizedBox.square(
+        dimension: dimension ?? 60,
+        child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                    color: !active
+                        ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                        : Theme.of(context).colorScheme.onTertiary),
+                gradient: !active
+                    ? null
+                    : LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                            MyColors.biruImran2,
+                            MyColors.biruImran,
+                          ]),
+                color: active ? null : Colors.transparent),
+            child: InkWell(
+              onTap: active ? onTap : null,
+              child: Icon(Icons.camera_alt_rounded, color: MyColors.myWhite),
+            )),
+      ),
     );
 
     return _widget;

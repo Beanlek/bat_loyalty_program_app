@@ -1,3 +1,4 @@
+import 'package:bat_loyalty_program_app/dummy.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,8 @@ class MyArguments {
       this.deviceID = 'flutter123',
       this.appVersion = '0.0.0',
 
-      //profile
+      this.prevPath = '/null',
+
       this.user = '{}',
     }
   );
@@ -30,8 +32,9 @@ class MyArguments {
   final String deviceID;
   final String appVersion;
 
-  //profile 
-   final String user;
+  final String prevPath;
+
+  final String user;
 }
 
 class MyRoutes {
@@ -40,7 +43,10 @@ class MyRoutes {
     LoginPage.routeName: (context) => LoginPage(),
     RegisterPage.routeName: (context) => RegisterPage(),
     RegisterStepsPage.routeName: (context) => RegisterStepsPage(),
+
     ProfilePage.routeName: (context) => ProfilePage(),
-    trackingHistoryPage.routeName: (context) => trackingHistoryPage(),
+
+    Dummy.routeName: (context) => Dummy(),
+    TrackingHistoryPage.routeName: (context) => TrackingHistoryPage(),
   };
 }
