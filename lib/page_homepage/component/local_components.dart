@@ -3,13 +3,48 @@ import 'package:image_picker/image_picker.dart';
 
 mixin HomeComponents {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
-  final TextEditingController searchController = TextEditingController();
+  
+  final ScrollController productController = ScrollController();
+  final ScrollController stickyController = ScrollController();
 
-  final FocusNode searchFocusNode = FocusNode();
 
   bool imageTaken = false;
   bool imageRetake = false;
   int loyaltyPoints = 0;
+
+  final List<Map<dynamic,dynamic>> brandMap = [
+    {
+      "data": "Apple",
+      "filter": false
+    },
+    {
+      "data": "Samsung",
+      "filter": false
+    },
+    {
+      "data": "Chanel",
+      "filter": false
+    },
+    {
+      "data": "Logitech",
+      "filter": false
+    },
+  ];
+
+  final List<Map<dynamic,dynamic>> categoryMap = [
+    {
+      "data": "mobile devices",
+      "filter": false
+    },
+    {
+      "data": "cosmetics",
+      "filter": false
+    },
+    {
+      "data": "mouses",
+      "filter": false
+    },
+  ];
 
   late Map<String, dynamic> user;
   late XFile receiptImage;

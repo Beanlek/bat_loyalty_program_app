@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-
 mixin ImageStatusComponents {
-  final TextEditingController searchController = TextEditingController();
   Map<dynamic, dynamic> receipts = {
     "Today": [
       {
@@ -49,7 +46,7 @@ mixin ImageStatusComponents {
         "created_at": '2024-07-03 09:11:30.364 +0800'
       },
     ],
-    "12 July 2024": [
+    "12 Jun 2024": [
       {
         "image": 'assets/images_examples/receipt-001.jpg',
         "created_at": '2024-07-03 09:11:30.364 +0800'
@@ -57,7 +54,26 @@ mixin ImageStatusComponents {
     ],
   };
 
-  void setSections() {
-
-  }
+  final List<Map<dynamic,dynamic>> dateMap = [
+    {
+      "data": "Any time",
+      "filter": false
+    },
+    {
+      "data": "Today",
+      "filter": false
+    },
+    {
+      "data": "This week",
+      "filter": false
+    },
+    {
+      "data": "This month",
+      "filter": false
+    },
+    {
+      "data": "This year",
+      "filter": false
+    },
+  ];
 }

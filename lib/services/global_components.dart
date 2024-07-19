@@ -35,6 +35,8 @@ extension StringExtension on String {
 
 mixin MyComponents {
   final ScrollController mainScrollController = ScrollController();
+  final TextEditingController searchController = TextEditingController();
+  final FocusNode searchFocusNode = FocusNode();
   
   bool isLoading = false;
   bool launchLoading = true;
@@ -43,6 +45,8 @@ mixin MyComponents {
 
   String currentPath = '';
   List<String> paths = [];
+
+  List<String> filtersApplied = [];
 
   late String domainName;
   late String appVersion;
@@ -87,4 +91,12 @@ mixin MyComponents {
 
     print('${routeName} : ${paths}');
   }
+
+  void applyFilters(BuildContext context, { key, required String data }) {
+    filtersApplied.contains(data) ? filtersApplied.removeWhere((item) => item == data) : filtersApplied.add(data);
+  }
+  void clearFilters() {
+    filtersApplied.clear();
+  }
+  
 }

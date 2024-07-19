@@ -52,7 +52,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
     return PopScope(
         child: launchLoading
             ? MyWidgets.MyLoading2(context, isDarkMode)
-            : Scaffold(
+            : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
                 appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Tracking History', appVersion: appVersion),
 
                 body: 
@@ -72,14 +72,19 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                         
-                                GradientSearchBar(
+                                GradientSearchBar( pageSetState: setState,
+                                  applyFilters: applyFilters,
+                                  filtersApplied: filtersApplied,
+                                  datas: [ dateMap ],
+                                    
                                   controller: searchController,
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Theme.of(context).colorScheme.tertiary,
-                                      Theme.of(context).colorScheme.onPrimary,
-                                    ],
-                                  ),
+                                  focusNode: searchFocusNode,
+                                  
+                                  items: [
+                                    GradientSearchBar.filterMenu(context, title: 'Date', data: dateMap, single: true,
+                                      applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
+                                  ],
+                                  onSearch: () {},
                                 ),
                                 
                                 SizedBox(
@@ -231,6 +236,6 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
                     MyWidgets.MyLoading(context, isLoading, isDarkMode)
                   ],
                 ),
-              ));
+              )));
   }
 }

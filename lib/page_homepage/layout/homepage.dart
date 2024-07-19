@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sticky_headers/sticky_headers/widget.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -37,7 +38,11 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
 
   @override
   void dispose() {
+    mainScrollController.dispose();
     searchController.dispose();
+    
+    stickyController.dispose();
+    productController.dispose();
 
     super.dispose();
   }
@@ -58,7 +63,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
 
     return PopScope(
       canPop: false,
-      child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : Scaffold(
+      child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         
         key: scaffoldKey,
         appBar: HomeWidgets.MyAppBar(context, isDarkMode, appVersion: appVersion, scaffoldKey: scaffoldKey,
@@ -75,86 +80,91 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
               indicatorBuilder: (context, controller) => Icon(FontAwesomeIcons.rotateRight, size: MySize.Width(context, 0.08),),
               child: SizedBox.expand(
                 child: Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.all(3.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: MySize.Height(context, 0.135),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Loyalty Points', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
-                            Expanded(child: Row(
-                              children: [
-                                Expanded(child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(user['id']!, style: Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.normal),),
-                                    Text.rich(
-                                      TextSpan(text: loyaltyPoints.toString(), style: Theme.of(context).textTheme.displayMedium!.copyWith(fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).colorScheme.outlineVariant),
-                                          children: [
-                                            TextSpan(text: ' pts', style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500,
-                                            color: Theme.of(context).colorScheme.outlineVariant
-                                          )
-                                        )
-                                      ])
-                                    )
-                                  ],
-                                )),
-                                Expanded(child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history,
-                                      onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
-                                    MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image,
-                                      onPressed: () => Navigator.pushNamed( context, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
-                                  ],
-                                )),
-                              ],
-                            )),
-                          ],
-                        )
-                      ),
-              
-                      SizedBox(height: 12,),
-              
+                                    
+                      // product list
                       Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Product Catalogue', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
-              
-                            //Search Bar
-                            GradientSearchBar(
-                              controller: searchController,
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-              
-                                  Theme.of(context).colorScheme.tertiary,
-                                  Theme.of(context).colorScheme.onPrimary,
-                                ],
-                              ),
-                            ),
-              
-                            SizedBox(
-                              height: 12,
-                            ),
-              
-                            // product list
-                            Expanded(
-                              child: GridView.builder(
+                        child: MyWidgets.MyScrollBar1( context, controller: mainScrollController, child: ListView.builder(
+                          padding: EdgeInsets.all(9),
+                          controller: mainScrollController,
+                          
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                SizedBox(
+                                  height: MySize.Height(context, 0.135),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Loyalty Points', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
+                                      Expanded(child: Row(
+                                        children: [
+                                          Expanded(child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(user['id']!, style: Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.normal),),
+                                              Text.rich(
+                                                TextSpan(text: user['points'].toString(), style: Theme.of(context).textTheme.displayMedium!.copyWith(fontWeight: FontWeight.bold,
+                                                    color: Theme.of(context).colorScheme.outlineVariant),
+                                                    children: [
+                                                      TextSpan(text: ' pts', style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500,
+                                                      color: Theme.of(context).colorScheme.outlineVariant
+                                                    )
+                                                  )
+                                                ])
+                                              )
+                                            ],
+                                          )),
+                                          Expanded(child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history,
+                                                onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
+                                              MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image,
+                                                onPressed: () => Navigator.pushNamed( context, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
+                                            ],
+                                          )),
+                                        ],
+                                      )),
+                                    ],
+                                  )
+                                ),
+                        
+                                SizedBox(height: 12,),
+                                Text('Product Catalogue', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500)),
+                              ]);
+                            } else if (index == 1) {
+                              return StickyHeader(
+                                header: Container( color: Theme.of(context).primaryColor, child: Padding( padding: const EdgeInsets.only(bottom: 3.0),
+                                  child: GradientSearchBar( pageSetState: setState,
+                                    applyFilters: applyFilters,
+                                    filtersApplied: filtersApplied,
+                                    datas: [ brandMap, categoryMap ],
+                                    
+                                    controller: searchController,
+                                    focusNode: searchFocusNode,
+                                  
+                                    items: [
+                                      GradientSearchBar.filterMenu(context, title: 'Brand', data: brandMap,
+                                        applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
+                                      GradientSearchBar.filterMenu(context, title: 'Category', data: categoryMap,
+                                        applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState),
+                                    ],
+                                    onSearch: () {},
+                                  )),
+                                ),
+                                    
+                                content: GridView.builder(
                                 padding: const EdgeInsets.all(15),
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2, // row
                                   childAspectRatio: 2.5 / 4,
                                   mainAxisSpacing: 20,
@@ -162,7 +172,9 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
                                 ),
                                 itemCount: 12,
                                 shrinkWrap: true,
-                                physics: const ScrollPhysics(),
+                                
+                                physics: NeverScrollableScrollPhysics(),
+                                // controller: productController,
                                 itemBuilder: (BuildContext context, int i) {
                                   return ProductCard(
                                       imageUrl: Image.asset(
@@ -185,11 +197,12 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
                                       ));
                                 },
                               ),
-                            ),
-              
-                          ],
-                        ),
-                      )
+                              );
+                            } else { return SizedBox(); }
+                          }
+                        )),
+                      ),
+                              
                     ],
                   ),
                 ),
@@ -249,7 +262,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
               }),
           ]
         )
-      ),
+      )),
     );
   }
 }

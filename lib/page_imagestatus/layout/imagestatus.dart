@@ -36,7 +36,7 @@ class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusCompo
     
     return PopScope(
       canPop: true,
-      child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : Scaffold(
+      child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Image Status', appVersion: appVersion),
         body:
     
@@ -48,16 +48,19 @@ class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusCompo
                 children: [
                   Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths)),
 
-                  GradientSearchBar(
+                  GradientSearchBar( pageSetState: setState,
+                    applyFilters: applyFilters,
+                    filtersApplied: filtersApplied,
+                    datas: [ dateMap ],
+                                    
                     controller: searchController,
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Theme.of(context).colorScheme.tertiary,
-                        Theme.of(context).colorScheme.onPrimary,
-                      ],
-                    ),
+                    focusNode: searchFocusNode,
+
+                    items: [
+                      GradientSearchBar.filterMenu(context, title: 'Date', data: dateMap, single: true,
+                        applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
+                    ],
+                    onSearch: () {},
                   ),
 
                   Expanded(
@@ -82,7 +85,7 @@ class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusCompo
             MyWidgets.MyLoading(context, isLoading, isDarkMode)
           ]
         )
-      )
+      ))
     );
   }
 }

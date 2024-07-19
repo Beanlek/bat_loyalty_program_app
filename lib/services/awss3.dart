@@ -54,4 +54,38 @@ class AwsS3 {
       return status;
     }
   }
+
+  static Future<Map<dynamic, dynamic>> getReceiptImageUrl( {key, required String userId, required XFile receipt }) async {
+    Object status = false;
+    Map<dynamic, dynamic> result = {};
+
+    void setResult(Object _result) {
+      result.addEntries( {"status": status}.entries );
+      result.addEntries( {"result": _result}.entries );
+    }
+    
+    try {
+      final response = await Amplify.Storage.getUrl( path: StoragePath.fromString('receipts/${userId}/${receipt.name}') ).result;
+      safePrint('url: ${response.url}');
+      status = true;
+
+      setResult(response.url);
+      
+      return result;
+    } on StorageException catch (e) {
+      safePrint(e.message);
+      status = e.message;
+
+      setResult('null');
+
+      return result;
+    } catch (e) {
+      safePrint(e);
+      status = e;
+
+      setResult('null');
+
+      return result;
+    }
+  }
 }

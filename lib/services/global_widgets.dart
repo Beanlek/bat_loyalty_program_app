@@ -659,9 +659,13 @@ class MyWidgets {
   }
 
   static Widget MyScroll1(BuildContext context,
-      {required ScrollController controller,
+    {
+      required ScrollController controller,
       required Widget child,
-      double? height}) {
+      double? height,
+      Axis scrollDirection = Axis.vertical,
+    }
+  ) {
     final _widget = RawScrollbar(
       controller: controller,
       thumbVisibility: true,
@@ -669,6 +673,7 @@ class MyWidgets {
       radius: Radius.circular(100),
       thickness: 3,
       child: SingleChildScrollView(
+        scrollDirection: scrollDirection,
           controller: controller,
           child: SizedBox(
               width: MySize.Width(context, 1),
@@ -679,10 +684,10 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyScrollBar1(BuildContext context, {required ScrollController controller, required Widget child} ) {
+  static Widget MyScrollBar1(BuildContext context, {required ScrollController controller, required Widget child, bool thumbVisibility = true} ) {
     final _widget = RawScrollbar(
       controller: controller,
-      thumbVisibility: true,
+      thumbVisibility: thumbVisibility,
       thumbColor: Theme.of(context).colorScheme.secondary,
       radius: Radius.circular(100),
       thickness: 3,
@@ -948,50 +953,217 @@ class ProductCard extends StatelessWidget {
 
 class GradientSearchBar extends StatelessWidget {
   final TextEditingController controller;
-  final Gradient gradient;
+  final FocusNode focusNode;
 
-  const GradientSearchBar({
+  final List<Widget> items;
+  final List<String> filtersApplied;
+  final List<List<Map<dynamic, dynamic>>> datas;
+  
+  void Function(void Function()) pageSetState;
+  void Function()? onSearch;
+  void Function(BuildContext, {required String data, dynamic key}) applyFilters;
+
+  GradientSearchBar({
     super.key,
     required this.controller,
-    required this.gradient,
+    required this.focusNode,
+
+    required this.items,
+    required this.filtersApplied,
+    required this.datas,
+    
+    this.onSearch,
+    required this.pageSetState,
+    required this.applyFilters,
   });
+
+  static Widget filterContainer(BuildContext context,
+    {
+      key, required String data,
+      required List<List<Map<dynamic, dynamic>>> datas,
+      required void Function(void Function()) pageSetState,
+      required void Function(BuildContext, {required String data, dynamic key}) applyFilters
+    }
+  ) {
+    final Color FILTER_CONTAINERDATA_COLOR = Theme.of(context).primaryColor;
+
+    final _widget = Padding( padding: const EdgeInsets.only(right: 12.0),
+      child: Material( elevation: 0,
+        borderRadius: BorderRadius.circular(100),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            gradient: LinearGradient( begin: Alignment.topLeft, end: Alignment.bottomRight,
+              colors: [ Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary, ],
+            ),
+          ),
+      
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Row( children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Text(data, style: Theme.of(context).textTheme.bodySmall!.copyWith( color: FILTER_CONTAINERDATA_COLOR)),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      print('x pressed');
+
+                      for (var i = 0; i < datas.length; i++) {
+                        final dataMap = datas[i];
+                        setState(() {
+                          for (var i = 0; i < dataMap.length; i++) {
+                            if (dataMap[i]['data'] == data) {dataMap[i]['filter'] = false; return;}
+                          }
+                        });
+                      }
+                      
+                      pageSetState(() => applyFilters(context, data: data));
+                    },
+                    icon: Icon(Icons.close, color: FILTER_CONTAINERDATA_COLOR, size: MySize.Width(context, 0.03),)
+                  ),
+                ],
+              );
+            }
+          ),
+        )
+      ),
+    );
+  
+    return _widget;
+  }
+
+  static Widget filterMenu(BuildContext context,
+    {
+      key, required String title, bool first = false, bool single = false,
+      required List<Map<dynamic, dynamic>> data,
+      required void Function(void Function()) pageSetState,
+      required void Function() clearFilters,
+      required void Function(BuildContext, {required String data, dynamic key}) applyFilters
+    }
+  ) {
+    final Color ICON_COLOR = Theme.of(context).colorScheme.secondary;
+    
+    final _widget = StatefulBuilder(
+      builder: (context, setState) {
+        return InkWell( onTap: () => setState(() {}),
+          child: Column( children: [
+            Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              first ? IconButton( onPressed: () => Navigator.pop(context, true),
+                icon: Icon(Icons.close, color: ICON_COLOR, size: MySize.Width(context, 0.05),)
+              ) : IconButton( onPressed: null, icon: PLACEHOLDER_ICON),
+          
+              Text(title, style: Theme.of(context).textTheme.bodyMedium ),
+            ]),
+          
+            Column( children: 
+            data.map((singleData) => 
+              Row( mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text( singleData['data'], style: Theme.of(context).textTheme.bodyMedium ),
+                  SizedBox(width: 12),
+          
+                  Checkbox( value: singleData['filter'],
+                    onChanged: (value) {
+                      if (single) {
+                        for (var aData in data) {
+                          aData.update('filter', (e) => false );
+                        }
+                        clearFilters();
+                      }
+
+                      setState(() { singleData['filter'] = value; });
+                      pageSetState(() => applyFilters(context, data: singleData['data']));
+                      
+                    },
+                  )
+                ],
+              )).toList()
+            )
+          ]),
+        );
+      }
+    );
+  
+    return _widget;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(24.0),
-        ),
-        child: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            prefixIcon: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {},
-            ),
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.tune_rounded),
-              onPressed: () {},
-            ),
-            border: OutlineInputBorder(
+    final Color ICON_COLOR = Theme.of(context).colorScheme.secondary;
+    final ScrollController filterController = ScrollController();
+    
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [ Theme.of(context).colorScheme.tertiary, Theme.of(context).colorScheme.onPrimary, ],
+              ),
               borderRadius: BorderRadius.circular(24.0),
-              borderSide: BorderSide.none,
             ),
-            filled: true,
-            fillColor: Colors.transparent, // Ensure fill color is transparent
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 0.0,
-              horizontal: 20.0,
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+        
+                // search and filter
+                prefixIcon: IconButton(
+                  icon: Icon(Icons.search, color: ICON_COLOR),
+                  onPressed: onSearch,
+                ),
+                suffixIcon: PopupMenuButton(
+                  color: Colors.transparent, elevation: 0,
+                  constraints: BoxConstraints( minWidth: MySize.Width(context, 0.65)),
+        
+                  itemBuilder: (context) {
+                    return [ PopupMenuItem(child: Material( elevation: 5, child: Container(
+                      decoration: BoxDecoration( color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
+                      child: Padding(padding: EdgeInsets.all(12), child: Column( children: items )
+                      ),
+                    ),)
+                  ) ];
+                  },
+                  child: Icon(Icons.tune_rounded, color: ICON_COLOR,),
+                ),
+        
+        
+                // decoration
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.transparent,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 0.0,
+                  horizontal: 20.0,
+                ),
+        
+              ),
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
-          style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
         ),
-      ),
+
+        SizedBox( height: filtersApplied.isNotEmpty ? 50 : 0,
+          child: ListView.builder(
+            controller: filterController,
+            scrollDirection: Axis.horizontal,
+            
+            itemCount: filtersApplied.length,
+            itemBuilder: (context, index) {
+              return filterContainer(context, data: filtersApplied[index], datas: datas, applyFilters: applyFilters, pageSetState: pageSetState);
+            }
+          ),
+        )
+      ],
     );
   }
 }

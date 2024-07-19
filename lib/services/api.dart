@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:amplify_core/amplify_core.dart';
+import 'package:bat_loyalty_program_app/services/awss3.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Api {
   static Future<bool> checkToken(String domainName, {key, bool main = false}) async {
@@ -254,6 +257,66 @@ class Api {
       print(errMsg);
     } catch (e) {
       print(e);
+      statusCode = 503;
+    }
+
+    return statusCode;
+  }
+
+  static Future<int> uploadImageReceipt(String domainName, String token, { required XFile receipt, required String userId, required String outletId }) async{
+    int statusCode = 0;
+
+    final Dio dio = Dio();
+
+    String url = '${domainName}/api/user/app/registerValidate';
+
+    try {
+      await AwsS3.uploadImageReceipt(
+        userId: userId,
+        receipt: receipt
+      ).then((res) async {
+        if (res == true) {
+          await AwsS3.getReceiptImageUrl(userId: userId, receipt: receipt).then((res) async {
+            if (res['status'] == true) {
+              try {
+                final response = await dio.post(
+                  options: Options(headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer $token',
+                  }),
+
+                  url,
+                  data: {
+                    "user_id": userId,
+                    "outlet_id": outletId,
+                    "created_by": userId,
+                    "image": res['result'].toString()
+                  }
+                );
+
+                statusCode = response.statusCode!;
+
+              } on DioException catch (e) {
+                String errMsg = 'Unknown error. $e';
+
+                if (e.response != null) {
+                  statusCode = e.response!.statusCode ?? 503;
+                  
+                  errMsg = e.response!.data['errMsg']; 
+
+                } else { statusCode = 503; }
+
+                safePrint(errMsg);
+              } catch (e) {
+                print(e);
+                statusCode = 503;
+              }
+            } else { safePrint(res['result']); statusCode = 503; }
+          });
+        } else { safePrint(res); statusCode = 503; }
+      });
+    } catch (e) {
+      safePrint(e);
       statusCode = 503;
     }
 

@@ -33,6 +33,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   custom_refresh_indicator: ^3.1.2
   floating_snackbar: ^1.0.3+1
+  sticky_headers: ^0.3.0+2
   lottie: ^3.1.2
   font_awesome_flutter: ^10.7.0
     
