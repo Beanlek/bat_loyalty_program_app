@@ -1,3 +1,6 @@
+import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
+import 'package:bat_loyalty_program_app/services/api.dart';
+import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
@@ -19,10 +22,21 @@ extension StringExtension on String {
 
     return _string;
   }
+
+  String clean() {
+    String _string = '';
+
+    _string = replaceAll(RegExp(r'_'), ' ');
+    _string = _string.split(' ').map((word) => word.capitalize()).join(' ');
+
+    return _string;
+  }
 }
 
 mixin MyComponents {
   final ScrollController mainScrollController = ScrollController();
+  final TextEditingController searchController = TextEditingController();
+  final FocusNode searchFocusNode = FocusNode();
 
   bool isLoading = false;
   bool launchLoading = true;
@@ -32,23 +46,41 @@ mixin MyComponents {
   String currentPath = '';
   List<String> paths = [];
 
+  List<String> filtersApplied = [];
+
   late String domainName;
   late String appVersion;
   late String deviceID;
   late String token;
+  late String token;
 
 
 
-  Future<void> initParam() async {
-    await MyPrefs.init().then((prefs) {
+  Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
+    await MyPrefs.init().then((prefs) async {
       prefs!;
 
       domainName = MyPrefs.getDomainName(prefs: prefs)!;
-      appVersion = MyPrefs.getAppVersion(prefs: prefs) ?? 'N/A';
+      appVersion = MyPrefs.getAppVersion(prefs: prefs) ?? '';
       deviceID = MyPrefs.getDeviceID(prefs: prefs) ?? 'N/A';
       token = MyPrefs.getToken(prefs: prefs) ?? 'N/A';
+      token = MyPrefs.getToken(prefs: prefs) ?? 'N/A';
       monthYear = DateFormat('MMMM yyyy');
+
+      if (needToken) {
+        await Api.checkToken(domainName).then((res) {
+          if (!res) {
+            FloatingSnackBar(message: 'Session time out.', context: context);
+            Navigator.pushNamed( context, LoginPage.routeName );
+          }
+        });
+      }
     });
+  }
+
+  Future<void> refreshPage(BuildContext context) async {
+    await Future.delayed(const Duration(seconds: 1));
+    await initParam(context);
   }
 
   void setPath({key, required String prevPath, required String routeName}) {
@@ -64,4 +96,12 @@ mixin MyComponents {
 
     print('${routeName} : ${paths}');
   }
+  
+  void applyFilters(BuildContext context, { key, required String data }) {
+    filtersApplied.contains(data) ? filtersApplied.removeWhere((item) => item == data) : filtersApplied.add(data);
+  }
+  void clearFilters() {
+    filtersApplied.clear();
+  }
+  
 }

@@ -21,7 +21,7 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
 
   @override
   void initState() {
-    initParam().whenComplete(() {
+    initParam(context, needToken: false).whenComplete(() {
       setState(() {
         launchLoading = false;
       });
@@ -78,14 +78,19 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
                                 SizedBox(height: 12,),
                                 Text('Enter your phone number to start registration.', style: Theme.of(context).textTheme.bodySmall),
                                 SizedBox(height: 24,),
+
                                 MyWidgets.MyTextField1(context, 'Phone', phoneController, digitOnly: true, onSubmit: (value) async {
                                   setState(() {
                                     isLoading = true;
                                   });
 
-                                  await mainButtonValidation(context).whenComplete(() { setState(() { isLoading = false; }); });
+                                  await mainButtonValidation(context, domainName).whenComplete(() { setState(() { isLoading = false; }); });
 
                                 }, onChanged: (_) => setState(() { print('Changed!'); mainButtonActive = false; }),),
+
+                                !pagePhoneError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['phoneErrorMsg']!) : SizedBox(),
+                                !pagePhoneError[1] ? MyWidgets.MyInfoTextField2(context, errMsgs['phoneErrorMsg']!) : SizedBox(),
+                                pagePhoneValid ? MyWidgets.MySuccessTextField(context, 'Phone number valid!') : SizedBox(),
                             
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
@@ -127,6 +132,8 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
 
                                   arguments: MyArguments('_', phone: phone)
                                 );
+
+                                unfocusAllNode();
                               }
                             ),
                           ],

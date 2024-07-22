@@ -1,3 +1,4 @@
+import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -535,18 +536,70 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyInfoTextField(BuildContext context, String text, {key}) {
+  static Widget MyInfoTextField(BuildContext context, String text,
+    {key}
+  ) {
+    final _widget = Align(alignment: Alignment.centerLeft, 
+      child: Padding(
+        padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+        child: Text(text, style: Theme.of(context).textTheme.labelMedium!.copyWith(
+          color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.5),
+          fontWeight: FontWeight.normal
+        )),
+    ));
+  
+    return _widget;
+  }
+
+  static Widget MyInfoTextField2(BuildContext context, String text, {key} ) {
+    final Color INFO_COLORS = Theme.of(context).colorScheme.onTertiary;
+
     final _widget = Align(
         alignment: Alignment.centerLeft,
         child: Padding(
           padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
-          child: Text(text,
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onPrimaryContainer
-                      .withOpacity(0.5),
-                  fontWeight: FontWeight.normal)),
+          child: Row(
+            children: [
+              Icon(
+                Icons.info,
+                color: INFO_COLORS,
+                size: 16,
+              ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(text,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: INFO_COLORS, fontWeight: FontWeight.normal)),
+            ],
+          ),
+        ));
+
+    return _widget;
+  }
+
+  static Widget MySuccessTextField(BuildContext context, String text, {key} ) {
+    final Color SUCCESS_COLORS = MyColors.hijauImran2;
+
+    final _widget = Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+          child: Row(
+            children: [
+              Icon(
+                Icons.check,
+                color: SUCCESS_COLORS,
+                size: 16,
+              ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(text,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: SUCCESS_COLORS, fontWeight: FontWeight.normal)),
+            ],
+          ),
         ));
 
     return _widget;
@@ -609,9 +662,13 @@ class MyWidgets {
   }
 
   static Widget MyScroll1(BuildContext context,
-      {required ScrollController controller,
+    {
+      required ScrollController controller,
       required Widget child,
-      double? height}) {
+      double? height,
+      Axis scrollDirection = Axis.vertical,
+    }
+  ) {
     final _widget = RawScrollbar(
       controller: controller,
       thumbVisibility: true,
@@ -619,6 +676,7 @@ class MyWidgets {
       radius: Radius.circular(100),
       thickness: 3,
       child: SingleChildScrollView(
+        scrollDirection: scrollDirection,
           controller: controller,
           child: SizedBox(
               width: MySize.Width(context, 1),
@@ -628,10 +686,8 @@ class MyWidgets {
 
     return _widget;
   }
-  
 
-static Widget MyScrollBar1(BuildContext context,
- {required ScrollController controller, required Widget child, bool thumbVisibility = true} ) {
+  static Widget MyScrollBar1(BuildContext context, {required ScrollController controller, required Widget child, bool thumbVisibility = true} ) {
     final _widget = RawScrollbar(
       controller: controller,
       thumbVisibility: thumbVisibility,
@@ -649,13 +705,13 @@ static Widget MyScrollBar1(BuildContext context,
       Color? color,
       void Function()? onPressed,
       IconData? icon,
-      double? iconSize}) {
+      double? iconSize, TextStyle? textStyle}) {
     final _widget = SizedBox(
       height: 35,
       child: TextButton.icon(
         onPressed: onPressed,
         label: Text(label,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+            style: (textStyle ?? Theme.of(context).textTheme.bodySmall)!.copyWith(
                 fontWeight: FontWeight.w500,
                 color: color ?? Theme.of(context).colorScheme.primary)),
         icon: Icon(icon ?? Icons.abc,
@@ -1035,15 +1091,144 @@ class _FilterButtonState extends State<FilterButton> {
 
 class GradientSearchBar extends StatelessWidget {
   final TextEditingController controller;
-  final Gradient gradient;
+  final FocusNode focusNode;
+
+  final List<Widget> items;
+  final List<String> filtersApplied;
+  final List<List<Map<dynamic, dynamic>>> datas;
+  
+  void Function(void Function()) pageSetState;
+  void Function()? onSearch;
+  void Function(BuildContext, {required String data, dynamic key}) applyFilters;
   final VoidCallback onFilterPressed;
   final bool showFilterOptions;
   final List<Widget> filterOptions;
   final Function(String) onSearchChanged;
 
-  const GradientSearchBar({
+  GradientSearchBar({
     super.key,
     required this.controller,
+    required this.focusNode,
+
+    required this.items,
+    required this.filtersApplied,
+    required this.datas,
+    
+    this.onSearch,
+    required this.pageSetState,
+    required this.applyFilters,
+  });
+
+  static Widget filterContainer(BuildContext context,
+    {
+      key, required String data,
+      required List<List<Map<dynamic, dynamic>>> datas,
+      required void Function(void Function()) pageSetState,
+      required void Function(BuildContext, {required String data, dynamic key}) applyFilters
+    }
+  ) {
+    final Color FILTER_CONTAINERDATA_COLOR = Theme.of(context).primaryColor;
+
+    final _widget = Padding( padding: const EdgeInsets.only(right: 12.0),
+      child: Material( elevation: 0,
+        borderRadius: BorderRadius.circular(100),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            gradient: LinearGradient( begin: Alignment.topLeft, end: Alignment.bottomRight,
+              colors: [ Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary, ],
+            ),
+          ),
+      
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Row( children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Text(data, style: Theme.of(context).textTheme.bodySmall!.copyWith( color: FILTER_CONTAINERDATA_COLOR)),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      print('x pressed');
+
+                      for (var i = 0; i < datas.length; i++) {
+                        final dataMap = datas[i];
+                        setState(() {
+                          for (var i = 0; i < dataMap.length; i++) {
+                            if (dataMap[i]['data'] == data) {dataMap[i]['filter'] = false; return;}
+                          }
+                        });
+                      }
+                      
+                      pageSetState(() => applyFilters(context, data: data));
+                    },
+                    icon: Icon(Icons.close, color: FILTER_CONTAINERDATA_COLOR, size: MySize.Width(context, 0.03),)
+                  ),
+                ],
+              );
+            }
+          ),
+        )
+      ),
+    );
+  
+    return _widget;
+  }
+
+  static Widget filterMenu(BuildContext context,
+    {
+      key, required String title, bool first = false, bool single = false,
+      required List<Map<dynamic, dynamic>> data,
+      required void Function(void Function()) pageSetState,
+      required void Function() clearFilters,
+      required void Function(BuildContext, {required String data, dynamic key}) applyFilters
+    }
+  ) {
+    final Color ICON_COLOR = Theme.of(context).colorScheme.secondary;
+    
+    final _widget = StatefulBuilder(
+      builder: (context, setState) {
+        return InkWell( onTap: () => setState(() {}),
+          child: Column( children: [
+            Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              first ? IconButton( onPressed: () => Navigator.pop(context, true),
+                icon: Icon(Icons.close, color: ICON_COLOR, size: MySize.Width(context, 0.05),)
+              ) : IconButton( onPressed: null, icon: PLACEHOLDER_ICON),
+          
+              Text(title, style: Theme.of(context).textTheme.bodyMedium ),
+            ]),
+          
+            Column( children: 
+            data.map((singleData) => 
+              Row( mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text( singleData['data'], style: Theme.of(context).textTheme.bodyMedium ),
+                  SizedBox(width: 12),
+          
+                  Checkbox( value: singleData['filter'],
+                    onChanged: (value) {
+                      if (single) {
+                        for (var aData in data) {
+                          aData.update('filter', (e) => false );
+                        }
+                        clearFilters();
+                      }
+
+                      setState(() { singleData['filter'] = value; });
+                      pageSetState(() => applyFilters(context, data: singleData['data']));
+                      
+                    },
+                  )
+                ],
+              )).toList()
+            )
+          ]),
+        );
+      }
+    );
+  
+    return _widget;
+  }
     required this.gradient,
     required this.onSearchChanged,
     required this.onFilterPressed,
@@ -1053,113 +1238,81 @@ class GradientSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: gradient,
-                borderRadius: BorderRadius.circular(24.0),
+    final Color ICON_COLOR = Theme.of(context).colorScheme.secondary;
+    final ScrollController filterController = ScrollController();
+    
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [ Theme.of(context).colorScheme.tertiary, Theme.of(context).colorScheme.onPrimary, ],
               ),
-              child: TextField(
-                controller: controller,
-                onChanged: onSearchChanged,
-                decoration: InputDecoration(
-                  prefixIcon: IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {},
-                  ),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.tune_rounded),
-                    onPressed: onFilterPressed,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor:
-                      Colors.transparent, // Ensure fill color is transparent
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 0.0,
-                    horizontal: 20.0,
-                  ),
+              borderRadius: BorderRadius.circular(24.0),
+            ),
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+        
+                // search and filter
+                prefixIcon: IconButton(
+                  icon: Icon(Icons.search, color: ICON_COLOR),
+                  onPressed: onSearch,
                 ),
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                suffixIcon: PopupMenuButton(
+                  color: Colors.transparent, elevation: 0,
+                  constraints: BoxConstraints( minWidth: MySize.Width(context, 0.65)),
+        
+                  itemBuilder: (context) {
+                    return [ PopupMenuItem(child: Material( elevation: 5, child: Container(
+                      decoration: BoxDecoration( color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
+                      child: Padding(padding: EdgeInsets.all(12), child: Column( children: items )
+                      ),
+                    ),)
+                  ) ];
+                  },
+                  child: Icon(Icons.tune_rounded, color: ICON_COLOR,),
+                ),
+        
+        
+                // decoration
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.transparent,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 0.0,
+                  horizontal: 20.0,
+                ),
+        
               ),
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
-            SizedBox(
-              height: 12,
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Container(
-                child: showFilterOptions
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  FilterButton(
-                                    onPressed: () {},
-                                    gradient: LinearGradient(colors: [
-                                      Theme.of(context).colorScheme.onTertiary,
-                                      Theme.of(context).colorScheme.primary,
-                                    ]),
-                                    label: "Today",
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  FilterButton(
-                                    onPressed: () {},
-                                    gradient: LinearGradient(colors: [
-                                      Theme.of(context).colorScheme.onTertiary,
-                                      Theme.of(context).colorScheme.primary,
-                                    ]),
-                                    label: "Last Week",
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  FilterButton(
-                                    onPressed: () {},
-                                    gradient: LinearGradient(colors: [
-                                      Theme.of(context).colorScheme.onTertiary,
-                                      Theme.of(context).colorScheme.primary,
-                                    ]),
-                                    label: "Last Month",
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.clear_outlined),
-                              ),
-                            ],
-                          )
-                        ],
-                      )
-                    : SizedBox.shrink(),
-                // Container(),
-              ),
-            ),
-          ],
-        ));
+          ),
+        ),
+
+        SizedBox( height: filtersApplied.isNotEmpty ? 50 : 0,
+          child: ListView.builder(
+            controller: filterController,
+            scrollDirection: Axis.horizontal,
+            
+            itemCount: filtersApplied.length,
+            itemBuilder: (context, index) {
+              return filterContainer(context, data: filtersApplied[index], datas: datas, applyFilters: applyFilters, pageSetState: pageSetState);
+            }
+          ),
+        )
+      ],
+    );
   }
 }
 
@@ -1187,7 +1340,7 @@ class Breadcrumb extends StatelessWidget {
                       }
                     },
                     child: Text(
-                      path,
+                      path.clean(),
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium!

@@ -24,7 +24,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
 
   @override
   void initState() {
-    initParam().whenComplete(() {
+    initParam(context).whenComplete(() {
       setState(() {
         launchLoading = false;
       });
@@ -39,8 +39,8 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
   }
 
   @override
-  Future<void> initParam() async {
-    super.initParam();
+  Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
+    super.initParam(context);
 
     await MyPrefs.init().then((prefs) {
       prefs!;
@@ -64,7 +64,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
     return PopScope(
         child: launchLoading
             ? MyWidgets.MyLoading2(context, isDarkMode)
-            : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
+            : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
                 appBar: MyWidgets.MyAppBar(
                     context, isDarkMode, 'Tracking History',
                     appVersion: appVersion),
@@ -134,6 +134,6 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
                     MyWidgets.MyLoading(context, isLoading, isDarkMode)
                   ],
                 ),
-              )));
+              ))));
   }
 }
