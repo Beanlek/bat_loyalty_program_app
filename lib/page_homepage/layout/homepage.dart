@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-
-import 'package:bat_loyalty_program_app/extensions/context_extension.dart';
 import 'package:bat_loyalty_program_app/l10n/l10n.dart';
 import 'package:bat_loyalty_program_app/model/product.dart';
 import 'package:bat_loyalty_program_app/page_homepage/component/local_components.dart';
@@ -22,8 +20,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
-
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
 
@@ -34,44 +30,40 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
-
   List<Product> _filteredDataList = [];
   List<Product> _dataList = [];
   bool _showFilterOptions = false;
   late Locale _currentLocale;
- 
 
   @override
   void initState() {
-   
-
     super.initState();
     loyaltyPoints = 2000;
 
-   _currentLocale = L10n.locals.first; // Initialize with the first locale
- GeneralStreams.languageStream.stream.listen((locale) {
+    _currentLocale = L10n.locals.first; // Initialize with the first locale
+    GeneralStreams.languageStream.stream.listen((locale) {
       setState(() {
         _currentLocale = locale;
       });
     });
-   
+
     initParam().whenComplete(() {
       setState(() {
         launchLoading = false;
         //futureProduct = Api.fetchProducts(domainName, token);
-       //GeneralStreams.languageStream.add(const Locale('en'));
+        //GeneralStreams.languageStream.add(const Locale('en'));
         futureProduct = _loadProducts();
         searchController.addListener(_filterData);
       });
     });
   }
 
-  void _toggleLocale() {
-    setState(() {
-      _currentLocale = _currentLocale == L10n.locals.first ? L10n.locals.last : L10n.locals.first;
-      GeneralStreams.languageStream.add(_currentLocale);
-    });
-  }
+  // void _toggleLocale() {
+  //   setState(() {
+  //     _currentLocale = _currentLocale == L10n.locals.first ? L10n.locals.last : L10n.locals.first;
+  //     GeneralStreams.languageStream.add(_currentLocale);
+  //   });
+  // }
 
   Future<List<Product>> _loadProducts() async {
     _dataList = await Api.fetchProducts(domainName, token);
@@ -148,9 +140,9 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+
     final Localizations = AppLocalizations.of(context);
-    if(Localizations == null){
+    if (Localizations == null) {
       print("localizations is null");
     }
 
@@ -158,295 +150,321 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
       canPop: false,
       child: launchLoading
           ? MyWidgets.MyLoading2(context, isDarkMode)
-          : Scaffold(
-              key: scaffoldKey,
-              appBar: HomeWidgets.MyAppBar(context, isDarkMode,
-                  appVersion: appVersion,
-                  scaffoldKey: scaffoldKey,
-                  onTap: () => Navigator.pushNamed(
-                      context, ProfilePage.routeName,
-                      arguments: MyArguments(token,
-                          prevPath: "/home", user: jsonEncode(user))),
-                  selectedLocal: _currentLocale,
+          : GestureDetector(
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: Scaffold(
+                  key: scaffoldKey,
+                  appBar: HomeWidgets.MyAppBar(
+                    context,
+                    isDarkMode,
+                    appVersion: appVersion,
+                    scaffoldKey: scaffoldKey,
+                    onTap: () => Navigator.pushNamed(
+                        context, ProfilePage.routeName,
+                        arguments: MyArguments(token,
+                            prevPath: "/home", user: jsonEncode(user))),
+                    selectedLocal: _currentLocale,
                   ),
-              body: Stack(
-                children: [
-                  SizedBox.expand(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                              height: MySize.Height(context, 0.135),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-
-                                  Text(
-                                     //'Loyalty Points',
-                                    Localizations!.loyalty_points,
-                                    //AppLocalizations.of(context)!.loyalty_points,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(fontWeight: FontWeight.w500),
-                                  ),
-                                  Expanded(
-                                      child: Row(
+                  body: Stack(
+                    children: [
+                      SizedBox.expand(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                  height: MySize.Height(context, 0.135),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
+                                      Text(
+                                        //'Loyalty Points',
+                                        Localizations!.loyalty_points,
+                                        //AppLocalizations.of(context)!.loyalty_points,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(
+                                                fontWeight: FontWeight.w500),
+                                      ),
                                       Expanded(
-                                          child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                          child: Row(
                                         children: [
-                                          Text(
-                                            user['id']!,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelMedium!
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.normal),
-                                          ),
-                                          Text.rich(TextSpan(
-                                              text: loyaltyPoints.toString(),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .displayMedium!
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .outlineVariant),
-                                              children: [
-                                                TextSpan(
-                                                    text: ' pts',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleLarge!
-                                                        .copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .outlineVariant))
-                                              ]))
-                                        ],
-                                      )),
+                                          Expanded(
+                                              child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                user['id']!,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelMedium!
+                                                    .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.normal),
+                                              ),
+                                              Text.rich(TextSpan(
+                                                  text:
+                                                      loyaltyPoints.toString(),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .displayMedium!
+                                                      .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .colorScheme
+                                                              .outlineVariant),
+                                                  children: [
+                                                    TextSpan(
+                                                        text: ' pts',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .titleLarge!
+                                                            .copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .outlineVariant))
+                                                  ]))
+                                            ],
+                                          )),
 
-                                      // tracking history and image status
-                                      Expanded(
-                                          child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          MyWidgets.MyTileButton(
-                                              context, 'Tracking History',
-                                              icon: Icons.history,
-                                              onPressed: () =>
-                                                  Navigator.pushNamed(
-                                                      context,
-                                                      TrackingHistoryPage
-                                                          .routeName,
-                                                      arguments: MyArguments(
-                                                          token,
-                                                          prevPath: "/home"))),
-                                          MyWidgets.MyTileButton(
-                                              context, 'Images Status',
-                                              icon: Icons.image),
+                                          // tracking history and image status
+                                          Expanded(
+                                              child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              MyWidgets.MyTileButton(
+                                                  context, 'Tracking History',
+                                                  icon: Icons.history,
+                                                  onPressed: () =>
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          TrackingHistoryPage
+                                                              .routeName,
+                                                          arguments: MyArguments(
+                                                              token,
+                                                              prevPath:
+                                                                  "/home"))),
+                                              MyWidgets.MyTileButton(
+                                                  context, 'Images Status',
+                                                  icon: Icons.image),
+                                            ],
+                                          )),
                                         ],
                                       )),
                                     ],
                                   )),
-                                ],
-                              )),
-                          SizedBox(
-                            height: 12,
+                              SizedBox(
+                                height: 12,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Product Catalogue',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium!
+                                          .copyWith(
+                                              fontWeight: FontWeight.w500),
+                                    ),
+
+                                    //Search Bar
+                                    GradientSearchBar(
+                                      controller: searchController,
+                                      onSearchChanged: onSearchChanged,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .tertiary,
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                        ],
+                                      ),
+                                      onFilterPressed: _toggleFilterOptions,
+                                      showFilterOptions: _showFilterOptions,
+                                    ),
+
+                                    // list of products
+                                    Expanded(
+                                        child: FutureBuilder<List<Product>>(
+                                      future: futureProduct,
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return MyWidgets.MyLoading2(
+                                              context, isDarkMode);
+                                        } else if (snapshot.hasError) {
+                                          // FloatingSnackBar(message: '${snapshot.error}', context: context);
+                                          return SnackBar(
+                                            content: Text('${snapshot.error}'),
+                                          );
+                                        } else if (!snapshot.hasData ||
+                                            snapshot.data!.isEmpty) {
+                                          // FloatingSnackBar(message: 'No product found.', context: context);
+                                          return SnackBar(
+                                            content: Text('No product found.'),
+                                          );
+                                        } else {
+                                          return isSearching || isLoading
+                                              ? MyWidgets.MyLoading2(
+                                                  context, isDarkMode)
+                                              : _filteredDataList.isEmpty
+                                                  ? Center(
+                                                      child: Text(
+                                                          'No matching products'))
+                                                  : GridView.builder(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              15),
+                                                      gridDelegate:
+                                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                                        crossAxisCount:
+                                                            2, // row
+                                                        childAspectRatio:
+                                                            2.5 / 4,
+                                                        mainAxisSpacing: 20,
+                                                        crossAxisSpacing: 20,
+                                                      ),
+                                                      itemCount:
+                                                          _filteredDataList
+                                                              .length,
+                                                      shrinkWrap: true,
+                                                      physics:
+                                                          AlwaysScrollableScrollPhysics(),
+                                                      itemBuilder:
+                                                          (BuildContext context,
+                                                              int i) {
+                                                        final product =
+                                                            _filteredDataList[
+                                                                i];
+
+                                                        return ProductCard(
+                                                            imageUrl:
+                                                                Image.memory(
+                                                              product.imageData,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                            title: product.name,
+                                                            points:
+                                                                product.points,
+                                                            onLoveIconTap:
+                                                                () {},
+                                                            gradient: LinearGradient(
+                                                                begin: Alignment
+                                                                    .centerLeft,
+                                                                end: Alignment
+                                                                    .centerRight,
+                                                                colors: [
+                                                                  Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .tertiary,
+                                                                  Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onPrimary,
+                                                                ]));
+                                                      },
+                                                    );
+                                        }
+                                      },
+                                    )),
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Product Catalogue',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(fontWeight: FontWeight.w500),
-                                ),
-
-                                //Search Bar
-                                GradientSearchBar(
-                                  controller: searchController,
-                                  onSearchChanged: onSearchChanged,
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Theme.of(context).colorScheme.tertiary,
-                                      Theme.of(context).colorScheme.onPrimary,
-                                    ],
-                                  ),
-                                  onFilterPressed: _toggleFilterOptions,
-                                  showFilterOptions: _showFilterOptions,
-                                ),
-
-                                // list of products
-                                Expanded(
-                                    child: FutureBuilder<List<Product>>(
-                                  future: futureProduct,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return MyWidgets.MyLoading2(
-                                          context, isDarkMode);
-                                    } else if (snapshot.hasError) {
-                                      // FloatingSnackBar(message: '${snapshot.error}', context: context);
-                                      return SnackBar(
-                                        content: Text('${snapshot.error}'),
-                                      );
-                                    } else if (!snapshot.hasData ||
-                                        snapshot.data!.isEmpty) {
-                                      // FloatingSnackBar(message: 'No product found.', context: context);
-                                      return SnackBar(
-                                        content: Text('No product found.'),
-                                      );
-                                    } else {
-                                      return isSearching || isLoading
-                                          ? MyWidgets.MyLoading2(
-                                              context, isDarkMode)
-                                          : _filteredDataList.isEmpty
-                                              ? Center(
-                                                  child: Text(
-                                                      'No matching products'))
-                                              : GridView.builder(
-                                                  padding:
-                                                      const EdgeInsets.all(15),
-                                                  gridDelegate:
-                                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisCount: 2, // row
-                                                    childAspectRatio: 2.5 / 4,
-                                                    mainAxisSpacing: 20,
-                                                    crossAxisSpacing: 20,
-                                                  ),
-                                                  itemCount:
-                                                      _filteredDataList.length,
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                      AlwaysScrollableScrollPhysics(),
-                                                  itemBuilder:
-                                                      (BuildContext context,
-                                                          int i) {
-                                                    final product =
-                                                        _filteredDataList[i];
-
-                                                    return ProductCard(
-                                                        imageUrl: Image.memory(
-                                                          product.imageData,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        title: product.name,
-                                                        points: product.points,
-                                                        onLoveIconTap: () {},
-                                                        gradient: LinearGradient(
-                                                            begin: Alignment
-                                                                .centerLeft,
-                                                            end: Alignment
-                                                                .centerRight,
-                                                            colors: [
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .tertiary,
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onPrimary,
-                                                            ]));
-                                                  },
-                                                );
-                                    }
-                                  },
-                                )),
-                              ],
-                            ),
-                          )
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              floatingActionButton:
-                  HomeWidgets.MyFloatingButton(context, 60, onTap: () {}),
-              drawer: HomeWidgets.MyDrawer(context, isDarkMode,
-                  appVersion: appVersion,
-                  domainName: domainName,
-                  items: [
-                    HomeWidgets.Item(context,
-                        icon: FontAwesomeIcons.userAlt,
-                        label: 'Profile',
-                        onTap: () => Navigator.pushNamed(
-                            context, ProfilePage.routeName,
-                            arguments: MyArguments(token,
-                                prevPath: "/home", user: jsonEncode(user)))),
-                    HomeWidgets.Item(context,
-                        icon: FontAwesomeIcons.storeAlt,
-                        label: 'Manage Outlets',
-                        onTap: () => false),
-                    Divider(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onTertiary
-                          .withOpacity(0.5),
-                    ),
-                    HomeWidgets.Item(context,
-                        icon: FontAwesomeIcons.history,
-                        label: 'Tracking History',
-                        onTap: () => Navigator.pushNamed(
-                            context, TrackingHistoryPage.routeName,
-                            arguments: MyArguments(token, prevPath: "/home"))),
-                    HomeWidgets.Item(context,
-                        icon: FontAwesomeIcons.images,
-                        label: 'Images Status',
-                        onTap: () => false),
-                    Divider(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onTertiary
-                          .withOpacity(0.5),
-                    ),
-                    HomeWidgets.Item(context,
-                        icon: FontAwesomeIcons.gear,
-                        label: 'Settings',
-                        onTap: () => false),
-                    HomeWidgets.Item(context,
-                        icon: FontAwesomeIcons.signOut,
-                        label: 'Log Out', onTap: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => PopUps.Default(
-                            context, 'Logging Out',
-                            subtitle: 'You are logging out. Proceed?',
-                            warning:
-                                'Once logged out, all progress will not be saved.'),
-                      ).then((res) async {
-                        if (res) {
-                          await Api.logout().whenComplete(() =>
-                              Navigator.pushNamed(
-                                  context, LoginPage.routeName));
-                        }
-                      });
-                    }),
-                  ])),
+                  floatingActionButton:
+                      HomeWidgets.MyFloatingButton(context, 60, onTap: () {}),
+                  drawer: HomeWidgets.MyDrawer(context, isDarkMode,
+                      appVersion: appVersion,
+                      domainName: domainName,
+                      items: [
+                        HomeWidgets.Item(context,
+                            icon: FontAwesomeIcons.userAlt,
+                            label: 'Profile',
+                            onTap: () => Navigator.pushNamed(
+                                context, ProfilePage.routeName,
+                                arguments: MyArguments(token,
+                                    prevPath: "/home",
+                                    user: jsonEncode(user)))),
+                        HomeWidgets.Item(context,
+                            icon: FontAwesomeIcons.storeAlt,
+                            label: 'Manage Outlets',
+                            onTap: () => false),
+                        Divider(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onTertiary
+                              .withOpacity(0.5),
+                        ),
+                        HomeWidgets.Item(context,
+                            icon: FontAwesomeIcons.history,
+                            label: 'Tracking History',
+                            onTap: () => Navigator.pushNamed(
+                                context, TrackingHistoryPage.routeName,
+                                arguments:
+                                    MyArguments(token, prevPath: "/home"))),
+                        HomeWidgets.Item(context,
+                            icon: FontAwesomeIcons.images,
+                            label: 'Images Status',
+                            onTap: () => false),
+                        Divider(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onTertiary
+                              .withOpacity(0.5),
+                        ),
+                        HomeWidgets.Item(context,
+                            icon: FontAwesomeIcons.gear,
+                            label: 'Settings',
+                            onTap: () => false),
+                        HomeWidgets.Item(context,
+                            icon: FontAwesomeIcons.signOut,
+                            label: 'Log Out', onTap: () async {
+                          await showDialog(
+                            context: context,
+                            builder: (context) => PopUps.Default(
+                                context, 'Logging Out',
+                                subtitle: 'You are logging out. Proceed?',
+                                warning:
+                                    'Once logged out, all progress will not be saved.'),
+                          ).then((res) async {
+                            if (res) {
+                              await Api.logout().whenComplete(() =>
+                                  Navigator.pushNamed(
+                                      context, LoginPage.routeName));
+                            }
+                          });
+                        }),
+                      ]))),
     );
   }
 }

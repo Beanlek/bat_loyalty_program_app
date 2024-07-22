@@ -1,4 +1,4 @@
-import 'package:bat_loyalty_program_app/l10n/l10n.dart';
+// import 'package:bat_loyalty_program_app/l10n/l10n.dart';
 import 'package:bat_loyalty_program_app/streams/general_stream.dart';
 import 'package:flutter/material.dart';
 

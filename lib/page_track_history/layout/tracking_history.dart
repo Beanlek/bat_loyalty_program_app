@@ -1,12 +1,12 @@
 import 'dart:convert';
+// import 'package:bat_loyalty_program_app/model/product.dart';
 import 'package:bat_loyalty_program_app/page_track_history/component/local_components.dart';
+import 'package:bat_loyalty_program_app/page_track_history/widget/local_widgets.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TrackingHistoryPage extends StatefulWidget {
   const TrackingHistoryPage({super.key});
@@ -18,8 +18,7 @@ class TrackingHistoryPage extends StatefulWidget {
 }
 
 class _TrackingHistoryPageState extends State<TrackingHistoryPage>
-    with TrackComponents , MyComponents{
-
+    with TrackComponents, MyComponents {
   int loyaltyPoints = 0;
   bool _showFilterOptions = false;
 
@@ -42,7 +41,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
   @override
   Future<void> initParam() async {
     super.initParam();
-    
+
     await MyPrefs.init().then((prefs) {
       prefs!;
       final _user = MyPrefs.getUser(prefs: prefs) ?? 'N/A';
@@ -51,231 +50,90 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    if (!launchLoading) setPath(prevPath: args.prevPath, routeName: TrackingHistoryPage.routeName);
+    if (!launchLoading)setPath(prevPath: args.prevPath, routeName: TrackingHistoryPage.routeName);
 
     return PopScope(
         child: launchLoading
             ? MyWidgets.MyLoading2(context, isDarkMode)
-            : Scaffold(
-                appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Tracking History', appVersion: appVersion),
-
-                body: 
-
-                Stack(
+            : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
+                appBar: MyWidgets.MyAppBar(
+                    context, isDarkMode, 'Tracking History',
+                    appVersion: appVersion),
+                body: Stack(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 12.0),
-                      
+                      padding: const EdgeInsets.all(12.0),
                       child: Column(
-                         mainAxisAlignment: MainAxisAlignment.start,
-                         crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths)),
-
                           Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                        
-                                GradientSearchBar(
-                                  controller: searchController,
-                                  onSearchChanged: (value) {
-                                    
-                                  },
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Theme.of(context).colorScheme.tertiary,
-                                      Theme.of(context).colorScheme.onPrimary,
-                                    ],
-                                  ),
-                                 onFilterPressed: _toggleFilterOptions,
-                                  showFilterOptions: _showFilterOptions,                                 
-                                ),
-
-                                SizedBox(
-                                  height: 12,
-                                ),
-                                        
-                                // product detail card
-
-                                // redeemed point, awb_no -> table redemption 
-                                //name , brand, image -> table product
-                                Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: Row(
-                                    children: [
-                                      // Column to show image
-                                      Column(
-                                        children: [
-                                          //Image.asset(imagePath),
-                                          Container(
-                                            width: 100,
-                                            height: 100,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(24),
-                                              border: Border.all(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                  width: 1),
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(23),
-                                              child: Image.asset(
-                                                'assets/images_examples/headphone.jpeg', // Replace with your image path
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                        
-                                      SizedBox(
-                                        width: 12,
-                                      ),
-                                        
-                                      // Column for product details
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            //title
-                                            Text(
-                                              'Headphone',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                        
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                        
-                                            // copy code
-                                            Row(children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  Clipboard.setData(ClipboardData(
-                                                      text:"1A2B 3C1A 2B3C 1A2B"));
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    SnackBar(
-                                                        content: Text(
-                                                            'Copied to clipboard')),
-                                                  );
-                                                },
-                                                child: Icon(
-                                                  FontAwesomeIcons.copy,
-                                                  // Icons.copy_rounded,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Expanded(
-                                                child: Text(
-                                                  '1A2B 3C1A 2B3C 1A2B',
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            ]),
-                                        
-                                            SizedBox(
-                                              height: 8,
-                                            ),
-                                        
-                                            // redeemed
-                                            Text(
-                                              'Redeemed On',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimaryContainer,
-                                              ),
-                                            ),
-                                        
-                                            // date
-                                            Text(
-                                              '5/7/2024 3:00 PM',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      SizedBox(
-                                        width: 12,
-                                      ),
-                                      // Column to show product points
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                width: 5,
-                                                height: 2,
-                                                color: Colors.red,
-                                              ),
-
-                                              SizedBox(
-                                                width: 7,
-                                              ),
-
-                                              FaIcon(FontAwesomeIcons.database,
-                                                  color: Colors.red),
-                                              //Icon(Icons.price_check, color: Colors.red),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Text(
-                                                '1200 Pts',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.red,
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                        
-                                 
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24.0, vertical: 12.0),
+                              // breadcrumb path
+                              child: Breadcrumb(paths: paths)),
+                          GradientSearchBar(
+                            controller: searchController,
+                            onSearchChanged: (value) {},
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context)
+                                    .colorScheme
+                                    .tertiary,
+                                Theme.of(context)
+                                    .colorScheme
+                                    .onPrimary,
                               ],
+                            ),
+                            onFilterPressed: _toggleFilterOptions,
+                            showFilterOptions: _showFilterOptions,
+                          ),
+                                
+                          // product detail card
+                          // redeemed point, awb_no -> table redemption
+                          //name , brand, image -> table product
+                                
+                          Expanded(
+                            child: MyWidgets.MyScrollBar1(
+                              context,
+                              controller: scrollController,
+                              thumbVisibility: true,
+                              child: ListView.builder(
+                                controller: scrollController,
+                                shrinkWrap: true,
+                                physics:
+                                    AlwaysScrollableScrollPhysics(),
+                                itemCount: products.length,
+                                itemBuilder: (context, index) {
+                                  final date = products.keys
+                                      .elementAt(
+                                          index); // Get the date
+                                  List<Map<dynamic, dynamic>>
+                                      productList = products[date];
+                                  
+                                  return TrackWidget.myProductItem(
+                                      context, date,
+                                      products: productList);
+                                },
+                              ),
+                                                 
                             ),
                           ),
                         ],
                       ),
                     ),
-
                     MyWidgets.MyLoading(context, isLoading, isDarkMode)
                   ],
-
                 ),
-              ));
+              )));
   }
 }

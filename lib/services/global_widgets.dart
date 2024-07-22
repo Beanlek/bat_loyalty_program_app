@@ -628,6 +628,21 @@ class MyWidgets {
 
     return _widget;
   }
+  
+
+static Widget MyScrollBar1(BuildContext context,
+ {required ScrollController controller, required Widget child, bool thumbVisibility = true} ) {
+    final _widget = RawScrollbar(
+      controller: controller,
+      thumbVisibility: thumbVisibility,
+      thumbColor: Theme.of(context).colorScheme.secondary,
+      radius: Radius.circular(100),
+      thickness: 3,
+      child: child
+    );
+
+    return _widget;
+  }
 
   static Widget MyTileButton(BuildContext context, String label,
       {key,
@@ -1025,7 +1040,6 @@ class GradientSearchBar extends StatelessWidget {
   final bool showFilterOptions;
   final List<Widget> filterOptions;
   final Function(String) onSearchChanged;
-  
 
   const GradientSearchBar({
     super.key,
@@ -1086,7 +1100,7 @@ class GradientSearchBar extends StatelessWidget {
               child: Container(
                 child: showFilterOptions
                     ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
                             children: [
@@ -1126,18 +1140,16 @@ class GradientSearchBar extends StatelessWidget {
                                   SizedBox(
                                     width: 10,
                                   ),
-                                  
                                 ],
                               ),
                             ],
                           ),
-                          
                           Column(
                             children: [
                               IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(Icons.clear_outlined),
-                                  ),
+                                onPressed: () {},
+                                icon: Icon(Icons.clear_outlined),
+                              ),
                             ],
                           )
                         ],
