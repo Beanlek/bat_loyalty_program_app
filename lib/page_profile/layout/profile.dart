@@ -27,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
 
   @override
   void initState() {
-    initParam(context).whenComplete(() { setState(() { launchLoading = false; }); });
+    initParam().whenComplete(() { setState(() { launchLoading = false; }); });
     
     super.initState();
   }
@@ -36,8 +36,8 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
   void dispose() { super.dispose(); }
   
   @override
-  Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
-    super.initParam(context);
+  Future<void> initParam() async {
+    super.initParam();
     
     dateTime = DateFormat('dd/MM/yyyy').add_Hms();
   }
@@ -132,10 +132,6 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
                                   ProfileWidgets.InfoTile(context, 'Mobile', subtitle: user['mobile']),
                                   ProfileWidgets.InfoTile(context, 'Email', subtitle: user['email']),
                                 
-                                  SizedBox(height: 16,),
-                                  
-                                  ProfileWidgets.InfoTile(context, 'Outlets', subtitle: "outlet[0]['id']\noutlet[1]['id']"),
-
                                   SizedBox(height: 16,),
                                   
                                   ProfileWidgets.InfoTile(context, 'Shipping\nAddress', subtitle:

@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
 
   @override
   void initState() {
-    initParam(context, needToken: false).whenComplete(() { setState(() { launchLoading = false; }); });
+    initParam().whenComplete(() { setState(() { launchLoading = false; }); });
     
     super.initState();
   }
@@ -43,8 +43,8 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
   }
 
   @override
-  Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
-    super.initParam(context, needToken: false);
+  Future<void> initParam() async {
+    super.initParam();
 
     await MyPrefs.init().then((prefs) {
       prefs!;

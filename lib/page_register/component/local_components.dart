@@ -1,7 +1,6 @@
 import 'dart:async';
 import "dart:math";
 
-import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +23,9 @@ mixin RegisterComponents {
   final TextEditingController address3Controller = TextEditingController(text: 'Taman Bunga');
   final TextEditingController postcodeController = TextEditingController();
 
-  final FocusNode phoneFocusnode = FocusNode();
   final FocusNode usernameFocusnode = FocusNode();
   final FocusNode fullNameFocusnode = FocusNode();
+  final FocusNode phoneFocusnode = FocusNode();
   final FocusNode emailFocusnode = FocusNode();
   final FocusNode passwordFocusnode = FocusNode();
   final FocusNode confirmPasswordFocusnode = FocusNode();
@@ -37,9 +36,9 @@ mixin RegisterComponents {
   final FocusNode postcodeFocusnode = FocusNode();
 
   Map<String, String> errMsgs = {
-    "phoneErrorMsg" : '',
     "usernameErrorMsg" : '',
     "fullNameErrorMsg" : '',
+    "phoneErrorMsg" : '',
     "emailErrorMsg" : '',
     "passwordErrorMsg" : '',
     "confirmPasswordErrorMsg" : '',
@@ -50,45 +49,27 @@ mixin RegisterComponents {
     "cityErrorMsg" : '',
     "stateErrorMsg" : '',
     "postcodeErrorMsg" : '',
-
-    "accountErrorMsg" : '',
-    "outletErrorMsg" : '',
-    
     "securityImageErrorMsg" : '',
     "securityPhraseErrorMsg" : '',
   };
 
   int activeStep = 1;
-  int totalSteps = 5;
+  int totalSteps = 4;
   
   bool mainButtonActive = false;
   bool step1ButtonActive = false;
   bool step2ButtonActive = false;
   bool step3ButtonActive = false;
-  bool step4ButtonActive = false;
   bool finalButtonActive = false;
 
-  bool pagePhoneValid = false;
-
-  List<bool> pagePhoneError = [true, true];
   List<bool> page1Error = [true, true, true, true, true];
   List<bool> page2Error = [true, true, true, true, true, true,];
   List<bool> page3Error = [true, true];
-  List<bool> page4Error = [true, true];
 
   bool viewPhrase = true;
   bool viewPersonalInfo = true;
   bool viewAddress = true;
-  bool viewOutlet = true;
   bool viewSecurity = true;
-  
-  List<Map<dynamic, dynamic>> accounts = [];
-  List<String> accountFilters = ['Company'];
-  List<Map<dynamic, dynamic>> outlets = [];
-  List<String> outletFilters = ['Outlet'];
-
-  final TextEditingController accountController = TextEditingController(text: 'Company');
-  final TextEditingController outletController = TextEditingController(text: 'Outlet');
   
   List<dynamic> states = [];
   List<String> statesFilters = ['State'];
@@ -134,63 +115,12 @@ mixin RegisterComponents {
   static const REGEX_SECURITY_IMAGE = r'^assets/security_images/SIMG-\d{4}\.jpg$';
   // SIMG-<any number>
 
-  Future<void> mainButtonValidation(BuildContext context, String domainName) async {
+  Future<void> mainButtonValidation(BuildContext context) async {
     if (phoneController.text.isNotEmpty) { 
-      await phoneNumberValidation(context, domainName).then((valid) { mainButtonActive = valid; });
+      await phoneNumberValidation(context).then((valid) { mainButtonActive = valid; });
     }
 
     else { mainButtonActive = false; }
-  }
-
-  void disposeAll() {
-    pageController.dispose();
-
-    usernameController.dispose();
-    fullNameController.dispose();
-    phoneController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-
-    address1Controller.dispose();
-    address2Controller.dispose();
-    address3Controller.dispose();
-    postcodeController.dispose();
-
-    phoneFocusnode.dispose();
-    usernameFocusnode.dispose();
-    fullNameFocusnode.dispose();
-    emailFocusnode.dispose();
-    passwordFocusnode.dispose();
-    confirmPasswordFocusnode.dispose();
-
-    address1Focusnode.dispose();
-    address2Focusnode.dispose();
-    address3Focusnode.dispose();
-    postcodeFocusnode.dispose();
-
-    accountController.dispose();
-    outletController.dispose();
-
-    stateController.dispose();
-    cityController.dispose();
-
-    securityImageController.dispose();
-    securityPhraseController.dispose();
-  }
-
-  void unfocusAllNode() {
-    phoneFocusnode.unfocus();
-    usernameFocusnode.unfocus();
-    fullNameFocusnode.unfocus();
-    emailFocusnode.unfocus();
-    passwordFocusnode.unfocus();
-    confirmPasswordFocusnode.unfocus();
-
-    address1Focusnode.unfocus();
-    address2Focusnode.unfocus();
-    address3Focusnode.unfocus();
-    postcodeFocusnode.unfocus();
   }
 
   void step1ButtonValidation(void Function(void Function()) setState) {
@@ -223,15 +153,7 @@ mixin RegisterComponents {
     else { setState((){ step3ButtonActive = false; }); }
   }
 
-  void step4ButtonValidation(void Function(void Function()) setState) {
-    if (
-      accountController.text != 'Account' &&
-      outletController.text != 'Outlet'
-    ) { setState((){ step4ButtonActive = true; }); }
-    else { setState((){ step4ButtonActive = false; }); }
-  }
-
-  Future<bool> registrationDataValidation(BuildContext context, String domainName) async {
+  Future<bool> registrationDataValidation(BuildContext context) async {
     bool thisValid = true;
     
     final id = usernameController.text.trim();
@@ -251,16 +173,8 @@ mixin RegisterComponents {
     String securityImage = securityImageController.text.trim();
     final securityPhrase = securityPhraseController.text.trim();
 
-    Map<dynamic, dynamic> outlet = outlets.where((_outlet) {
-      final _outletName = _outlet['name'].toString();
-      
-      return _outletName == outletController.text;
-    }).toList().first;
-
-    final outletId = outlet['id'];
-
-    await phoneNumberValidation(context, domainName).then((valid) { if (!valid) thisValid = false; });
-    await usernameValidation(context, domainName).then((valid) { if (!valid) thisValid = false; });
+    await phoneNumberValidation(context).then((valid) { if (!valid) thisValid = false; });
+    await usernameValidation(context).then((valid) { if (!valid) thisValid = false; });
 
     if (email.isNotEmpty || email != '') { inputValidation(context, 'email', pattern: REGEX_EMAIL, data: email); }
 
@@ -278,7 +192,6 @@ mixin RegisterComponents {
     securityImage = securityImage.substring(securityImage.indexOf('S'), securityImage.indexOf('.'));
 
     registrationData.addEntries({ "id": id }.entries);
-    registrationData.addEntries({ "outlet_id": outletId }.entries);
     registrationData.addEntries({ "name": name }.entries);
     registrationData.addEntries({ "password": password }.entries);
     registrationData.addEntries({ "address1": address1 }.entries);
@@ -297,56 +210,41 @@ mixin RegisterComponents {
     return thisValid;
   }
 
-  Future<bool> phoneNumberValidation(BuildContext context, String domainName ) async {
-    bool valid = false; pagePhoneValid = valid;
-    String msg = 'Looks like you already registered.';
+  Future<bool> phoneNumberValidation(BuildContext context) async {
+    bool valid = false;
+    String msg = 'Your phone number are already registered.';
 
-    String pattern = REGEX_PHONE;
-    RegExp regex = RegExp(pattern);
+    await Future.delayed(const Duration(seconds: 1)).then((_) {
+      String pattern = REGEX_PHONE;
+      RegExp regex = RegExp(pattern);
 
-    if (regex.hasMatch(phoneController.text)) { valid = true; pagePhoneError[0]= valid; }
-      else { msg = 'Invalid phone number. Please try again.'; phoneController.text = ''; pagePhoneError[0]= valid;}
+      if (regex.hasMatch(phoneController.text)) { valid = true; }
+        else { msg = 'Invalid phone number. Please try again.'; phoneController.text = ''; }
 
-    if (valid) {
-      await Api.registration_validate(domainName, mobile: phoneController.text, id: '_' ).then((statusCode) {
-        if (statusCode == 200) {
-          pagePhoneError[1] = valid;
-        } else if (statusCode == 422) { valid = false; pagePhoneError[1] = valid;
-        } else { msg = 'Something went wrong. Error ${statusCode}.'; valid = false; pagePhoneError[0] = valid; }
-
-        if (!valid) FloatingSnackBar(message: msg, context: context);
-      });
-    }
-
-    if (pagePhoneError.every( (e) => e == true )) pagePhoneValid = true;
+      if (!valid) FloatingSnackBar(message: msg, context: context);
+    });
 
     errMsgs.update('phoneErrorMsg', (value) => msg);
 
     return valid;
   }
 
-  Future<bool> usernameValidation(BuildContext context, String domainName, {bool snackBar = true}) async {
-    bool valid = false; pagePhoneValid = valid;
+  Future<bool> usernameValidation(BuildContext context, {bool snackBar = true}) async {
+    bool valid = false;
     String msg = 'Your username are already taken.';
 
-    String pattern = REGEX_USERNAME;
-    RegExp regex = RegExp(pattern);
+    await Future.delayed(const Duration(seconds: 1)).then((_) {
+      String pattern = REGEX_USERNAME;
+      RegExp regex = RegExp(pattern);
 
-    if (regex.hasMatch(usernameController.text.trim())) { valid = true; }
-      else { msg = 'Invalid username. Please follow the guideline.'; }
+      if (regex.hasMatch(usernameController.text)) { valid = true; }
+        else { msg = 'Invalid username. Please follow the guideline.'; }
 
-    if (valid) {
-      await Api.registration_validate(domainName, mobile: '_', id: usernameController.text.trim() ).then((statusCode) {
-        if (statusCode == 422) { valid = false; }
-          else if (statusCode == 200) {}
-          else { msg = 'Something went wrong. Error ${statusCode}.'; valid = false; }
-
-        if (!valid && snackBar) FloatingSnackBar(message: msg, context: context);
-      });
-    }
-
+      if (!valid && snackBar) FloatingSnackBar(message: msg, context: context);
+    });
+    
     errMsgs.update('usernameErrorMsg', (value) => msg);
-
+    
     return valid;
   }
 
@@ -389,71 +287,6 @@ mixin RegisterComponents {
     return valid;
   }
   
-  Future<void> setAccountList(String domainName, void Function(void Function()) setState) async {
-    accountFilters.clear(); accounts.clear();
-    accountFilters.add('Company');
-    
-    await Api.account_list(domainName).then((res) {
-      print("res['result']: ${res['result']}");
-      
-      final int statusCode = res['status_code'];
-
-      List<dynamic> results = List.from(res['result']);
-
-      setState(() {
-        if (statusCode == 200) {
-          for (var account in results) {
-            accountFilters.add(account['name']);
-          }
-          
-          accounts = List.from( results );
-        } else {
-          accountFilters.add('Error');
-        }
-      });
-
-
-      print('accounts: $accounts');
-    });
-  }
-
-  Future<void> setOutletList(String domainName, void Function(void Function()) setState ) async {
-    outletFilters.clear(); outlets.clear();
-    outletFilters.add('Outlet');
-
-    Map<dynamic, dynamic> accountId = accounts.where((_account) {
-      final _accountName = _account['name'].toString();
-      
-      return _accountName == accountController.text;
-    }).toList().first;
-
-    print('accountId: ${accountId['id']}');
-    
-    await Api.outlet_list(domainName, account: accountId['id']).then((res) {
-      final int statusCode = res['status_code'];
-      print(res);
-      print(statusCode);
-
-      List<dynamic> results = List.from(res['result']);
-
-      setState(() {
-        if (statusCode == 200) {
-          for (var outlet in results) {
-            outletFilters.add(outlet['name']);
-          }
-          
-          outlets = List.from( results );
-        } else {
-          outletFilters.add('Error');
-        }
-      });
-
-
-      print('outlets: $outlets');
-      print('outletFilters: $outletFilters');
-    });
-  }
-  
   Future<void> setCountryStates() async {
     await country.getStatesOfCountry('MY').then((_states) {
 
@@ -464,7 +297,7 @@ mixin RegisterComponents {
         states.add(singleState);
         statesFilters.add(stateName);
       }
-      // print('states : ${states}');
+      print('states : ${states}');
     });
   }
 

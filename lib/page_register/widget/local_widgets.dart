@@ -275,33 +275,25 @@ class RegisterWidgets {
     bool? viewPhrase,
     bool? viewPersonalInfo,
     bool? viewAddress,
-    bool? viewOutlet,
     bool? viewSecurity,
 
     void Function()? onSubmit,
-    void Function()? setOutletList,
     void Function()? onPhraseRefresh,
     void Function()? onImageRefresh,
     void Function()? changeViewPhrase,
 
     void Function()? changeViewPersonalInfo,
     void Function()? changeViewAddress,
-    void Function()? changeViewOutlet,
     void Function()? changeViewSecurity,
 
     void Function()? toPage1,
     void Function()? toPage2,
     void Function()? toPage3,
-    void Function()? toPage4,
 
     List<dynamic>? states,
     List<dynamic>? city,
     List<String>? stateFilters,
     List<String>? cityFilters,
-    List<dynamic>? accounts,
-    List<dynamic>? outlets,
-    List<String>? accountFilters,
-    List<String>? outletFilters,
 
     List<bool>? imageSelections,
     List<bool>? phraseSelections,
@@ -327,9 +319,6 @@ class RegisterWidgets {
     TextEditingController? address2Controller,
     TextEditingController? address3Controller,
     TextEditingController? postcodeController,
-
-    TextEditingController? accountController,
-    TextEditingController? outletController,
 
     FocusNode? usernameFocusnode,
     FocusNode? fullNameFocusnode,
@@ -516,8 +505,8 @@ class RegisterWidgets {
                               isLoadingFalse!();
             
                               setState(() {
-                                stepButtonValidation();
-                              });
+                                  stepButtonValidation();
+                                });
                             });
                           }); 
                     
@@ -751,114 +740,16 @@ class RegisterWidgets {
       case 4:
         _widget = StatefulBuilder(
           builder: (context, setState) {
-            double pageHeight = MySize.Height(context, 0.65);
-
-            return MyWidgets.MyScroll1( context,
-            height: pageHeight,
-              controller: page4ScrollController,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Column(
-                      children: [
-                        GradientText('Outlet Information',
-                          style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w800),
-                          gradient: LinearGradient(colors: [
-                            Theme.of(context).colorScheme.secondary,
-                            Theme.of(context).colorScheme.primary,
-                          ]),
-                        ),
-                        SizedBox(height: 12,),
-                        Text('Please choose your main workplace location.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
-                        SizedBox(height: 24,),
-                        
-                        MyWidgets.MyTextField3(context, 'Company', selectedFilter: accountController!.text, filters: accountFilters!,
-                          onChanged: (String? _filter) async{
-                            if (_filter! == 'Company') {
-                              accountController.text = _filter;
-                              outletController!.text = 'Outlet';
-                              
-                              setOutletList!();
-                              stepButtonValidation();
-                            }
-                            
-                            isLoadingTrue!();
-
-                            if (accountController.text == _filter) {
-                              isLoadingFalse!(); return;
-                            }
-
-                            await Future.delayed(const Duration(milliseconds: 400)).whenComplete(() async{
-                              if (accountController.text != _filter) setState((){outletController!.text = 'Outlet';});
-                              
-                              setState((){
-                                accountController.text = _filter;
-                                print('outletController!.text: ${outletController!.text}');
-                                
-                                setOutletList!();
-                                isLoadingFalse!();
-
-                                stepButtonValidation();
-                              });
-                            });
-                        }),
-                        !pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['accountErrorMsg']! ) : SizedBox(),
-                        SizedBox(height: 12,),
-
-                        MyWidgets.MyTextField3(context, 'Outlet', selectedFilter: outletController!.text, filters: outletFilters!,
-                          active: accountController.text == 'Company' ? false : true, onChanged: (String? _filter) async{
-                            isLoadingTrue!();
-
-                            if (outletController.text == _filter!) {
-                              isLoadingFalse!(); return;
-                            }
-
-                            setState((){
-                              outletController.text = _filter;
-                              isLoadingFalse!();
-
-                              stepButtonValidation();
-                            });
-                            
-                        }),
-                        !pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['outletErrorMsg']! ) : SizedBox(),
-                      ],
-                    ),
-                
-                    Column(
-                      children: [
-                        MyWidgets.MyButton1(context, 150, 'Next', active: stepButtonActive,
-                          onSubmit
-                        ),
-                        SizedBox(height: 12,),
-                        MyWidgets.MyInfoTextField2(context, 'Only choose your main outlet.\nOther outlets can be added in the app later.')
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-        );
-        break;
-      case 5:
-        _widget = StatefulBuilder(
-          builder: (context, setState) {
-            double multiplier = 1.8;
+            double multiplier = 1.5;
             double multiplierPersonalInfo = 0;
             double multiplierAddress = 0;
-            double multiplierOutlet = 0;
             double multiplierSecurity = 0;
 
             if (!viewPersonalInfo!) multiplierPersonalInfo = 0.3;
             if (!viewAddress!) multiplierAddress = 0.5;
-            if (!viewOutlet!) multiplierOutlet = 0.2;
             if (!viewSecurity!) multiplierSecurity = 0.3;
 
-            double multiplierTotal = multiplier
-              - multiplierPersonalInfo - multiplierAddress - multiplierSecurity - multiplierOutlet;
+            double multiplierTotal = multiplier - multiplierPersonalInfo - multiplierAddress - multiplierSecurity;
 
             double pageHeight = MySize.Height(context, multiplierTotal);
             print('multiplierTotal : ${multiplierTotal}');
@@ -911,17 +802,6 @@ class RegisterWidgets {
                     
                         Divider(color: Theme.of(context).colorScheme.onTertiary,),
                         
-                        Header(context, title: 'Outlet Information',
-                          trailing: IconButton(onPressed: changeViewOutlet, icon: Icon(viewOutlet ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
-                        ),
-                        !viewOutlet ? SizedBox() :
-                        Column(children: [
-                          ConfirmationListTile(context, title: 'Company', subtitle: accountController!.text.trim(), onEdit: toPage4),
-                          ConfirmationListTile(context, title: 'Outlet', subtitle: outletController!.text.trim(), onEdit: toPage4),
-                        ],),
-                    
-                        Divider(color: Theme.of(context).colorScheme.onTertiary,),
-                        
                         Header(context, title: 'Security Information',
                           trailing: IconButton(onPressed: changeViewSecurity, icon: Icon(viewSecurity ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
                         ),
@@ -934,7 +814,7 @@ class RegisterWidgets {
                       ],
                     ),
                 
-                    MyWidgets.MyButton1(context, 150, 'Register', active: stepButtonActive,
+                    MyWidgets.MyButton1(context, 150, 'Next',
                       onSubmit
                     ),
                   ],

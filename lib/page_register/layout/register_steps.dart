@@ -23,7 +23,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
 
   @override
   void initState() {
-    initParam(context, needToken: false).whenComplete(() {
+    initParam().whenComplete(() {
       setState(() {
         launchLoading = false;
       });
@@ -35,15 +35,31 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
   @override
   void dispose() {
     mainScrollController.dispose();
-    disposeAll();
+    pageController.dispose();
+
+    usernameController.dispose();
+    fullNameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+
+    address1Controller.dispose();
+    address2Controller.dispose();
+    address3Controller.dispose();
+    postcodeController.dispose();
+
+    stateController.dispose();
+    cityController.dispose();
+
+    securityImageController.dispose();
+    securityPhraseController.dispose();
     
     super.dispose();
   }
 
   @override
-  Future<void> initParam(BuildContext context, {key, bool needToken = true}) async{
-    super.initParam(context, needToken: false).whenComplete((){ setAccountList(domainName, setState); });
-
+  Future<void> initParam() async{
+    super.initParam();
     setCountryStates();
     setSecurityPhrases().whenComplete(() => randomizeSecurityPhrases() );
     setSecurityImages().whenComplete(() => randomizeSecurityImages() );
@@ -81,7 +97,6 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           children: [
                             IconButton(onPressed: () {
                               // print('steps.dart activeStep: $activeStep');
-                              unfocusAllNode();
                               if (activeStep == 1) {
                                 Navigator.pop(context);
                                 return;
@@ -98,8 +113,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                                 children: RegisterWidgets.MySteps(context, activeStep: activeStep, totalSteps: totalSteps),
                               )
                             ),
-                            !finalButtonActive || activeStep == totalSteps ? IconButton(onPressed: () {}, icon: PLACEHOLDER_ICON) :
-                            IconButton(onPressed: () { unfocusAllNode(); toPage(setState, page: 5); }, icon: Icon(Icons.arrow_forward_rounded)),
+                            IconButton(onPressed: () {}, icon: PLACEHOLDER_ICON),
                           ],
                         ),
                     
@@ -128,15 +142,13 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                             final password = passwordController.text.trim();
                             final confirmPassword = confirmPasswordController.text.trim();
 
-                            await usernameValidation(context, domainName, snackBar: false).then((valid) => setState(() { page1Error[0] = valid; }));
+                            await usernameValidation(context, snackBar: false).then((valid) => setState(() { page1Error[0] = valid; }));
                             await inputValidation(context, 'fullName', pattern: RegisterComponents.REGEX_NAME, data: name, snackBar: false).then((valid) => setState(() { page1Error[1] = valid; }));
                             if (email.isNotEmpty || email != '') await inputValidation(context, 'email', pattern: RegisterComponents.REGEX_EMAIL, data: email, snackBar: false).then((valid) => setState(() { page1Error[2] = valid; }));
                             await inputValidation(context, 'password', pattern: RegisterComponents.REGEX_PASSWORD, data: password, snackBar: false).then((valid) => setState(() { page1Error[3] = valid; }));
                             await inputValidation(context, 'confirmPassword', pattern: RegisterComponents.REGEX_PASSWORD, data: confirmPassword, password: true, snackBar: false).then((valid) => setState(() { page1Error[4] = valid; isLoading = false; }));
                             
                             page1Error.every((e) => e == true) ? nextPage(setState) : null;
-
-                            unfocusAllNode();
                           },
                           phone: args.phone,
                           errMsgs: errMsgs,
@@ -176,8 +188,6 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                             await inputValidation(context, 'postcode', pattern: RegisterComponents.REGEX_POSTCODE, data: postcode, snackBar: false).then((valid) => setState(() { page2Error[5] = valid; isLoading = false;}));
                             
                             page2Error.every((e) => e == true) ? nextPage(setState) : null;
-
-                            unfocusAllNode();
                           },
                           phone: args.phone,
                           errMsgs: errMsgs,
@@ -210,7 +220,6 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                         } else if (index == 3) {
                           return RegisterWidgets.MyPage(context, index: 3, onSubmit: () {
                             nextPage(setState);
-                            unfocusAllNode();
                           },
                           phone: args.phone,
                           errMsgs: errMsgs,
@@ -252,69 +261,32 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           isDarkMode: isDarkMode);
                         } else if (index == 4) {
                           return RegisterWidgets.MyPage(context, index: 4, onSubmit: () async {
-                            nextPage(setState);
-                            setState(() => finalButtonActive = true);
-                            unfocusAllNode();
-                          },
-                          phone: args.phone,
-                          errMsgs: errMsgs,
-                          pageError: page4Error,
-                          stepButtonActive: step4ButtonActive,
-                          stepButtonValidation: () { step4ButtonValidation(setState); },
-                          pageController: pageController,
-
-                          isLoadingTrue: () { setState(() => isLoading = true); },
-                          isLoadingFalse: () { setState(() => isLoading = false); },
-
-                          accounts: accounts,
-                          accountFilters: accountFilters,
-                          accountController: accountController,
-
-                          outlets: outlets,
-                          outletFilters: outletFilters,
-                          outletController: outletController,
-
-                          setOutletList: () { setOutletList(domainName, setState); },
-                          
-                          isDarkMode: isDarkMode);
-                        } else if (index == 5) {
-                          return RegisterWidgets.MyPage(context, index: 5, onSubmit: () async {
-                            await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Registering New Cashier',
-                              confirmText: 'Register',
-                              cancelText: 'Back',
-                              subtitle: 'Make sure your information are correct before registering.',
-                              warning: 'Once registered, some information cannot be editted.'),).then((res) async {
-                                if (res ?? false) {
-                                  setState(() { isLoading = true; phoneController.text = args.phone; });
+                            setState(() { isLoading = true; phoneController.text = args.phone; });
                             
-                                  await registrationDataValidation(context, domainName).then((valid) async {
-                                    if (valid) {
-                                      await Api.user_register(context, domainName, registrationData: registrationData).then((statusCode) {
-                                        print({ statusCode });
+                            await registrationDataValidation(context).then((valid) async {
+                              if (valid) {
+                                await Api.user_register(context, domainName, registrationData: registrationData).then((statusCode) {
+                                  print({ statusCode });
 
-                                        if (statusCode == 200) {
-                                          setState(() { isLoading = false; });
+                                  if (statusCode == 200) {
+                                    setState(() { isLoading = false; });
 
-                                          FloatingSnackBar(message: 'Account successfully registered! Log in to proceed.', context: context);
+                                    FloatingSnackBar(message: 'Account successfully registered! Log in to proceed.', context: context);
 
-                                          Navigator.pushNamed(
-                                            context,
-                                            LoginPage.routeName
-                                          );
-                                        } else if (statusCode == 422) {
-                                          FloatingSnackBar(message: 'Error ${statusCode}. Phone or Username already existed.', context: context);
-                                        } else {
-                                          FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
-                                        }
-                                        
-                                        setState(() { isLoading = false; });
-                                      });
-                                    }
-                                  });
-                                }
+                                    Navigator.pushNamed(
+                                      context,
+                                      LoginPage.routeName
+                                    );
+                                  } else if (statusCode == 422) {
+                                    FloatingSnackBar(message: 'Error ${statusCode}. Phone or Username already existed.', context: context);
+                                  } else {
+                                    FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                  }
+                                  
+                                  setState(() { isLoading = false; });
+                                });
                               }
-                            );
-                            unfocusAllNode();
+                            });
                           },
                           phone: args.phone,
                           errMsgs: errMsgs,
@@ -329,11 +301,9 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           toPage1: () { setState(() { toPage(setState, page: 1); }); },
                           toPage2: () { setState(() { toPage(setState, page: 2); }); },
                           toPage3: () { setState(() { toPage(setState, page: 3); }); },
-                          toPage4: () { setState(() { toPage(setState, page: 4); }); },
 
                           viewPersonalInfo: viewPersonalInfo,
                           viewAddress: viewAddress,
-                          viewOutlet: viewOutlet,
                           viewSecurity: viewSecurity,
 
                           securityImageController : securityImageController,
@@ -353,12 +323,8 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           stateController : stateController,
                           cityController : cityController,
 
-                          accountController : accountController,
-                          outletController : outletController,
-
                           changeViewPersonalInfo: () { setState(() { viewPersonalInfo = !viewPersonalInfo; });},
                           changeViewAddress: () { setState(() { viewAddress = !viewAddress; });},
-                          changeViewOutlet: () { setState(() { viewOutlet = !viewOutlet; });},
                           changeViewSecurity: () { setState(() { viewSecurity = !viewSecurity; });},
                           
                           isDarkMode: isDarkMode);

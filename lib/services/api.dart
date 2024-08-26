@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:amplify_core/amplify_core.dart';
-import 'package:bat_loyalty_program_app/services/awss3.dart';
 import 'package:bat_loyalty_program_app/model/product.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
@@ -10,10 +8,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
-import 'package:image_picker/image_picker.dart';
 
 class Api {
-  static Future<bool> checkToken(String domainName, {key, bool main = false}) async {
+  static Future<bool> checkToken() async {
     String? token;
     String? tokenExpiryTime;
 
@@ -32,12 +29,6 @@ class Api {
 
         if (DateTime.now().isBefore(tokenExpiryTimeParsed)) {
           hadToken = true;
-
-          if (!main) {
-          await user_self(domainName, token!).then((res) {
-            print(res);
-            if (res != 200) hadToken = false;
-          }); }
         }
       }
     });
@@ -125,212 +116,6 @@ class Api {
     return statusCode;
   }
 
-  static Future<List<dynamic>> getReceipts(String domainName) async {
-    // int statusCode = 0;
-    // final Dio dio = Dio();
-    List<dynamic> receipts = [];
-
-    return receipts;
-  }
-
-  static Future<Map<String, dynamic>> account_list(String domainName) async {
-    int statusCode = 0;
-    Map<String, dynamic> result = {
-      "status_code": statusCode,
-      "result": []
-    };
-    final Dio dio = Dio();
-
-    String url = '${domainName}/api/account/app/list';
-
-    try {
-      final response = await dio.get(
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-        }),
-
-        url,
-      );
-
-      statusCode = response.statusCode!;
-
-      if (statusCode == 200) {
-        result.update("result", (value) => response.data );
-      }
-    } on DioException catch (e) {
-      String errMsg = 'Unknown error. $e';
-
-      if (e.response != null) {
-        statusCode = e.response!.statusCode ?? 503;
-        
-        errMsg = e.response!.data['errMsg']; 
-        result.update("result", (value) => [{ "errMsg": errMsg }]);
-
-      } else { statusCode = 503; }
-      print(errMsg);
-    } catch (e) {
-      print(e);
-      statusCode = 503;
-      result.update("result", (value) => [{ "errMsg": e }]);
-    }
-
-    result.update("status_code", (value) => statusCode);
-
-    return result;
-  }
-
-  static Future<Map<String, dynamic>> outlet_list(String domainName, {key, required String account}) async {
-    int statusCode = 0;
-    Map<String, dynamic> result = {
-      "status_code": statusCode,
-      "result": []
-    };
-    final Dio dio = Dio();
-
-    String url = '${domainName}/api/user/app/getOutletRegister';
-
-    try {
-      final response = await dio.get(
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-        }),
-        data: {
-          "id": account
-        },
-
-        url,
-      );
-
-      statusCode = response.statusCode!;
-
-      if (statusCode == 200) {
-        result.update("result", (value) => response.data);
-      } else { result.update("result", (value) => [ response.data]); }
-    } on DioException catch (e) {
-      String errMsg = 'Unknown error. $e';
-
-      if (e.response != null) {
-        statusCode = e.response!.statusCode ?? 503;
-        
-        errMsg = e.response!.data['errMsg']; 
-        result.update("result", (value) => [{ "errMsg": errMsg }]);
-
-      } else { statusCode = 503; }
-      print(errMsg);
-    } catch (e) {
-      print(e);
-      statusCode = 503;
-      result.update("result", (value) => [{ "errMsg": e }]);
-    }
-
-    result.update("status_code", (value) => statusCode);
-
-    return result;
-  }
-
-  static Future<int> registration_validate(String domainName, {key, required String mobile, required String id}) async {
-    int statusCode = 0; print(domainName);
-
-    final Dio dio = Dio();
-
-    String url = '${domainName}/api/user/app/registerValidate';
-
-    try {
-      final response = await dio.get(
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-        }),
-        data: {
-          "name": id,
-          "mobile": mobile,
-        },
-
-        url,
-      );
-
-      statusCode = response.statusCode!;
-
-    } on DioException catch (e) {
-      if (e.response != null) {
-        statusCode = e.response!.statusCode ?? 503;
-      } else {
-        statusCode = 503;
-      }
-
-      String errMsg = 'Unknown error. $e';
-
-      if (e.response != null) {
-        errMsg = e.response!.data['errMsg'];
-      }
-      print(errMsg);
-    } catch (e) {
-      print(e);
-      statusCode = 503;
-    }
-
-    return statusCode;
-  }
-
-  static Future<int> uploadImageReceipt(String domainName, String token, { required XFile receipt, required String userId, required String outletId }) async{
-    int statusCode = 0;
-
-    final Dio dio = Dio();
-
-    String url = '${domainName}/api/user/app/registerValidate';
-
-    try {
-      await AwsS3.uploadImageReceipt(
-        userId: userId,
-        receipt: receipt
-      ).then((res) async {
-        if (res == true) {
-          await AwsS3.getReceiptImageUrl(userId: userId, receipt: receipt).then((res) async {
-            if (res['status'] == true) {
-              try {
-                final response = await dio.post(
-                  options: Options(headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer $token',
-                  }),
-
-                  url,
-                  data: {
-                    "user_id": userId,
-                    "outlet_id": outletId,
-                    "created_by": userId,
-                    "image": res['result'].toString()
-                  }
-                );
-
-                statusCode = response.statusCode!;
-
-              } on DioException catch (e) {
-                String errMsg = 'Unknown error. $e';
-
-                if (e.response != null) {
-                  statusCode = e.response!.statusCode ?? 503;
-                  
-                  errMsg = e.response!.data['errMsg']; 
-
-                } else { statusCode = 503; }
-
-                safePrint(errMsg);
-              } catch (e) {
-                print(e);
-                statusCode = 503;
-              }
-            } else { safePrint(res['result']); statusCode = 503; }
-          });
-        } else { safePrint(res); statusCode = 503; }
-      });
-    } catch (e) {
-      safePrint(e);
-      statusCode = 503;
-    }
-
-    return statusCode;
-  }
-
   static Future<int> user_self(String domainName, String token) async {
     int statusCode = 0;
 
@@ -358,18 +143,8 @@ class Api {
           MyPrefs.setUser(jsonEncode(user), prefs: prefs);
         });
       }
-    } on DioException catch (e) {
-      String errMsg = 'Unknown error. $e';
-
-      if (e.response != null) {
-        statusCode = e.response!.statusCode ?? 503;
-        
-        errMsg = e.response!.data; 
-
-      } else { statusCode = 503; }
-      print(errMsg);
     } catch (e) {
-      print(e);
+      print('user_self error : $e');
       statusCode = 503;
     }
 
