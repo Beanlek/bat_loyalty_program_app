@@ -32,6 +32,8 @@ class MyTheme {
     primaryColor: MyColors.myWhite,
     brightness: Brightness.light,
 
+    pageTransitionsTheme: PageTransitionsTheme(builders: { TargetPlatform.android: CupertinoPageTransitionsBuilder() }),
+
     textTheme: TextTheme(
       displayLarge: TextStyle(),
       displayMedium: TextStyle(),
@@ -87,6 +89,8 @@ class MyTheme {
 
     primaryColor: MyColors.myBlack,
     brightness: Brightness.dark,
+
+    pageTransitionsTheme: PageTransitionsTheme(builders: { TargetPlatform.android: CupertinoPageTransitionsBuilder() }),
 
     textTheme: TextTheme(
       displayLarge: TextStyle(),

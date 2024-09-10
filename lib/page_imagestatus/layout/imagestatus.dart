@@ -35,7 +35,7 @@ class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusCompo
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: ImageStatusPage.routeName);
     
     return PopScope(
-      canPop: true,
+      canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Image Status', appVersion: appVersion),
         body:

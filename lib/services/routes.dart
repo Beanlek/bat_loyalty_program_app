@@ -1,7 +1,10 @@
 import 'package:bat_loyalty_program_app/dummy.dart';
 import 'package:bat_loyalty_program_app/page_homepage/layout/homepage_preview.dart';
 import 'package:bat_loyalty_program_app/page_imagestatus/layout/imagestatus.dart';
+import 'package:bat_loyalty_program_app/page_manageoutlet/layout/manageoutlet.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
+import 'package:bat_loyalty_program_app/page_profile/layout/profile_edit.dart';
+import 'package:bat_loyalty_program_app/page_settings/layout/settings.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/page_homepage/layout/homepage.dart';
@@ -26,6 +29,8 @@ class MyArguments {
       this.receiptImage,
 
       this.user = '{}',
+      this.outlets = '{}',
+      this.currentOutlet = '{}',
     }
   );
 
@@ -40,6 +45,8 @@ class MyArguments {
   final XFile? receiptImage;
 
   final String user;
+  final String outlets;
+  final String currentOutlet;
 }
 
 class MyRoutes {
@@ -52,6 +59,11 @@ class MyRoutes {
     RegisterStepsPage.routeName: (context) => RegisterStepsPage(),
 
     ProfilePage.routeName: (context) => ProfilePage(),
+    ProfileEditPage.routeName: (context) => ProfileEditPage(),
+
+    ManageOutletPage.routeName: (context) => ManageOutletPage(),
+
+    SettingsPage.routeName: (context) => SettingsPage(),
 
     Dummy.routeName: (context) => Dummy(),
     ImageStatusPage.routeName: (context) => ImageStatusPage(),

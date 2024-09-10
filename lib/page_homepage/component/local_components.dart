@@ -47,6 +47,7 @@ mixin HomeComponents {
   ];
 
   late Map<String, dynamic> user;
+  late Map<String, dynamic> outlets;
   late XFile receiptImage;
 
   Future<bool> takeImage() async {

@@ -278,6 +278,11 @@ class RegisterWidgets {
     bool? viewOutlet,
     bool? viewSecurity,
 
+    bool? postcodeChanged,
+
+    void Function()? postcodeChangedTrue,
+    void Function()? postcodeChangedFalse,
+
     void Function()? onSubmit,
     void Function()? setOutletList,
     void Function()? onPhraseRefresh,
@@ -328,6 +333,7 @@ class RegisterWidgets {
     TextEditingController? address3Controller,
     TextEditingController? postcodeController,
 
+    TextEditingController? outletPostcodeController,
     TextEditingController? accountController,
     TextEditingController? outletController,
 
@@ -341,6 +347,8 @@ class RegisterWidgets {
     FocusNode? address2Focusnode,
     FocusNode? address3Focusnode,
     FocusNode? postcodeFocusnode,
+
+    FocusNode? outletPostcodeFocusnode,
 
     TextEditingController? stateController,
     TextEditingController? cityController,
@@ -751,7 +759,7 @@ class RegisterWidgets {
       case 4:
         _widget = StatefulBuilder(
           builder: (context, setState) {
-            double pageHeight = MySize.Height(context, 0.65);
+            double pageHeight = MySize.Height(context, 0.75);
 
             return MyWidgets.MyScroll1( context,
             height: pageHeight,
@@ -797,7 +805,7 @@ class RegisterWidgets {
                                 accountController.text = _filter;
                                 print('outletController!.text: ${outletController!.text}');
                                 
-                                setOutletList!();
+                                if ( outletPostcodeController!.text != "" ) setOutletList!();
                                 isLoadingFalse!();
 
                                 stepButtonValidation();
@@ -806,9 +814,33 @@ class RegisterWidgets {
                         }),
                         !pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['accountErrorMsg']! ) : SizedBox(),
                         SizedBox(height: 12,),
+                        
+                        MyWidgets.MyTextField1(context, 'Postcode', outletPostcodeController!, focusNode: outletPostcodeFocusnode, compulsory: true, digitOnly: true,
+                          onChanged: (_) { stepButtonValidation(); setState((){ postcodeChangedTrue!(); outletController!.text = 'Outlet';}); print('postcodeChanged onChanged: $postcodeChanged');},
+                          onSubmit: (_) async {
+                            if (outletPostcodeController.text == "") {
+                              return;
+                            }
+
+                            isLoadingTrue!();
+
+                            await Future.delayed(const Duration(milliseconds: 400)).whenComplete(() async{
+                              setState((){ print('postcodeChanged onSubmit: $postcodeChanged');
+                                if (postcodeChanged ?? false) { setOutletList!(); postcodeChangedFalse!(); print('postcodeChanged falsed: $postcodeChanged');}
+                                isLoadingFalse!();
+
+                                stepButtonValidation();
+                              });
+                            });
+                            
+                            outletPostcodeFocusnode!.unfocus();
+                          },
+                        ),
+                        !pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['usernameErrorMsg']! ) : SizedBox(),
+                        SizedBox(height: 12,),
 
                         MyWidgets.MyTextField3(context, 'Outlet', selectedFilter: outletController!.text, filters: outletFilters!,
-                          active: accountController.text == 'Company' ? false : true, onChanged: (String? _filter) async{
+                          active: (accountController.text == 'Company' || outletPostcodeController.text == "") ? false : true, onChanged: (String? _filter) async{
                             isLoadingTrue!();
 
                             if (outletController.text == _filter!) {
@@ -823,7 +855,7 @@ class RegisterWidgets {
                             });
                             
                         }),
-                        !pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['outletErrorMsg']! ) : SizedBox(),
+                        !pageError[2] ? MyWidgets.MyErrorTextField(context, errMsgs['outletErrorMsg']! ) : SizedBox(),
                       ],
                     ),
                 
@@ -833,7 +865,7 @@ class RegisterWidgets {
                           onSubmit
                         ),
                         SizedBox(height: 12,),
-                        MyWidgets.MyInfoTextField2(context, 'Only choose your main outlet.\nOther outlets can be added in the app later.')
+                        MyWidgets.MyInfoTextField2(context, 'Choose your main outlet first.\nOther outlets can be added in the app later.')
                       ],
                     ),
                   ],

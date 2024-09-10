@@ -46,7 +46,7 @@ class _HomepagePreviewState extends State<HomepagePreview> with HomeComponents, 
     print('imageRetake: $imageRetake');
     
     return PopScope(
-      canPop: true,
+      canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : Scaffold(
         body:
     

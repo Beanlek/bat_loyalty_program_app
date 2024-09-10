@@ -4,7 +4,9 @@ import 'package:bat_loyalty_program_app/page_homepage/layout/homepage_preview.da
 import 'package:bat_loyalty_program_app/page_homepage/widget/local_widgets.dart';
 import 'package:bat_loyalty_program_app/page_imagestatus/layout/imagestatus.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
+import 'package:bat_loyalty_program_app/page_manageoutlet/layout/manageoutlet.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
+import 'package:bat_loyalty_program_app/page_settings/layout/settings.dart';
 import 'package:bat_loyalty_program_app/page_track_history/layout/tracking_history.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
@@ -53,7 +55,9 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
 
     await MyPrefs.init().then((prefs) async { prefs!;
       final _user = MyPrefs.getUser(prefs: prefs) ?? '{}';
+      final _outlets = MyPrefs.getOutlets(prefs: prefs) ?? '{}';
       user = jsonDecode(_user);
+      outlets = jsonDecode(_outlets);
     });
   }
 
@@ -67,7 +71,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
         
         key: scaffoldKey,
         appBar: HomeWidgets.MyAppBar(context, isDarkMode, appVersion: appVersion, scaffoldKey: scaffoldKey,
-          onTap: () => Navigator.pushNamed( context, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user)))),
+          onTap: () => Navigator.pushNamed( context, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user), outlets: jsonEncode(outlets)))),
 
         body: 
         
@@ -195,8 +199,8 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
                                               .onPrimary,
                                         ],
                                       ));
-                                },
-                              ),
+                                  },
+                                ),
                               );
                             } else { return SizedBox(); }
                           }
@@ -238,9 +242,9 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
         drawer: HomeWidgets.MyDrawer(context, isDarkMode, appVersion: appVersion, domainName: domainName, 
           items: [
             HomeWidgets.Item(context, icon: FontAwesomeIcons.userAlt, label: 'Profile',
-              onTap: () => Navigator.pushNamed( context, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user)))),
+              onTap: () => Navigator.pushNamed( context, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user), outlets: jsonEncode(outlets)))),
             HomeWidgets.Item(context, icon: FontAwesomeIcons.storeAlt, label: 'Manage Outlets',
-              onTap: () => false),
+              onTap: () => Navigator.pushNamed( context, ManageOutletPage.routeName , arguments: MyArguments(token, prevPath: "/home", outlets: jsonEncode(outlets)))),
 
             Divider(color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5),),
 
@@ -252,7 +256,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
             Divider(color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5),),
 
             HomeWidgets.Item(context, icon: FontAwesomeIcons.gear, label: 'Settings',
-              onTap: () => false),
+              onTap: () => Navigator.pushNamed( context, SettingsPage.routeName , arguments: MyArguments(token, prevPath: "/home"))),
             HomeWidgets.Item(context, icon: FontAwesomeIcons.signOut, label: 'Log Out',
               onTap: () async {
                 await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Logging Out',

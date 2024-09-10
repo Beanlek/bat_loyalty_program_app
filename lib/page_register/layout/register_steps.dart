@@ -1,4 +1,5 @@
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
+import 'package:bat_loyalty_program_app/services/regex.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 
@@ -129,10 +130,10 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                             final confirmPassword = confirmPasswordController.text.trim();
 
                             await usernameValidation(context, domainName, snackBar: false).then((valid) => setState(() { page1Error[0] = valid; }));
-                            await inputValidation(context, 'fullName', pattern: RegisterComponents.REGEX_NAME, data: name, snackBar: false).then((valid) => setState(() { page1Error[1] = valid; }));
-                            if (email.isNotEmpty || email != '') await inputValidation(context, 'email', pattern: RegisterComponents.REGEX_EMAIL, data: email, snackBar: false).then((valid) => setState(() { page1Error[2] = valid; }));
-                            await inputValidation(context, 'password', pattern: RegisterComponents.REGEX_PASSWORD, data: password, snackBar: false).then((valid) => setState(() { page1Error[3] = valid; }));
-                            await inputValidation(context, 'confirmPassword', pattern: RegisterComponents.REGEX_PASSWORD, data: confirmPassword, password: true, snackBar: false).then((valid) => setState(() { page1Error[4] = valid; isLoading = false; }));
+                            await inputValidation(context, 'fullName', pattern: Regex.REGEX_NAME, data: name, snackBar: false).then((valid) => setState(() { page1Error[1] = valid; }));
+                            if (email.isNotEmpty || email != '') await inputValidation(context, 'email', pattern: Regex.REGEX_EMAIL, data: email, snackBar: false).then((valid) => setState(() { page1Error[2] = valid; }));
+                            await inputValidation(context, 'password', pattern: Regex.REGEX_PASSWORD, data: password, snackBar: false).then((valid) => setState(() { page1Error[3] = valid; }));
+                            await inputValidation(context, 'confirmPassword', pattern: Regex.REGEX_PASSWORD, data: confirmPassword, password: true, snackBar: false).then((valid) => setState(() { page1Error[4] = valid; isLoading = false; }));
                             
                             page1Error.every((e) => e == true) ? nextPage(setState) : null;
 
@@ -168,12 +169,12 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                             final city = cityController.text.trim();
                             final postcode = postcodeController.text.trim();
                             
-                            await inputValidation(context, 'address1', pattern: RegisterComponents.REGEX_ADDRESS, data: address1, snackBar: false).then((valid) => setState(() { page2Error[0] = valid; }));
-                            await inputValidation(context, 'address2', pattern: RegisterComponents.REGEX_ADDRESS, data: address2, snackBar: false).then((valid) => setState(() { page2Error[1] = valid; }));
-                            await inputValidation(context, 'address3', pattern: RegisterComponents.REGEX_ADDRESS, data: address3, snackBar: false).then((valid) => setState(() { page2Error[2] = valid; }));
-                            await inputValidation(context, 'state', pattern: RegisterComponents.REGEX_NAME, data: state, snackBar: false).then((valid) => setState(() { page2Error[3] = valid; }));
-                            await inputValidation(context, 'city', pattern: RegisterComponents.REGEX_NAME, data: city, snackBar: false).then((valid) => setState(() { page2Error[4] = valid; }));
-                            await inputValidation(context, 'postcode', pattern: RegisterComponents.REGEX_POSTCODE, data: postcode, snackBar: false).then((valid) => setState(() { page2Error[5] = valid; isLoading = false;}));
+                            await inputValidation(context, 'address1', pattern: Regex.REGEX_ADDRESS, data: address1, snackBar: false).then((valid) => setState(() { page2Error[0] = valid; }));
+                            await inputValidation(context, 'address2', pattern: Regex.REGEX_ADDRESS, data: address2, snackBar: false).then((valid) => setState(() { page2Error[1] = valid; }));
+                            await inputValidation(context, 'address3', pattern: Regex.REGEX_ADDRESS, data: address3, snackBar: false).then((valid) => setState(() { page2Error[2] = valid; }));
+                            await inputValidation(context, 'state', pattern: Regex.REGEX_NAME, data: state, snackBar: false).then((valid) => setState(() { page2Error[3] = valid; }));
+                            await inputValidation(context, 'city', pattern: Regex.REGEX_NAME, data: city, snackBar: false).then((valid) => setState(() { page2Error[4] = valid; }));
+                            await inputValidation(context, 'postcode', pattern: Regex.REGEX_POSTCODE, data: postcode, snackBar: false).then((valid) => setState(() { page2Error[5] = valid; isLoading = false;}));
                             
                             page2Error.every((e) => e == true) ? nextPage(setState) : null;
 
@@ -252,7 +253,12 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           isDarkMode: isDarkMode);
                         } else if (index == 4) {
                           return RegisterWidgets.MyPage(context, index: 4, onSubmit: () async {
-                            nextPage(setState);
+                            final postcode = outletPostcodeController.text.trim();
+                            
+                            await inputValidation(context, 'postcode', pattern: Regex.REGEX_POSTCODE, data: postcode, snackBar: false).then((valid) => setState(() { page4Error[1] = valid; isLoading = false;}));
+                            
+                            page2Error.every((e) => e == true) ? nextPage(setState) : null;
+
                             setState(() => finalButtonActive = true);
                             unfocusAllNode();
                           },
@@ -274,7 +280,14 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           outletFilters: outletFilters,
                           outletController: outletController,
 
-                          setOutletList: () { setOutletList(domainName, setState); },
+                          outletPostcodeController: outletPostcodeController,
+                          outletPostcodeFocusnode: outletPostcodeFocusnode,
+
+                          postcodeChanged: postcodeChanged,
+                          postcodeChangedTrue: () { setState(() => postcodeChanged = true); },
+                          postcodeChangedFalse: () { setState(() => postcodeChanged = false); },
+
+                          setOutletList: () { setOutletList(context, domainName, setState); },
                           
                           isDarkMode: isDarkMode);
                         } else if (index == 5) {

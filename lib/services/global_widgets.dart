@@ -168,66 +168,90 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyTextField2(BuildContext context, String text,
-      TextEditingController controller, FocusNode focusNode,
+  static Widget MyTextField2(
+      BuildContext context, String text, TextEditingController controller,
       {key,
-      required bool isDark,
-      double? width,
-      void Function()? onFilter,
-      void Function()? onSearch}) {
+      bool digitOnly = false,
+      bool compulsory = false,
+      bool isPassword = false,
+      FocusNode? focusNode,
+      void Function(String)? onChanged,
+      void Function(String)? onSubmit}) {
+    bool _isPasswordVisible = false;
     final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
 
     final _widget = StatefulBuilder(builder: (context, setState) {
+      IconButton obscureIconButton() {
+        return IconButton(
+          iconSize: MySize.Width(context, 0.05),
+          icon: Icon(
+            _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+          ),
+          onPressed: () {
+            setState(() {
+              _isPasswordVisible = !_isPasswordVisible;
+              print('_isPasswordVisible : ${_isPasswordVisible}');
+            });
+          },
+        );
+      }
+
       return Material(
         elevation: 0,
         borderRadius: BorderRadius.circular(100),
         child: Container(
-            width: width ?? null,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
                 gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      MyColors.biruImran3,
-                      MyColors.biruImran4,
+                      Theme.of(context).colorScheme.tertiary,
+                      Theme.of(context).colorScheme.onPrimary,
                     ])),
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
               child: TextFormField(
-                focusNode: focusNode,
                 controller: controller,
+                focusNode: focusNode,
+
+                onChanged: onChanged,
+                onFieldSubmitted: onSubmit,
+                obscureText: isPassword ? !_isPasswordVisible : isPassword,
+                keyboardType: !digitOnly ? null : TextInputType.phone,
                 style:
                     TextStyle(color: DATA_COLOR, fontWeight: FontWeight.w500),
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    border: !isDark
-                        ? InputBorder.none
-                        : OutlineInputBorder(
-                            borderSide: BorderSide(color: MyColors.myWhite)),
+                    border: InputBorder.none,
                     errorBorder: InputBorder.none,
                     hintText: text,
                     hintStyle: TextStyle(
-                        color: DATA_COLOR.withOpacity(0.5),
-                        fontWeight: FontWeight.w300),
+                        color: DATA_COLOR, fontWeight: FontWeight.normal),
                     suffixIconColor: DATA_COLOR,
-                    suffixIcon: IconButton(
-                      iconSize: MySize.Width(context, 0.05),
-                      icon: Icon(
-                        Icons.tune_rounded,
-                      ),
-                      onPressed: onFilter,
-                    ),
-                    prefixIconColor: DATA_COLOR,
-                    prefixIcon: IconButton(
-                      iconSize: MySize.Width(context, 0.05),
-                      icon: Icon(
-                        Icons.search_rounded,
-                      ),
-                      onPressed: onSearch,
-                    )),
+                    suffixIcon: (compulsory && isPassword)
+                        ? SizedBox(
+                            width: MySize.Width(context, 0.17),
+                            child: Row(
+                              children: [
+                                obscureIconButton(),
+                                Icon(
+                                  FontAwesomeIcons.asterisk,
+                                  size: 12,
+                                )
+                              ],
+                            ),
+                          )
+                        : compulsory
+                            ? Icon(
+                                FontAwesomeIcons.asterisk,
+                                size: 12,
+                              )
+                            : !isPassword
+                                ? PLACEHOLDER_ICON
+                                : obscureIconButton()),
               ),
             )),
       );
@@ -684,6 +708,29 @@ class MyWidgets {
     return _widget;
   }
 
+  static Widget MyScroll2(BuildContext context,
+    {
+      required ScrollController controller,
+      required Widget child,
+      double? height,
+      Axis scrollDirection = Axis.vertical,
+    }
+  ) {
+    final _widget = RawScrollbar(
+      controller: controller,
+      thumbVisibility: true,
+      thumbColor: Theme.of(context).colorScheme.secondary,
+      radius: Radius.circular(100),
+      thickness: 3,
+      child: SingleChildScrollView(
+        scrollDirection: scrollDirection,
+          controller: controller,
+          child: child),
+    );
+
+    return _widget;
+  }
+
   static Widget MyScrollBar1(BuildContext context, {required ScrollController controller, required Widget child, bool thumbVisibility = true} ) {
     final _widget = RawScrollbar(
       controller: controller,
@@ -698,11 +745,13 @@ class MyWidgets {
   }
 
   static Widget MyTileButton(BuildContext context, String label,
-    { key, Color? color, void Function()? onPressed, IconData? icon, double? iconSize, TextStyle? textStyle}
+    { key, Color? color, void Function()? onPressed, IconData? icon, double? iconSize, TextStyle? textStyle, double buttonHeight = 35}
   ) {
     final _widget = SizedBox(
-      height: 35,
+      height: buttonHeight,
       child: TextButton.icon(
+        style: ButtonStyle(visualDensity: VisualDensity.compact),
+        
         onPressed: onPressed,
         label: Text(label, style: (textStyle ?? Theme.of(context).textTheme.bodySmall)!.copyWith(fontWeight: FontWeight.w500,
           color: color ?? Theme.of(context).colorScheme.primary
@@ -749,20 +798,60 @@ class MyWidgets {
   }
 
   static PreferredSizeWidget MyAppBar(BuildContext context, bool isDarkMode, String title,
-    {key, required String appVersion}
+    {key, required String appVersion, bool canPop = true, Future<dynamic> Function()? popDialog}
   ) {
     final Color DATA_COLOR = Theme.of(context).colorScheme.secondary;
     
     final _widget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
 
-      leading: IconButton(onPressed: () => Navigator.pop(context, true), icon: Icon(Icons.arrow_back, color: DATA_COLOR,)),
+      leading: IconButton(onPressed: () {
+        if (!canPop) {
+          popDialog!().then((res) async { print('appbar_res: $res');
+            canPop = res; if (res) Navigator.pop(context);
+          });
+        } else { Navigator.pop(context); }
+      }, icon: Icon(Icons.arrow_back, color: DATA_COLOR,)),
       leadingWidth: MySize.Width(context, 0.15),
       
       title: Text( title, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.normal, color: DATA_COLOR), ),
 
       actions: [ MyLogoBar(context, isDarkMode, appVersion: appVersion) ],
     );
+  
+    return _widget;
+  }
+  static Widget MySwitch(BuildContext context,
+    {key, required bool active,
+    required String activeText,
+    required String inactiveText,
+
+    Color? activeColor,
+    Color? inactiveColor,
+
+    void Function(bool)? onChanged
+    }
+  ) {
+    final _widget = Row( mainAxisAlignment: MainAxisAlignment.end, children: [
+      Padding( padding: const EdgeInsets.only(right: 8.0),
+        child: Text(active ? activeText : inactiveText,
+          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+            color: active ? activeColor ?? MyColors.hijauImran2 : inactiveColor ?? MyColors.merahImran )
+      )),
+
+      Transform.scale(scale: 0.8, child: Switch(
+        thumbColor: WidgetStatePropertyAll(MyColors.myWhite),
+        activeColor: activeColor ?? MyColors.hijauImran2,
+        trackColor: WidgetStatePropertyAll(
+          active ? activeColor ?? MyColors.hijauImran2 : inactiveColor ?? MyColors.merahImran
+        ),
+
+        inactiveTrackColor: inactiveColor ?? MyColors.merahImran,
+        trackOutlineColor: WidgetStateColor.transparent,
+
+        value: active, onChanged: onChanged
+      ))
+    ]);
   
     return _widget;
   }
@@ -1171,8 +1260,10 @@ class GradientSearchBar extends StatelessWidget {
 // for breadcrumb
 class Breadcrumb extends StatelessWidget {
   final List<String> paths;
+  bool canPop;
+  Future<dynamic> Function()? popDialog;
 
-  const Breadcrumb({super.key, required this.paths});
+  Breadcrumb({super.key, required this.paths, this.canPop = true, this.popDialog});
 
   @override
   Widget build(BuildContext context) {
@@ -1184,7 +1275,11 @@ class Breadcrumb extends StatelessWidget {
               if (path == paths.last) { return; }
               else {
                 int index = paths.indexOf(path);
-                for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context); }
+                if (!canPop) {
+                  popDialog!().then((res) async { print('appbar_res: $res');
+                    canPop = res; if (res) for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context); }
+                  });
+                } else { for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context); } }
               }
             },
             child: Text(

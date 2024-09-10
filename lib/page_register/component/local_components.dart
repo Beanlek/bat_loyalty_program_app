@@ -3,6 +3,7 @@ import "dart:math";
 
 import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
+import 'package:bat_loyalty_program_app/services/regex.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,16 +13,16 @@ import 'package:flutter/widgets.dart';
 mixin RegisterComponents {
   final PageController pageController = PageController(initialPage: 1);
 
-  final TextEditingController usernameController = TextEditingController(text: 'User1000');
-  final TextEditingController fullNameController = TextEditingController(text: 'Ahmad Albab');
+  final TextEditingController usernameController = TextEditingController(text: 'Cashier1021');
+  final TextEditingController fullNameController = TextEditingController(text: 'Jason Olga');
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController(text: 'imr4nfazli@gmail.com');
   final TextEditingController passwordController = TextEditingController(text: 'amast@123');
   final TextEditingController confirmPasswordController = TextEditingController(text: 'amast@12');
 
-  final TextEditingController address1Controller = TextEditingController(text: 'No 2 1C/KU5');
-  final TextEditingController address2Controller = TextEditingController(text: 'Jalan Raya');
-  final TextEditingController address3Controller = TextEditingController(text: 'Taman Bunga');
+  final TextEditingController address1Controller = TextEditingController(text: 'No 5 Unit AD08');
+  final TextEditingController address2Controller = TextEditingController(text: 'Jalan Ophelia');
+  final TextEditingController address3Controller = TextEditingController(text: 'Taman Jaring');
   final TextEditingController postcodeController = TextEditingController();
 
   final FocusNode phoneFocusnode = FocusNode();
@@ -69,12 +70,13 @@ mixin RegisterComponents {
   bool finalButtonActive = false;
 
   bool pagePhoneValid = false;
+  bool postcodeChanged = false;
 
   List<bool> pagePhoneError = [true, true];
   List<bool> page1Error = [true, true, true, true, true];
   List<bool> page2Error = [true, true, true, true, true, true,];
   List<bool> page3Error = [true, true];
-  List<bool> page4Error = [true, true];
+  List<bool> page4Error = [true, true, true];
 
   bool viewPhrase = true;
   bool viewPersonalInfo = true;
@@ -88,7 +90,10 @@ mixin RegisterComponents {
   List<String> outletFilters = ['Outlet'];
 
   final TextEditingController accountController = TextEditingController(text: 'Company');
+  final TextEditingController outletPostcodeController = TextEditingController();
   final TextEditingController outletController = TextEditingController(text: 'Outlet');
+
+  final FocusNode outletPostcodeFocusnode = FocusNode();
   
   List<dynamic> states = [];
   List<String> statesFilters = ['State'];
@@ -109,30 +114,6 @@ mixin RegisterComponents {
   final TextEditingController securityPhraseController = TextEditingController();
 
   Map<String, dynamic> registrationData = {};
-
-  static const REGEX_PHONE = r'^(?:[+]6)?0(([0-9]{2,3}((\s[0-9]{3,4}\s[0-9]{4})|(-[0-9]{3,4}\s[0-9]{4})|(-[0-9]{7,8})))|([0-9]{9,10}))$';
-  // malaysian phone no, 01112341234 @ 601112341234
-
-  static const REGEX_EMAIL = r'\w+@\w+\.\w+';
-  // standard email, imran@gmail.com
-
-  static const REGEX_USERNAME = r'^[a-zA-Z]+[a-zA-Z0-9]*$';
-  // starts with a letter
-
-  static const REGEX_NAME = r'^([^0-9]*)$';
-  // also used for city and state // text only
-
-  static const REGEX_ADDRESS = r'^.*';
-  // allow all
-
-  static const REGEX_PASSWORD = r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
-  // 1 lowercase 1 special 1 digit
-
-  static const REGEX_POSTCODE = r'^[0-9]{5}$';
-  // 5 integer only
-
-  static const REGEX_SECURITY_IMAGE = r'^assets/security_images/SIMG-\d{4}\.jpg$';
-  // SIMG-<any number>
 
   Future<void> mainButtonValidation(BuildContext context, String domainName) async {
     if (phoneController.text.isNotEmpty) { 
@@ -226,6 +207,7 @@ mixin RegisterComponents {
   void step4ButtonValidation(void Function(void Function()) setState) {
     if (
       accountController.text != 'Account' &&
+      postcodeController.text.isNotEmpty &&
       outletController.text != 'Outlet'
     ) { setState((){ step4ButtonActive = true; }); }
     else { setState((){ step4ButtonActive = false; }); }
@@ -262,18 +244,18 @@ mixin RegisterComponents {
     await phoneNumberValidation(context, domainName).then((valid) { if (!valid) thisValid = false; });
     await usernameValidation(context, domainName).then((valid) { if (!valid) thisValid = false; });
 
-    if (email.isNotEmpty || email != '') { inputValidation(context, 'email', pattern: REGEX_EMAIL, data: email); }
+    if (email.isNotEmpty || email != '') { inputValidation(context, 'email', pattern: Regex.REGEX_EMAIL, data: email); }
 
-    await inputValidation(context, 'fullName', pattern: REGEX_NAME, data: name).then((valid) { if (!valid) thisValid = false; });
-    await inputValidation(context, 'address1', pattern: REGEX_ADDRESS, data: address1).then((valid) { if (!valid) thisValid = false; });
-    await inputValidation(context, 'address2', pattern: REGEX_ADDRESS, data: address2).then((valid) { if (!valid) thisValid = false; });
-    await inputValidation(context, 'address3', pattern: REGEX_ADDRESS, data: address3).then((valid) { if (!valid) thisValid = false; });
-    await inputValidation(context, 'city', pattern: REGEX_NAME, data: city).then((valid) { if (!valid) thisValid = false; });
-    await inputValidation(context, 'state', pattern: REGEX_NAME, data: state).then((valid) { if (!valid) thisValid = false; });
-    await inputValidation(context, 'postcode', pattern: REGEX_POSTCODE, data: postcode).then((valid) { if (!valid) thisValid = false; });
+    await inputValidation(context, 'fullName', pattern: Regex.REGEX_NAME, data: name).then((valid) { if (!valid) thisValid = false; });
+    await inputValidation(context, 'address1', pattern: Regex.REGEX_ADDRESS, data: address1).then((valid) { if (!valid) thisValid = false; });
+    await inputValidation(context, 'address2', pattern: Regex.REGEX_ADDRESS, data: address2).then((valid) { if (!valid) thisValid = false; });
+    await inputValidation(context, 'address3', pattern: Regex.REGEX_ADDRESS, data: address3).then((valid) { if (!valid) thisValid = false; });
+    await inputValidation(context, 'city', pattern: Regex.REGEX_NAME, data: city).then((valid) { if (!valid) thisValid = false; });
+    await inputValidation(context, 'state', pattern: Regex.REGEX_NAME, data: state).then((valid) { if (!valid) thisValid = false; });
+    await inputValidation(context, 'postcode', pattern: Regex.REGEX_POSTCODE, data: postcode).then((valid) { if (!valid) thisValid = false; });
 
-    await inputValidation(context, 'securityImage', pattern: REGEX_SECURITY_IMAGE, data: securityImage).then((valid) { if (!valid) thisValid = false; });
-    await inputValidation(context, 'securityPhrase', pattern: REGEX_NAME, data: securityPhrase).then((valid) { if (!valid) thisValid = false; });
+    await inputValidation(context, 'securityImage', pattern: Regex.REGEX_SECURITY_IMAGE, data: securityImage).then((valid) { if (!valid) thisValid = false; });
+    await inputValidation(context, 'securityPhrase', pattern: Regex.REGEX_NAME, data: securityPhrase).then((valid) { if (!valid) thisValid = false; });
 
     securityImage = securityImage.substring(securityImage.indexOf('S'), securityImage.indexOf('.'));
 
@@ -301,7 +283,7 @@ mixin RegisterComponents {
     bool valid = false; pagePhoneValid = valid;
     String msg = 'Looks like you already registered.';
 
-    String pattern = REGEX_PHONE;
+    String pattern = Regex.REGEX_PHONE;
     RegExp regex = RegExp(pattern);
 
     if (regex.hasMatch(phoneController.text)) { valid = true; pagePhoneError[0]= valid; }
@@ -329,7 +311,7 @@ mixin RegisterComponents {
     bool valid = false; pagePhoneValid = valid;
     String msg = 'Your username are already taken.';
 
-    String pattern = REGEX_USERNAME;
+    String pattern = Regex.REGEX_USERNAME;
     RegExp regex = RegExp(pattern);
 
     if (regex.hasMatch(usernameController.text.trim())) { valid = true; }
@@ -417,7 +399,7 @@ mixin RegisterComponents {
     });
   }
 
-  Future<void> setOutletList(String domainName, void Function(void Function()) setState ) async {
+  Future<void> setOutletList(BuildContext context, String domainName, void Function(void Function()) setState ) async {
     outletFilters.clear(); outlets.clear();
     outletFilters.add('Outlet');
 
@@ -429,20 +411,22 @@ mixin RegisterComponents {
 
     print('accountId: ${accountId['id']}');
     
-    await Api.outlet_list(domainName, account: accountId['id']).then((res) {
+    await Api.outlet_list(domainName, account: accountId['id'], postcode: outletPostcodeController.text).then((res) {
       final int statusCode = res['status_code'];
       print(res);
       print(statusCode);
 
-      List<dynamic> results = List.from(res['result']);
+      List<dynamic> rows = List.from(res['result']['data']['rows']);
 
       setState(() {
         if (statusCode == 200) {
-          for (var outlet in results) {
+          for (var outlet in rows) {
             outletFilters.add(outlet['name']);
           }
           
-          outlets = List.from( results );
+          outlets = List.from( rows );
+
+          if (outletFilters.length == 1) FloatingSnackBar(message: 'No outlets in the desribed postcode.', context: context);
         } else {
           outletFilters.add('Error');
         }

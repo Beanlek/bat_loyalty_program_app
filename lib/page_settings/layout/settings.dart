@@ -1,18 +1,19 @@
+import 'package:bat_loyalty_program_app/page_settings/component/local_components.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:flutter/material.dart';
 
-class Dummy extends StatefulWidget {
-  const Dummy({super.key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
 
-  static const routeName = '/dummy';
+  static const routeName = '/settings';
 
   @override
-  State<Dummy> createState() => _DummyState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _DummyState extends State<Dummy> with MyComponents{
+class _SettingsPageState extends State<SettingsPage> with SettingsComponents, MyComponents{
   
   @override
   void initState() {
@@ -30,7 +31,7 @@ class _DummyState extends State<Dummy> with MyComponents{
   
   @override
   Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
-    super.initParam(context); canPop = false;
+    super.initParam(context);
     
     // dateTime = DateFormat('dd/MM/yyyy').add_Hms();
   }
@@ -42,23 +43,23 @@ class _DummyState extends State<Dummy> with MyComponents{
     
     // final outletsMap = jsonDecode(args.outlets); outlets = Map.from(outletsMap);
     
-    if (!launchLoading) setPath(prevPath: args.prevPath, routeName: Dummy.routeName);
+    if (!launchLoading) setPath(prevPath: args.prevPath, routeName: SettingsPage.routeName);
 
     return PopScope(
-      onPopInvoked: (value) {
-        if (value) return;
+      // onPopInvoked: (value) {
+      //   if (value) return;
 
-        showDialog(context: context, builder: (context) => PopUps.Default(context, 'Unsaved Data',
-          confirmText: 'Yes',
-          cancelText: 'Continue Editing',
-          subtitle: 'Are you sure you want to exit this page?', warning: 'Once exit, all progress will not be saved.'),).then((res) async {
-            canPop = res; if (res) Navigator.pop(context);
-          });
-      },
+      //   showDialog(context: context, builder: (context) => PopUps.Default(context, 'Unsaved Data',
+      //     confirmText: 'Yes',
+      //     cancelText: 'Continue Editing',
+      //     subtitle: 'Are you sure you want to exit this page?', warning: 'Once exit, all progress will not be saved.'),).then((res) async {
+      //       canPop = res; if (res) Navigator.pop(context);
+      //     });
+      // },
       canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Dummy', appVersion: appVersion),
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'SettingsPage', appVersion: appVersion),
         
         body:
         
@@ -70,7 +71,7 @@ class _DummyState extends State<Dummy> with MyComponents{
                 children: [
                   Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths)),
                       
-                  Expanded(child: Center(child: Text('Dummy'))),
+                  Expanded(child: Center(child: Text('SettingsPage'))),
                 ],
               ),
             ),

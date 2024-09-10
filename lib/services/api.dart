@@ -32,10 +32,15 @@ class Api {
           hadToken = true;
 
           if (!main) {
-          await user_self(domainName, token!).then((res) {
-            print(res);
-            if (res != 200) hadToken = false;
-          }); }
+            final String cachedUser = MyPrefs.getUser(prefs: prefs)!;
+            final Map<String, dynamic> mappedUser = jsonDecode(cachedUser);
+            final String password = mappedUser['password'];
+            
+            await user_self(domainName, token!, password:password).then((res) {
+              print(res);
+              if (res != 200) hadToken = false;
+            });
+          }
         }
       }
     });
@@ -176,7 +181,7 @@ class Api {
     return result;
   }
 
-  static Future<Map<String, dynamic>> outlet_list(String domainName, {key, required String account}) async {
+  static Future<Map<String, dynamic>> outlet_list(String domainName, {key, required String account, required String postcode}) async {
     int statusCode = 0;
     Map<String, dynamic> result = {
       "status_code": statusCode,
@@ -192,7 +197,8 @@ class Api {
           'Content-Type': 'application/json',
         }),
         data: {
-          "id": account
+          "id": account,
+          "postcode": postcode
         },
 
         url,
@@ -323,7 +329,7 @@ class Api {
     return statusCode;
   }
 
-  static Future<int> user_self(String domainName, String token) async {
+  static Future<int> user_self(String domainName, String token, {required String password}) async {
     int statusCode = 0;
 
     final Dio dio = Dio();
@@ -343,12 +349,16 @@ class Api {
       statusCode = response.statusCode!;
 
       if (statusCode == 200) {
-        final user = response.data['user'];
+        final Map<String, dynamic> user = response.data['data']['user'];
+        final Map<String, dynamic> outlets = response.data['data']['outlets'];
+
+        user['password'] = password;
 
         await MyPrefs.init().then((prefs) {
           prefs!;
           
           MyPrefs.setUser(jsonEncode(user), prefs: prefs);
+          MyPrefs.setOutlets(jsonEncode(outlets), prefs: prefs);
         });
       }
     } on DioException catch (e) {
@@ -360,6 +370,46 @@ class Api {
         errMsg = e.response!.data; 
 
       } else { statusCode = 503; }
+      print(errMsg);
+    } catch (e) {
+      print(e);
+      statusCode = 503;
+    }
+
+    return statusCode;
+  }
+
+  static Future<int> user_update_self(BuildContext context, String domainName, String token, 
+    { required Map<String, dynamic> updateSelfData }
+  ) async {
+    int statusCode = 0;
+
+    updateSelfData.forEach((key, data) {
+      if (data.isEmpty || data == '') { statusCode = 400; FloatingSnackBar(message: 'Error ${statusCode}. ${key.capitalize()} is empty.', context: context); }
+    }); if ( statusCode == 400 ) { return statusCode; }
+
+    final Dio dio = Dio();
+
+    String url = '${domainName}/api/user/app/updateSelf';
+
+    try {
+      final response = await dio.post(
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+
+        url,
+        data: { "data": updateSelfData }
+      );
+
+      statusCode = response.statusCode!;
+
+    } on DioException catch (e) {
+      statusCode = e.response!.statusCode ?? 503;
+      String errMsg = 'Unknown error.';
+
+      if (e.response != null) { errMsg = e.response!.data; }
       print(errMsg);
     } catch (e) {
       print(e);

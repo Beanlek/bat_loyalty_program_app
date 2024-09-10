@@ -59,4 +59,11 @@ class MyPrefs {
   static String? getUser({required SharedPreferences prefs}) {
     return prefs.getString('user');
   }
+
+  static void setOutlets(String outlets, {required SharedPreferences prefs}) {
+    prefs.setString('outlets', outlets);
+  }
+  static String? getOutlets({required SharedPreferences prefs}) {
+    return prefs.getString('outlets');
+  }
 }

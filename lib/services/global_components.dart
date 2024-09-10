@@ -40,8 +40,11 @@ mixin MyComponents {
   
   bool isLoading = false;
   bool launchLoading = true;
+  bool refreshing = false;
+  bool canPop = true;
 
   DateFormat? monthYear;
+  DateFormat? monthYear2;
 
   String currentPath = '';
   List<String> paths = [];
@@ -53,6 +56,8 @@ mixin MyComponents {
   late String deviceID;
   late String token;
 
+  Future<bool> popDialog() async {return true;}
+
   Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
     await MyPrefs.init().then((prefs) async {
       prefs!;
@@ -63,6 +68,7 @@ mixin MyComponents {
       token = MyPrefs.getToken(prefs: prefs) ?? 'N/A';
 
       monthYear = DateFormat('MMMM yyyy');
+      monthYear2 = DateFormat('MMM yyyy');
 
       if (needToken) {
         await Api.checkToken(domainName).then((res) {

@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                                       final token = MyPrefs.getToken(prefs: prefs);
                           
                                       if (statusCode == 200 && token != null) {
-                                        await Api.user_self(domainName, token);
+                                        await Api.user_self(domainName, token, password: password);
                           
                                         Navigator.pushNamed(
                                           context,
