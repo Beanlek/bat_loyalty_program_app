@@ -17,9 +17,9 @@ class ImageStatusPage extends StatefulWidget {
 class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusComponents, MyComponents {
   @override
   void initState() {
-    initParam(context).whenComplete(() { setState(() { launchLoading = false; }); });
-  
     super.initState();
+  
+    initParam(context).whenComplete(() { setState(() { launchLoading = false; }); });
   }
   
   @override

@@ -3,11 +3,13 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPrefs {
+  // init
   static Future<SharedPreferences?> init() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs;
   }
 
+  // token
   static void setToken(String token, {required SharedPreferences prefs}) {
     prefs.setString('token', token);
   }
@@ -22,6 +24,7 @@ class MyPrefs {
     return prefs.getString('tokenExpiryTime');
   }
 
+  // device and app information
   static void setAppVersion({required SharedPreferences prefs}) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     prefs.setString('appVersion', packageInfo.version);
@@ -39,6 +42,7 @@ class MyPrefs {
     return prefs.getString('deviceID');
   }
 
+  // domain name
   static void setDomainName(String domainName, {required SharedPreferences prefs}) {
     prefs.setString('domainName', domainName);
   }
@@ -53,6 +57,7 @@ class MyPrefs {
     return prefs.getString('allDomain');
   }
 
+  // user information
   static void setUser(String user, {required SharedPreferences prefs}) {
     prefs.setString('user', user);
   }
@@ -66,4 +71,13 @@ class MyPrefs {
   static String? getOutlets({required SharedPreferences prefs}) {
     return prefs.getString('outlets');
   }
+
+  // refresh data
+  static void setIsRefresh(bool isRefresh, {required SharedPreferences prefs}) {
+    prefs.setBool('isRefresh', isRefresh);
+  }
+  static bool? getIsRefresh({required SharedPreferences prefs}) {
+    return prefs.getBool('isRefresh');
+  }
+
 }

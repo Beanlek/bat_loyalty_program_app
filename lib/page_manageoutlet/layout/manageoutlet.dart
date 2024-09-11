@@ -1,9 +1,12 @@
 import 'dart:convert';
 
 import 'package:bat_loyalty_program_app/page_manageoutlet/component/local_components.dart';
+import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
+import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
+import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -20,9 +23,9 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
   
   @override
   void initState() {
-    initParam(context, needToken: false).whenComplete(() { setState(() { launchLoading = false; }); });
-    
     super.initState();
+    
+    initParam(context, needToken: false).whenComplete(() { setState(() { launchLoading = false; }); });
   }
 
   @override
@@ -34,9 +37,23 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
   
   @override
   Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
-    super.initParam(context); await setAccountImages();
+    super.initParam(context); await setAccountImages(); canPop = false;
     
     dateTime = DateFormat('dd/MM/yyyy').add_Hms();
+  }
+
+  @override
+  Future<bool> popDialog() async {
+    bool res = false;
+
+    await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Unsaved Data',
+      confirmText: 'Yes',
+      cancelText: 'Continue Editing',
+      subtitle: 'Are you sure you want to exit this page?', warning: 'Once exit, all progress will not be saved.'
+      
+    )).then((_res) async { print('_res: $_res'); res = _res; });
+
+    return res;
   }
   
   @override
@@ -44,11 +61,24 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     
-    final outletsMap = jsonDecode(args.outlets); outlets = Map.from(outletsMap); print("outlesMap init");
+    if (launchLoading) {
+      final userMap = jsonDecode(args.user); user = Map.from(userMap); print('user: $user');
+      final outletsMap = jsonDecode(args.outlets); outlets = Map.from(outletsMap);
+      
+      setActiveCount(outlets); print("outlesMap init: $outlets");
+    }
     
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: ManageOutletPage.routeName);
 
     return PopScope(
+      onPopInvoked: (didPop) async { print('onPopInvoked');
+        if (didPop) return;
+
+        await popDialog().then((res) async { print('popscope_res: $res');
+            canPop = res; if (res) Navigator.pop(context, true);
+          });
+
+      },
       canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -83,7 +113,12 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        child: Text('Total Outlets: ${outlets['rows'].length}', style: Theme.of(context).textTheme.bodyMedium),
+                        child: Column( crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Active Outlets: ${activeCount}', style: Theme.of(context).textTheme.bodyMedium),
+                            Text('Total Outlets: ${outlets['count']}', style: Theme.of(context).textTheme.bodyMedium),
+                          ],
+                        ),
                       ),
                       Padding( padding: const EdgeInsets.only(bottom: 8.0), child:
                         MyWidgets.MySwitch(context, active: showInactiveOutlets, activeText: 'Show Past Outlets', inactiveText: 'Show Past Outlets',
@@ -98,10 +133,147 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                     child: MyWidgets.MyScrollBar1( context, controller: mainScrollController,
                       child: ListView.builder( controller: mainScrollController,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
-                        itemCount: outlets['rows'].length + 1,
+                        itemCount: outlets['count'] + 1,
                         physics: AlwaysScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          if (index == outlets['rows'].length) {
+
+                          if (index != outlets['count']) {
+
+                            Map<dynamic, dynamic> outlet = outlets['rows'][index]; print(index); print("outlets['count']: ${outlets['count']}");
+                            bool show = false;
+
+                            if (outlet['active']) { show = true; }
+                            else if (!outlet['active'] && showInactiveOutlets) { show = true; }
+                            else { show = false; }
+
+                            if (show) {
+                            
+                              String imagePath = 'assets/account_images/company.png';
+                              String address = 
+                                '${outlet['address1']}, ${outlet['address2']}, ${outlet['address3']},\n${outlet['postcode']}, ${outlet['city']}, ${outlet['state']}';
+
+                              for (var i = 0; i < accountImages.length; i++) {
+                                if (outlet['account_id'].toString().toLowerCase() == accountImages[i]['name']) {
+                                  imagePath = 'assets/account_images/${outlet['account_id'].toString().toLowerCase()}.png'; i = accountImages.length;
+                                } else {
+                                  imagePath = 'assets/account_images/company.png';
+                                }
+                              }
+                              
+                              return Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Stack(
+                                children: [
+                                  // switch button
+                                  Opacity( opacity: outlet['active'] ? 1 : 0.5, child: Card(
+                                    elevation: 2,
+                                    color: Theme.of(context).primaryColor,
+                                    shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(12.0), 
+                                      side: BorderSide(color: Theme.of(context).colorScheme.primary)
+                                    ),
+                                  
+                                    child: Padding( padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), child: Column( crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // first row
+                                        Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Row(
+                                          children: [
+                                            Padding( padding: const EdgeInsets.only(right: 8.0), child: SizedBox(
+                                              width: MySize.Width(context, 0.15),
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                child: Image.asset( imagePath ),
+                                              ),
+                                            )),
+                                  
+                                            Column( crossAxisAlignment: CrossAxisAlignment.start, children:[
+                                              Text(outlet['outlet_id'], style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
+                                              Text(outlet['name'], style: Theme.of(context).textTheme.bodyMedium),
+                                            ]),
+                                          ],
+                                        )),
+                                  
+                                        // address
+                                        Padding( padding: const EdgeInsets.only(bottom: 62.0),
+                                          child: Opacity( opacity: 0.5, child: Text(address, style: Theme.of(context).textTheme.bodySmall))),
+                                      ],
+                                    )),
+                                  )),
+                                  
+                                  Positioned( bottom: 12, right: 12,
+                                    child: Padding( padding: const EdgeInsets.only(bottom: 8.0), child:
+                                      MyWidgets.MySwitch(context, active: outlet['active'], activeText: 'Status: Assigned', inactiveText: 'Status: Not assigned',
+                                        onChanged: (_value) async {
+                                          if (activeCount == 1 && outlet['active'] == true) {
+                                            FloatingSnackBar(message: 'This is your only active outlet. You cannnot deactivate this outlet.', context: context);
+                                          } else {
+                                          
+                                            setState(() => isLoading = true);
+                                            String subtitle;
+
+                                            if (outlet['active']) {
+                                              subtitle = 'You are DEACTIVATING your status.\n\nThis indicates that you are no longer assigned as a employee in this outlet. Proceed?';
+                                            } else {
+                                              subtitle = 'You are REACTIVATING your status.\n\nThis indicates that you will be assigned as a employee in this outlet. Proceed?';
+                                            }
+                                            
+                                            await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Changing Status',
+                                              subtitle: subtitle, ),).then((res) async {
+                                                if (res ?? false) {
+                                                  updateActiveData.clear();
+                                                  setState(() => outlet['active'] = _value);
+
+                                                  updateActiveData.addEntries({ "user_id": user['id'] }.entries);
+                                                  updateActiveData.addEntries({ "outlet_id": outlet['outlet_id'] }.entries);
+                                                  updateActiveData.addEntries({ "active": outlet['active'] }.entries);
+
+                                                  await Api.user_account_update_active(context, domainName, token, updateActiveData: updateActiveData).then((statusCode) async {
+                                                    print({ statusCode });
+
+                                                    if (statusCode == 200) {
+                                                      await MyPrefs.init().then((prefs) async {
+                                                        prefs!;
+                                                        
+                                                        final String cachedUser = MyPrefs.getUser(prefs: prefs)!;
+                                                        final Map<String, dynamic> mappedUser = jsonDecode(cachedUser);
+                                                        final String password = mappedUser['password'];
+                                                        
+                                                        await Api.user_self(domainName, token, password: password).then((res) {
+
+                                                          if (res == 200) {
+                                                            FloatingSnackBar(message: 'Successful. Outlet status changed.', context: context);
+                                                          } else {
+                                                            FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                                          }
+
+                                                          setState(() { isLoading = false; });
+                                                        });
+
+                                                        setState(() { isLoading = false; });
+                                                      });
+
+                                                    } else {
+                                                      FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                                    }
+                                                    
+                                                    setState(() { isLoading = false; });
+                                                  });
+                                                  
+                                                  setActiveCount(outlets);
+                                                  updateActiveData.clear();
+                                                }
+                                                
+                                                setState(() => isLoading = false);
+                                              });
+                                          }
+                                        }
+                                      )),
+                                  ),
+                                ],
+                              ));
+                            } else {
+                              return SizedBox();
+                            }
+
+                          } else {
+
                             return InkWell(
                               onTap: () {},
                               
@@ -117,65 +289,6 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                                 ))
                               )),
                             );
-                          } else {
-                            Map<dynamic, dynamic> outlet = outlets['rows'][index];
-                            String imagePath = 'assets/account_images/company.png';
-                            String address = 
-                              '${outlet['address1']}, ${outlet['address2']}, ${outlet['address3']},\n${outlet['postcode']}, ${outlet['city']}, ${outlet['state']}';
-
-                            for (var i = 0; i < accountImages.length; i++) {
-                              if (outlet['account_id'].toString().toLowerCase() == accountImages[i]['name']) {
-                                imagePath = 'assets/account_images/${outlet['account_id'].toString().toLowerCase()}.png'; i = accountImages.length;
-                              } else {
-                                imagePath = 'assets/account_images/company.png';
-                              }
-                            }
-                            
-                            return Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Stack(
-                              children: [
-                                // switch button
-                                Opacity( opacity: activeTemp ? 1 : 0.5, child: Card(
-                                  elevation: 2,
-                                  color: Theme.of(context).primaryColor,
-                                  shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(12.0), 
-                                    side: BorderSide(color: Theme.of(context).colorScheme.primary)
-                                  ),
-                                
-                                  child: Padding( padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), child: Column( crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // first row
-                                      Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Row(
-                                        children: [
-                                          Padding( padding: const EdgeInsets.only(right: 8.0), child: SizedBox(
-                                            width: MySize.Width(context, 0.15),
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                              child: Image.asset( imagePath ),
-                                            ),
-                                          )),
-                                
-                                          Column( crossAxisAlignment: CrossAxisAlignment.start, children:[
-                                            Text(outlet['outlet_id'], style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
-                                            Text(outlet['name'], style: Theme.of(context).textTheme.bodyMedium),
-                                          ]),
-                                        ],
-                                      )),
-                                
-                                      // address
-                                      Padding( padding: const EdgeInsets.only(bottom: 62.0),
-                                        child: Opacity( opacity: 0.5, child: Text(address, style: Theme.of(context).textTheme.bodySmall))),
-                                    ],
-                                  )),
-                                )),
-                                
-                                Positioned( bottom: 12, right: 12,
-                                  child: Padding( padding: const EdgeInsets.only(bottom: 8.0), child:
-                                    MyWidgets.MySwitch(context, active: activeTemp, activeText: 'Status: Employee', inactiveText: 'Status: Not a employee',
-                                      onChanged: (_value) { setState(() => activeTemp = _value); }
-                                    )),
-                                ),
-                              ],
-                            ));
                           }
                         },
                       ),

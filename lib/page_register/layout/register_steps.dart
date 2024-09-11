@@ -24,13 +24,13 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
 
   @override
   void initState() {
+    super.initState();
+    
     initParam(context, needToken: false).whenComplete(() {
       setState(() {
         launchLoading = false;
       });
     });
-    
-    super.initState();
   }
 
   @override

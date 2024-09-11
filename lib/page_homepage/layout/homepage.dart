@@ -32,10 +32,10 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
 
   @override
   void initState() {
-    loyaltyPoints = 2000;
+    super.initState();
     initParam(context).whenComplete(() { setState(() { launchLoading = false; }); });
     
-    super.initState();
+    setState(() { isRefresh = getIsRefresh(); });
   }
 
   @override
@@ -71,150 +71,167 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
         
         key: scaffoldKey,
         appBar: HomeWidgets.MyAppBar(context, isDarkMode, appVersion: appVersion, scaffoldKey: scaffoldKey,
-          onTap: () => Navigator.pushNamed( context, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user), outlets: jsonEncode(outlets)))),
+          onTap: () => myPushNamed( context, setState, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user), outlets: jsonEncode(outlets)))),
 
         body: 
         
-        Stack(
-          children: [
-            CustomMaterialIndicator(
-              edgeOffset: 10, backgroundColor: Colors.transparent, elevation: 0,
-              onRefresh: () async { setState(() { isLoading = true; }); await refreshPage(context).whenComplete(() => setState(() { isLoading = false; })); },
-              
-              indicatorBuilder: (context, controller) => Icon(FontAwesomeIcons.rotateRight, size: MySize.Width(context, 0.08),),
-              child: SizedBox.expand(
-                child: Padding(
-                  padding: const EdgeInsets.all(3.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                                    
-                      // product list
-                      Expanded(
-                        child: MyWidgets.MyScrollBar1( context, controller: mainScrollController, child: ListView.builder(
-                          padding: EdgeInsets.all(9),
-                          controller: mainScrollController,
-                          
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                SizedBox(
-                                  height: MySize.Height(context, 0.135),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Loyalty Points', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
-                                      Expanded(child: Row(
-                                        children: [
-                                          Expanded(child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(user['id']!, style: Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.normal),),
-                                              Text.rich(
-                                                TextSpan(text: user['points'].toString(), style: Theme.of(context).textTheme.displayMedium!.copyWith(fontWeight: FontWeight.bold,
-                                                    color: Theme.of(context).colorScheme.outlineVariant),
-                                                    children: [
-                                                      TextSpan(text: ' pts', style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500,
-                                                      color: Theme.of(context).colorScheme.outlineVariant
-                                                    )
-                                                  )
-                                                ])
-                                              )
-                                            ],
-                                          )),
-                                          Expanded(child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history,
-                                                onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
-                                              MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image,
-                                                onPressed: () => Navigator.pushNamed( context, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
-                                            ],
-                                          )),
-                                        ],
-                                      )),
-                                    ],
-                                  )
-                                ),
-                        
-                                SizedBox(height: 12,),
-                                Text('Product Catalogue', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500)),
-                              ]);
-                            } else if (index == 1) {
-                              return StickyHeader(
-                                header: Container( color: Theme.of(context).primaryColor, child: Padding( padding: const EdgeInsets.only(bottom: 3.0),
-                                  child: GradientSearchBar( pageSetState: setState,
-                                    applyFilters: applyFilters,
-                                    filtersApplied: filtersApplied,
-                                    datas: [ brandMap, categoryMap ],
-                                    
-                                    controller: searchController,
-                                    focusNode: searchFocusNode,
-                                  
-                                    items: [
-                                      GradientSearchBar.filterMenu(context, title: 'Brand', data: brandMap,
-                                        applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
-                                      GradientSearchBar.filterMenu(context, title: 'Category', data: categoryMap,
-                                        applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState),
-                                    ],
-                                    onSearch: () {},
-                                  )),
-                                ),
-                                    
-                                content: GridView.builder(
-                                padding: const EdgeInsets.all(15),
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2, // row
-                                  childAspectRatio: 2.5 / 4,
-                                  mainAxisSpacing: 20,
-                                  crossAxisSpacing: 20,
-                                ),
-                                itemCount: 12,
-                                shrinkWrap: true,
-                                
-                                physics: NeverScrollableScrollPhysics(),
-                                // controller: productController,
-                                itemBuilder: (BuildContext context, int i) {
-                                  return ProductCard(
-                                      imageUrl: Image.asset(
-                                        'assets/images_examples/headphone.jpeg',
-                                      ),
-                                      title: "Headphone",
-                                      points: 1000,
-                                      onLoveIconTap: () {},
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .tertiary,
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary,
-                                        ],
-                                      ));
-                                  },
-                                ),
-                              );
-                            } else { return SizedBox(); }
-                          }
-                        )),
-                      ),
-                              
-                    ],
-                  ),
-                ),
-              ),
-            ),
+        FutureBuilder<bool?>(
+          initialData: false,
+          future: isRefresh,
+          builder: (context, snapshot) { if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return MyWidgets.MyErrorPage(context, isDarkMode);
+            } else if (snapshot.hasData) { isRefresing = snapshot.data!; print('snapshot has data: $isRefresing');
+
+              if (isRefresing) {refreshPage(context, setState);}
             
-            MyWidgets.MyLoading(context, isLoading, isDarkMode)
-          ],
+              return Stack(
+                children: [
+                  CustomMaterialIndicator(
+                    edgeOffset: 10, backgroundColor: Colors.transparent, elevation: 0,
+                    onRefresh: () async { setState(() { isLoading = true; }); await refreshPage(context, setState).whenComplete(() => setState(() { isLoading = false; })); },
+                    
+                    indicatorBuilder: (context, controller) => Icon(FontAwesomeIcons.rotateRight, size: MySize.Width(context, 0.08),),
+                    child: SizedBox.expand(
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                                          
+                            // product list
+                            Expanded(
+                              child: MyWidgets.MyScrollBar1( context, controller: mainScrollController, child: ListView.builder(
+                                padding: EdgeInsets.all(9),
+                                controller: mainScrollController,
+                                
+                                itemCount: 2,
+                                itemBuilder: (context, index) {
+                                  if (index == 0) {
+                                    return Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      SizedBox(
+                                        height: MySize.Height(context, 0.135),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('Loyalty Points', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
+                                            Expanded(child: Row(
+                                              children: [
+                                                Expanded(child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(user['id']!, style: Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.normal),),
+                                                    Text.rich(
+                                                      TextSpan(text: user['points'].toString(), style: Theme.of(context).textTheme.displayMedium!.copyWith(fontWeight: FontWeight.bold,
+                                                          color: Theme.of(context).colorScheme.outlineVariant),
+                                                          children: [
+                                                            TextSpan(text: ' pts', style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500,
+                                                            color: Theme.of(context).colorScheme.outlineVariant
+                                                          )
+                                                        )
+                                                      ])
+                                                    )
+                                                  ],
+                                                )),
+                                                Expanded(child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    MyWidgets.MyTileButton(context, 'Tracking History', icon: Icons.history,
+                                                      onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
+                                                    MyWidgets.MyTileButton(context, 'Images Status', icon: Icons.image,
+                                                      onPressed: () => myPushNamed( context, setState, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
+                                                  ],
+                                                )),
+                                              ],
+                                            )),
+                                          ],
+                                        )
+                                      ),
+                              
+                                      SizedBox(height: 12,),
+                                      Text('Product Catalogue', style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500)),
+                                    ]);
+                                  } else if (index == 1) {
+                                    return StickyHeader(
+                                      header: Container( color: Theme.of(context).primaryColor, child: Padding( padding: const EdgeInsets.only(bottom: 3.0),
+                                        child: GradientSearchBar( pageSetState: setState,
+                                          applyFilters: applyFilters,
+                                          filtersApplied: filtersApplied,
+                                          datas: [ brandMap, categoryMap ],
+                                          
+                                          controller: searchController,
+                                          focusNode: searchFocusNode,
+                                        
+                                          items: [
+                                            GradientSearchBar.filterMenu(context, title: 'Brand', data: brandMap,
+                                              applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
+                                            GradientSearchBar.filterMenu(context, title: 'Category', data: categoryMap,
+                                              applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState),
+                                          ],
+                                          onSearch: () {},
+                                        )),
+                                      ),
+                                          
+                                      content: GridView.builder(
+                                      padding: const EdgeInsets.all(15),
+                                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2, // row
+                                        childAspectRatio: 2.5 / 4,
+                                        mainAxisSpacing: 20,
+                                        crossAxisSpacing: 20,
+                                      ),
+                                      itemCount: 12,
+                                      shrinkWrap: true,
+                                      
+                                      physics: NeverScrollableScrollPhysics(),
+                                      // controller: productController,
+                                      itemBuilder: (BuildContext context, int i) {
+                                        return ProductCard(
+                                            imageUrl: Image.asset(
+                                              'assets/images_examples/headphone.jpeg',
+                                            ),
+                                            title: "Headphone",
+                                            points: 1000,
+                                            onLoveIconTap: () {},
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: [
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .tertiary,
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .onPrimary,
+                                              ],
+                                            ));
+                                        },
+                                      ),
+                                    );
+                                  } else { return SizedBox(); }
+                                }
+                              )),
+                            ),
+                                    
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  MyWidgets.MyLoading(context, (isLoading || isRefresing), isDarkMode)
+                ],
+              );
+            } else { 
+              return MyWidgets.MyLoading2(context, isDarkMode);
+            }} else { 
+              return MyWidgets.MyLoading2(context, isDarkMode);
+            }
+          }
         ),
 
         floatingActionButton: HomeWidgets.MyFloatingButton( context, 60, onTap: () async { setState(() { isLoading = true; });
@@ -225,11 +242,11 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
               setState(() => imageTaken = taken);
 
               if (imageTaken || imageRetake) {
-                submit = await Navigator.pushNamed( context, HomepagePreview.routeName , arguments: MyArguments(token,
+                submit = await myPushNamed( context, setState, HomepagePreview.routeName , arguments: MyArguments(token,
                   prevPath: "/home", receiptImage: receiptImage, username: user['id'],
                 ));
 
-                if (submit == true) { setState(() { isLoading = true; imageRetake = false; }); await refreshPage(context).whenComplete(() => setState(() { isLoading = false; })); }
+                if (submit == true) { setState(() { isLoading = true; imageRetake = false; }); await refreshPage(context, setState).whenComplete(() => setState(() { isLoading = false; })); }
                 else if (submit == 'retake') { setState(() { imageRetake = true; }); }
                 else { setState(() { imageRetake = false; }); }
               } else { setState(() { imageRetake = false; }); }
@@ -242,21 +259,25 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
         drawer: HomeWidgets.MyDrawer(context, isDarkMode, appVersion: appVersion, domainName: domainName, 
           items: [
             HomeWidgets.Item(context, icon: FontAwesomeIcons.userAlt, label: 'Profile',
-              onTap: () => Navigator.pushNamed( context, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user), outlets: jsonEncode(outlets)))),
+              onTap: () => myPushNamed( context, setState, ProfilePage.routeName , arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user), outlets: jsonEncode(outlets)))),
+
             HomeWidgets.Item(context, icon: FontAwesomeIcons.storeAlt, label: 'Manage Outlets',
-              onTap: () => Navigator.pushNamed( context, ManageOutletPage.routeName , arguments: MyArguments(token, prevPath: "/home", outlets: jsonEncode(outlets)))),
+              onTap: () { scaffoldKey.currentState!.closeDrawer();
+                myPushNamed( context, setState, ManageOutletPage.routeName,
+                  arguments: MyArguments(token, prevPath: "/home", user: jsonEncode(user), outlets: jsonEncode(outlets)));
+              }),
 
             Divider(color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5),),
 
             HomeWidgets.Item(context, icon: FontAwesomeIcons.history, label: 'Tracking History',
               onTap: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
             HomeWidgets.Item(context, icon: FontAwesomeIcons.images, label: 'Images Status',
-              onTap: () => Navigator.pushNamed( context, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
+              onTap: () => myPushNamed( context, setState, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
 
             Divider(color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5),),
 
             HomeWidgets.Item(context, icon: FontAwesomeIcons.gear, label: 'Settings',
-              onTap: () => Navigator.pushNamed( context, SettingsPage.routeName , arguments: MyArguments(token, prevPath: "/home"))),
+              onTap: () => myPushNamed( context, setState, SettingsPage.routeName , arguments: MyArguments(token, prevPath: "/home"))),
             HomeWidgets.Item(context, icon: FontAwesomeIcons.signOut, label: 'Log Out',
               onTap: () async {
                 await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Logging Out',

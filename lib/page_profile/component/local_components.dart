@@ -74,6 +74,10 @@ mixin ProfileComponents {
   bool createUser = true;
   bool saveButtonActive = true;
   List<bool> errorMarks = [false, false, false, false, false, false, false, false, false, false, false];
+
+  // update mark
+  bool userUpdated = false;
+  bool stillEditing = false;
   
   Map<String, dynamic> user = {};
   Map<String, dynamic> outlets = {};

@@ -25,9 +25,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
 
   @override
   void initState() {
-    initParam(context);
-
     super.initState();
+
+    initParam(context);
   }
 
   @override
@@ -40,7 +40,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
   
   @override
   Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
-    super.initParam(context); canPop = false;
+    super.initParam(context);
     
     dateTime = DateFormat('dd/MM/yyyy').add_Hms();
   }
@@ -74,12 +74,16 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
     if (!launchLoading) { setPath(prevPath: args.prevPath, routeName: ProfileEditPage.routeName); }
 
     return PopScope(
-      onPopInvoked: (value) async {
-        if (value) return;
-
-        await popDialog().then((res) async { print('popscope_res: $res');
-            canPop = res; if (res) Navigator.pop(context);
-          });
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        
+        if (!stillEditing) {
+          Navigator.pop(context, userUpdated);
+        } else {
+          await popDialog().then((res) async { print('popscope_res: $res');
+              canPop = res; if (res) Navigator.pop(context, userUpdated);
+            });
+        }
       },
       canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
@@ -94,7 +98,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
               padding: const EdgeInsets.all(12.0),
               child: Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths, canPop: canPop, popDialog: popDialog,)),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths, canPop: !stillEditing, refresh: userUpdated, popDialog: popDialog,)),
 
                   Expanded(
                     child: MyWidgets.MyScroll2( context,
@@ -111,16 +115,16 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
                                   ProfileWidgets.Header(context, title: 'Personal Information'),
                                   Column(children: [
                                     ProfileWidgets.ConfirmationListTile(context, title: 'Phone No', controller: phoneController, readOnly: true, focusNode: dummyFocusnode,
-                                      onTap: () => setState( () {} )
+                                      onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[0] ? MyWidgets.MyErrorTextField(context, "Error TextField" ) : SizedBox(),
                                     ProfileWidgets.ConfirmationListTile(context, title: 'Username', controller: usernameController, readOnly: true, focusNode: usernameFocusnode,
-                                      onTap: () => setState( () {} )
+                                      onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[1] ? MyWidgets.MyErrorTextField(context, "Error TextField" ) : SizedBox(),
                                     ProfileWidgets.ConfirmationListTile(context, title: 'Full Name', controller: fullNameController, focusNode: fullNameFocusnode,
-                                      onTap: () => setState( () {} )
+                                      onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[2] ? MyWidgets.MyErrorTextField(context, errMsgs['fullNameErrorMsg']! ) : SizedBox(),
                                     ProfileWidgets.ConfirmationListTile(context, title: 'Email', controller: emailController, focusNode: emailFocusnode,
-                                      onTap: () => setState( () {} )
+                                      onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[3] ? MyWidgets.MyErrorTextField(context, errMsgs['emailErrorMsg']! ) : SizedBox(),
                                   ],),
 
@@ -129,7 +133,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
                                   ProfileWidgets.Header(context, title: 'Security Information'),
                                   Column(children: [
                                     ProfileWidgets.ConfirmationListTile(context, title: 'Password', controller: passwordController, isPassword: true, focusNode: passwordFocusnode, readOnly: true,
-                                      onTap: () => setState( () {} )
+                                      onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[4] ? MyWidgets.MyErrorTextField(context, errMsgs['passwordErrorMsg']! ) : SizedBox(),
                                   ],),
                               
@@ -138,13 +142,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
                                   ProfileWidgets.Header(context, title: 'Address Information'),
                                   Column(children: [
                                     ProfileWidgets.ConfirmationListTile(context, title: 'Unit No. / House No.', controller: address1Controller, focusNode: address1Focusnode,
-                                      onTap: () => setState( () {} )
+                                      onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[5] ? MyWidgets.MyErrorTextField(context, errMsgs['address1ErrorMsg']! ) : SizedBox(),
                                     ProfileWidgets.ConfirmationListTile(context, title: 'Street Name', controller: address2Controller, focusNode: address2Focusnode,
-                                      onTap: () => setState( () {} )
+                                      onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[6] ? MyWidgets.MyErrorTextField(context, errMsgs['address2ErrorMsg']! ) : SizedBox(),
                                     ProfileWidgets.ConfirmationListTile(context, title: 'Residential Area', controller: address3Controller, focusNode: address3Focusnode,
-                                      onTap: () => setState( () {} )
+                                      onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[7] ? MyWidgets.MyErrorTextField(context, errMsgs['address3ErrorMsg']! ) : SizedBox(),
                                     
                                     ProfileWidgets.dropdownField(context, 'State', selectedFilter: stateController.text, filters: statesFilters, onChanged: (String? _filter) async {
@@ -242,7 +246,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
                                     errorMarks[9] ? MyWidgets.MyErrorTextField(context, errMsgs['cityErrorMsg']! ) : SizedBox(),
                                     
                                     ProfileWidgets.ConfirmationListTile(context, title: 'PostCode', controller: postcodeController, focusNode: postcodeFocusnode, digitOnly: true,
-                                      onTap: () => setState( () {} )
+                                      onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[10] ? MyWidgets.MyErrorTextField(context, errMsgs['postcodeErrorMsg']! ) : SizedBox(),
                                   ],),
                                 ],
@@ -276,31 +280,22 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
                                                     await Api.user_self(domainName, token, password: password).then((res) {
 
                                                       if (res == 200) {
+                                                        // success
                                                         FloatingSnackBar(message: 'Successful. Edit saved', context: context);
-                                                      } else {
-                                                        FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
-                                                      }
+                                                        setState(() => userUpdated = true );
+                                                        setState(() => stillEditing = false );
 
-                                                      setState(() { isLoading = false; });
-                                                    });
-
-                                                    setState(() { isLoading = false; });
+                                                      } else { FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                                      } setState(() { isLoading = false; });
+                                                    }); setState(() { isLoading = false; });
                                                   });
-
-                                                } else {
-                                                  FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
-                                                }
-                                                
-                                                setState(() { isLoading = false; });
+                                                } else { FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                                } setState(() { isLoading = false; });
                                               });
                                             } else { print('failed');
                                               FloatingSnackBar(message: 'Unsuccessful. Please enter your info correctly.', context: context);
-                                            }
-
-                                            setState(() { isLoading = false; });
-                                          });
-
-                                          setState(() { isLoading = false; });
+                                            } setState(() { isLoading = false; });
+                                          }); setState(() { isLoading = false; });
                                         }
                                       }
                                     );

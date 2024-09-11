@@ -1261,9 +1261,10 @@ class GradientSearchBar extends StatelessWidget {
 class Breadcrumb extends StatelessWidget {
   final List<String> paths;
   bool canPop;
+  bool refresh;
   Future<dynamic> Function()? popDialog;
 
-  Breadcrumb({super.key, required this.paths, this.canPop = true, this.popDialog});
+  Breadcrumb({super.key, required this.paths, this.canPop = true, this.refresh = false, this.popDialog});
 
   @override
   Widget build(BuildContext context) {
@@ -1277,9 +1278,9 @@ class Breadcrumb extends StatelessWidget {
                 int index = paths.indexOf(path);
                 if (!canPop) {
                   popDialog!().then((res) async { print('appbar_res: $res');
-                    canPop = res; if (res) for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context); }
+                    canPop = res; if (res) for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context, refresh); }
                   });
-                } else { for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context); } }
+                } else { for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context, refresh); } }
               }
             },
             child: Text(

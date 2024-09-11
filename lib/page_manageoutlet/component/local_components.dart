@@ -15,13 +15,21 @@ mixin ManageOutletComponents {
     },
   ];
 
+  int activeCount = 0;
+
   List<dynamic> accountImages = [];
   List<dynamic> accountImagesTemp = [];
 
   bool activeTemp = true;
-  bool showInactiveOutlets = true;
+  bool showInactiveOutlets = false;
   
+  Map<String, dynamic> user = {};
   Map<String, dynamic> outlets = {};
+  Map<String, dynamic> updateActiveData = {};
+
+  void setActiveCount(Map<String, dynamic> outlets) { activeCount = 0;
+    for (var i = 0; i < outlets['count']; i++) { if (outlets['rows'][i]['active']) { activeCount++; } }
+  }
 
   Future<void> setAccountImages() async {
     final regEx = RegExp(r'(?<=assets/account_images/)(.*)(?=.png)');

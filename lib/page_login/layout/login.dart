@@ -28,9 +28,9 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
 
   @override
   void initState() {
-    initParam(context, needToken: false).whenComplete(() { setState(() { launchLoading = false; }); });
-    
     super.initState();
+    
+    initParam(context, needToken: false).whenComplete(() { setState(() { launchLoading = false; }); });
   }
 
   @override

@@ -329,6 +329,46 @@ class Api {
     return statusCode;
   }
 
+  static Future<int> user_account_update_active(BuildContext context, String domainName, String token, 
+    { required Map<String, dynamic> updateActiveData }
+  ) async {
+    int statusCode = 0;
+
+    updateActiveData.forEach((key, data) {
+      if (data == null) { statusCode = 400; FloatingSnackBar(message: 'Error ${statusCode}. ${key.capitalize()} is empty.', context: context); }
+    }); if ( statusCode == 400 ) { return statusCode; }
+
+    final Dio dio = Dio();
+
+    String url = '${domainName}/api/user_account/app/updateActive';
+
+    try {
+      final response = await dio.post(
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+
+        url,
+        data: { "data": updateActiveData }
+      );
+
+      statusCode = response.statusCode!;
+
+    } on DioException catch (e) {
+      statusCode = e.response!.statusCode ?? 503;
+      String errMsg = 'Unknown error.';
+
+      if (e.response != null) { errMsg = e.response!.data; }
+      print(errMsg);
+    } catch (e) {
+      print(e);
+      statusCode = 503;
+    }
+
+    return statusCode;
+  }
+
   static Future<int> user_self(String domainName, String token, {required String password}) async {
     int statusCode = 0;
 

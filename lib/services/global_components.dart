@@ -39,8 +39,8 @@ mixin MyComponents {
   final FocusNode searchFocusNode = FocusNode();
   
   bool isLoading = false;
+  bool isRefresing = false;
   bool launchLoading = true;
-  bool refreshing = false;
   bool canPop = true;
 
   DateFormat? monthYear;
@@ -56,9 +56,44 @@ mixin MyComponents {
   late String deviceID;
   late String token;
 
+  late Future<bool> isRefresh;
+
+  Future<Object?> myPushNamed(BuildContext context, void Function(void Function() fn) setState, String routeName, {
+      Object? arguments,
+  }) async {
+    await Navigator.pushNamed( context, routeName , arguments: arguments).then((res) async {
+      if (res == true) { print('pushNamed res == true');
+        await setIsRefreshTrue().whenComplete(() => setState((){isRefresh = getIsRefresh();}) );
+
+        return true;
+      } else {return false;}
+    }); return false;
+  }
+
+  Future<bool> getIsRefresh() async {
+    bool _isRefresh = false;
+    
+    await MyPrefs.init().then((prefs) {
+      prefs!;
+      
+      _isRefresh = MyPrefs.getIsRefresh(prefs: prefs) ?? false;
+    });
+    
+    return _isRefresh; 
+  }
+
+  Future<void> setIsRefreshTrue() async {
+    await MyPrefs.init().then((prefs) {
+      prefs!;
+      
+      MyPrefs.setIsRefresh(prefs: prefs, true);
+    });
+  }
+
   Future<bool> popDialog() async {return true;}
 
   Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
+    isRefresh = getIsRefresh(); print('run :: isRefresh = getIsRefresh();');
     await MyPrefs.init().then((prefs) async {
       prefs!;
       
@@ -81,9 +116,16 @@ mixin MyComponents {
     });
   }
 
-  Future<void> refreshPage(BuildContext context) async {
+  Future<void> refreshPage(BuildContext context, void Function(void Function() fn) setState) async {
     await Future.delayed(const Duration(seconds: 1));
-    await initParam(context);
+    await initParam(context).whenComplete(() async {
+      await MyPrefs.init().then((prefs) {
+        prefs!;
+        
+        MyPrefs.setIsRefresh(prefs: prefs, false);
+        setState(() {isRefresh = getIsRefresh();}); print('run :: isRefresh = getIsRefresh();');
+      });
+    });
   }
 
   void setPath({key, required String prevPath, required String routeName}) {

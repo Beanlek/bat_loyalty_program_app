@@ -35,6 +35,7 @@ class ProfileWidgets {
     { key, required String title, required TextEditingController controller,
       void Function()? onPressed,
       void Function()? onTap,
+      void Function(String)? onChanged,
       required FocusNode focusNode,
       bool readOnly = false,
       bool isPassword = false,
@@ -137,7 +138,8 @@ class ProfileWidgets {
               readOnly: readOnly,
               digitOnly: digitOnly,
             
-              onTap: onTap
+              onTap: onTap,
+              onChanged: onChanged
             ),
           
             trailing: (isPassword || isImage) ? SizedBox(
@@ -164,6 +166,7 @@ class ProfileWidgets {
     {key, required FocusNode focusNode, required TextEditingController controller,
       required bool obscureText, bool readOnly = false,
       void Function()? onTap,
+      void Function(String)? onChanged,
       bool digitOnly = false
     }
   ) {
@@ -175,6 +178,7 @@ class ProfileWidgets {
       keyboardType: !digitOnly ? null : TextInputType.phone,
 
       onTap: onTap,
+      onChanged: onChanged,
 
       decoration: InputDecoration(border: InputBorder.none, isDense: true,
         hintText: title, hintStyle: TextStyle( color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5), fontWeight: FontWeight.normal),

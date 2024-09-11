@@ -22,8 +22,8 @@ class _HomepagePreviewState extends State<HomepagePreview> with HomeComponents, 
 
   @override
   void initState() {
-    initParam(context).whenComplete(() { setState(() { launchLoading = false; }); });
     super.initState();
+    initParam(context).whenComplete(() { setState(() { launchLoading = false; }); });
   }
 
   @override

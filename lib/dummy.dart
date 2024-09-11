@@ -16,9 +16,9 @@ class _DummyState extends State<Dummy> with MyComponents{
   
   @override
   void initState() {
-    initParam(context, needToken: false).whenComplete(() { setState(() { launchLoading = false; }); });
-    
     super.initState();
+    
+    initParam(context, needToken: false).whenComplete(() { setState(() { launchLoading = false; }); });
   }
 
   @override

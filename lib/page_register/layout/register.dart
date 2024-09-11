@@ -21,13 +21,13 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
 
   @override
   void initState() {
+    super.initState();
+    
     initParam(context, needToken: false).whenComplete(() {
       setState(() {
         launchLoading = false;
       });
     });
-    
-    super.initState();
   }
 
   @override

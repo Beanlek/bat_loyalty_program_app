@@ -17,9 +17,9 @@ class _SettingsPageState extends State<SettingsPage> with SettingsComponents, My
   
   @override
   void initState() {
-    initParam(context, needToken: false).whenComplete(() { setState(() { launchLoading = false; }); });
-    
     super.initState();
+    
+    initParam(context, needToken: false).whenComplete(() { setState(() { launchLoading = false; }); });
   }
 
   @override

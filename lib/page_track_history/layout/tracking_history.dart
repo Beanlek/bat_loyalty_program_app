@@ -23,12 +23,8 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
 
   @override
   void initState() {
-    initParam(context).whenComplete(() {
-      setState(() {
-        launchLoading = false;
-      });
-    });
     super.initState();
+    initParam(context).whenComplete(() { setState(() { launchLoading = false; }); });
   }
 
   @override
