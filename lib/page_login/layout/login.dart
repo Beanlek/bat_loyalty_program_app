@@ -159,9 +159,8 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                                     await MyPrefs.init().then((prefs) async {
                                       prefs!;
                                       
-                                      final token = MyPrefs.getToken(prefs: prefs);
-                          
-                                      if (statusCode == 200 && token != null) {
+                                      final token = MyPrefs.getToken(prefs: prefs);                                         
+                                      if (statusCode == 200 && token != null) {                                        
                                         await Api.user_self(domainName, token);
                           
                                         Navigator.pushNamed(

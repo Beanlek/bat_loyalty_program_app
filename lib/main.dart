@@ -48,10 +48,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Locale>(
+     
       stream: GeneralStreams.languageStream.stream,
       builder: (context, snapshot) {
         Locale locale = snapshot.data ?? const Locale('en');
+        
         return MaterialApp(
+        
           debugShowCheckedModeBanner: false,
 
           title: 'BAT Loyalty Program',

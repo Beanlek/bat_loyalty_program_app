@@ -1,4 +1,4 @@
-import 'package:bat_loyalty_program_app/l10n/l10n.dart';
+// import 'package:bat_loyalty_program_app/l10n/l10n.dart';
 import 'package:bat_loyalty_program_app/streams/general_stream.dart';
 import 'package:flutter/material.dart';
 
@@ -104,7 +104,7 @@ class HomeWidgets {
                 ? const Locale('bn')
                 : const Locale('en');
             GeneralStreams.languageStream.add(newLocale);
-            //  Locale newLocale = L10n.locals.firstWhere((element) => element != selectedLocal);
+            // Locale newLocale = L10n.locals.firstWhere((element) => element != selectedLocal);
             //GeneralStreams.languageStream.add(L10n.locals.firstWhere((element) => element != selectedLocal));
           },
           icon: Icon(Icons.language,

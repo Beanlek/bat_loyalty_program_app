@@ -120,7 +120,6 @@ class Api {
     int statusCode = 0;
 
     final Dio dio = Dio();
-
     String url = '${domainName}/api/user/app/self';
 
     try {
@@ -133,14 +132,15 @@ class Api {
       );
 
       statusCode = response.statusCode!;
-
+      
       if (statusCode == 200) {
-        final user = response.data['user'];
-
+      final user = response.data['data']['user'];
+        // final user = response.data['user'];      
         await MyPrefs.init().then((prefs) {
           prefs!;
-
           MyPrefs.setUser(jsonEncode(user), prefs: prefs);
+          
+          
         });
       }
     } catch (e) {
@@ -168,7 +168,6 @@ class Api {
     }
 
     final Dio dio = Dio();
-
     String url = '${domainName}/api/user/app/register';
 
     try {
