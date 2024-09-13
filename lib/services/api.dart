@@ -134,8 +134,7 @@ class Api {
       statusCode = response.statusCode!;
       
       if (statusCode == 200) {
-      final user = response.data['data']['user'];
-        // final user = response.data['user'];      
+      final user = response.data['data']['user'];          
         await MyPrefs.init().then((prefs) {
           prefs!;
           MyPrefs.setUser(jsonEncode(user), prefs: prefs);

@@ -30,6 +30,10 @@ dependencies:
     
   cupertino_icons: ^1.0.6
   http: ^1.2.1
+  country_flags: ^3.0.0
+  country_flags_flutter: ^1.0.1
+  flag: ^7.0.0
+  world_flags: ^1.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,9 +1,9 @@
 // import 'package:bat_loyalty_program_app/l10n/l10n.dart';
 import 'package:bat_loyalty_program_app/streams/general_stream.dart';
 import 'package:flutter/material.dart';
-
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
+import 'package:flag/flag.dart';
 
 class HomeWidgets {
   static Widget MyDrawer(BuildContext context, bool isDarkMode,
@@ -100,13 +100,66 @@ class HomeWidgets {
       actions: [
         IconButton(
           onPressed: () {
-            Locale newLocale = selectedLocal.languageCode == 'en'
-                ? const Locale('bn')
-                : const Locale('en');
-            GeneralStreams.languageStream.add(newLocale);
-            // Locale newLocale = L10n.locals.firstWhere((element) => element != selectedLocal);
-            //GeneralStreams.languageStream.add(L10n.locals.firstWhere((element) => element != selectedLocal));
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Center(
+                    child: const Text('Select Language',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 16)),
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        leading: Flag.fromCode(
+                          FlagsCode.GB,
+                          height: 25,
+                          width: 30,
+                          borderRadius: 100,
+                        ),
+                        title: const Text('English',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            )),
+                        onTap: () {
+                          Locale newLocale = const Locale('en');
+                          GeneralStreams.languageStream.add(newLocale);
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                      ListTile(
+                        leading: Flag.fromCode(
+                          FlagsCode.BD,
+                          height: 25,
+                          width: 30,
+                          borderRadius: 100,
+                        ),
+                        title: const Text('Bangladesh',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            )),
+                        onTap: () {
+                          Locale newLocale = const Locale('bn');
+                          GeneralStreams.languageStream.add(newLocale);
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
           },
+          // onPressed: () {
+          //   Locale newLocale = selectedLocal.languageCode == 'en'
+          //       ? const Locale('bn')
+          //       : const Locale('en');
+          //   GeneralStreams.languageStream.add(newLocale);
+          // },
           icon: Icon(Icons.language,
               color: Theme.of(context).colorScheme.secondary),
         ),
