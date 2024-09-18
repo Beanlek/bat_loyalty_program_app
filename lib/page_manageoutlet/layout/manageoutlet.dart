@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bat_loyalty_program_app/page_manageoutlet/component/local_components.dart';
+import 'package:bat_loyalty_program_app/page_manageoutlet/layout/manageoutlet_add.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
@@ -37,23 +38,26 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
   
   @override
   Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
-    super.initParam(context); await setAccountImages(); canPop = false;
+    super.initParam(context); await setAccountImages();
     
     dateTime = DateFormat('dd/MM/yyyy').add_Hms();
   }
 
   @override
-  Future<bool> popDialog() async {
-    bool res = false;
+  Future<void> refreshPage(BuildContext context, void Function(void Function() fn) setState) async {
+    await super.refreshPage(context, setState).whenComplete(() async {
 
-    await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Unsaved Data',
-      confirmText: 'Yes',
-      cancelText: 'Continue Editing',
-      subtitle: 'Are you sure you want to exit this page?', warning: 'Once exit, all progress will not be saved.'
+      await MyPrefs.init().then((prefs) async { prefs!;
+
+        final _user = MyPrefs.getUser(prefs: prefs) ?? '{}';
+        setState(() { user = jsonDecode(_user); });
+
+        final _outlets = MyPrefs.getOutlets(prefs: prefs) ?? '{}';
+        setState(() { outlets = jsonDecode(_outlets); });
+
+      });
       
-    )).then((_res) async { print('_res: $_res'); res = _res; });
-
-    return res;
+    });
   }
   
   @override
@@ -71,238 +75,264 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: ManageOutletPage.routeName);
 
     return PopScope(
-      onPopInvoked: (didPop) async { print('onPopInvoked');
+      onPopInvoked: (didPop) async {
         if (didPop) return;
-
-        await popDialog().then((res) async { print('popscope_res: $res');
-            canPop = res; if (res) Navigator.pop(context, true);
-          });
-
+        
+        Navigator.pop(context, outletListEditted);
       },
       canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Manage Outlets', appVersion: appVersion),
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Manage Outlets', appVersion: appVersion, canPop: canPop, refresh: outletListEditted, popDialog: popDialog),
         
         body:
-        
-        Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center,
+
+        FutureBuilder<bool?>(
+          initialData: false,
+          future: isRefresh,
+          builder: (context, snapshot) { if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return MyWidgets.MyErrorPage(context, isDarkMode);
+            } else if (snapshot.hasData) {isRefresing = snapshot.data!; print('snapshot has data: $isRefresing');
+
+              if (isRefresing) {refreshPage(context, setState);}
+
+              return Stack(
                 children: [
-                  Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths)),
-                  
-                  GradientSearchBar( pageSetState: setState,
-                    applyFilters: applyFilters,
-                    filtersApplied: filtersApplied,
-                    datas: [ accounts ],
-                                    
-                    controller: searchController,
-                    focusNode: searchFocusNode,
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths, refresh: outletListEditted,)),
+                        
+                        GradientSearchBar( pageSetState: setState,
+                          applyFilters: applyFilters,
+                          filtersApplied: filtersApplied,
+                          datas: [ accounts ],
+                                          
+                          controller: searchController,
+                          focusNode: searchFocusNode,
 
-                    items: [
-                      GradientSearchBar.filterMenu(context, title: 'Company', data: accounts, single: false,
-                        applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
-                    ],
-                    onSearch: () {},
-                  ),
+                          items: [
+                            GradientSearchBar.filterMenu(context, title: 'Company', data: accounts, single: false,
+                              applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
+                          ],
+                          onSearch: () {},
+                        ),
 
-                  Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        child: Column( crossAxisAlignment: CrossAxisAlignment.start,
+                        Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('Active Outlets: ${activeCount}', style: Theme.of(context).textTheme.bodyMedium),
-                            Text('Total Outlets: ${outlets['count']}', style: Theme.of(context).textTheme.bodyMedium),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                              child: Column( crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Active Outlets: ${activeCount}', style: Theme.of(context).textTheme.bodyMedium),
+                                  Text('Total Outlets: ${outlets['count']}', style: Theme.of(context).textTheme.bodyMedium),
+                                ],
+                              ),
+                            ),
+                            Padding( padding: const EdgeInsets.only(bottom: 8.0), child:
+                              MyWidgets.MySwitch(context, active: showInactiveOutlets, activeText: 'Show Past Outlets', inactiveText: 'Show Past Outlets',
+                              activeColor: Theme.of(context).colorScheme.secondary,
+                              inactiveColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                                onChanged: (_value) { setState(() => showInactiveOutlets = _value); }
+                              )),
                           ],
                         ),
-                      ),
-                      Padding( padding: const EdgeInsets.only(bottom: 8.0), child:
-                        MyWidgets.MySwitch(context, active: showInactiveOutlets, activeText: 'Show Past Outlets', inactiveText: 'Show Past Outlets',
-                        activeColor: Theme.of(context).colorScheme.secondary,
-                        inactiveColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
-                          onChanged: (_value) { setState(() => showInactiveOutlets = _value); }
-                        )),
-                    ],
-                  ),
 
-                  Expanded(
-                    child: MyWidgets.MyScrollBar1( context, controller: mainScrollController,
-                      child: ListView.builder( controller: mainScrollController,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        itemCount: outlets['count'] + 1,
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
+                        Expanded(
+                          child: MyWidgets.MyScrollBar1( context, controller: mainScrollController,
+                            child: ListView.builder( controller: mainScrollController,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              itemCount: outlets['count'] + 1,
+                              physics: AlwaysScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
 
-                          if (index != outlets['count']) {
+                                if (index != outlets['count']) {
 
-                            Map<dynamic, dynamic> outlet = outlets['rows'][index]; print(index); print("outlets['count']: ${outlets['count']}");
-                            bool show = false;
+                                  Map<dynamic, dynamic> outlet = outlets['rows'][index]; print(index); print("outlets['count']: ${outlets['count']}");
+                                  bool show = false;
 
-                            if (outlet['active']) { show = true; }
-                            else if (!outlet['active'] && showInactiveOutlets) { show = true; }
-                            else { show = false; }
+                                  if (outlet['active']) { show = true; }
+                                  else if (!outlet['active'] && showInactiveOutlets) { show = true; }
+                                  else { show = false; }
 
-                            if (show) {
-                            
-                              String imagePath = 'assets/account_images/company.png';
-                              String address = 
-                                '${outlet['address1']}, ${outlet['address2']}, ${outlet['address3']},\n${outlet['postcode']}, ${outlet['city']}, ${outlet['state']}';
-
-                              for (var i = 0; i < accountImages.length; i++) {
-                                if (outlet['account_id'].toString().toLowerCase() == accountImages[i]['name']) {
-                                  imagePath = 'assets/account_images/${outlet['account_id'].toString().toLowerCase()}.png'; i = accountImages.length;
-                                } else {
-                                  imagePath = 'assets/account_images/company.png';
-                                }
-                              }
-                              
-                              return Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Stack(
-                                children: [
-                                  // switch button
-                                  Opacity( opacity: outlet['active'] ? 1 : 0.5, child: Card(
-                                    elevation: 2,
-                                    color: Theme.of(context).primaryColor,
-                                    shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(12.0), 
-                                      side: BorderSide(color: Theme.of(context).colorScheme.primary)
-                                    ),
+                                  if (show) {
                                   
-                                    child: Padding( padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), child: Column( crossAxisAlignment: CrossAxisAlignment.start,
+                                    String imagePath = 'assets/account_images/company.png';
+                                    String address = 
+                                      '${outlet['address1']}, ${outlet['address2']}, ${outlet['address3']},\n${outlet['postcode']}, ${outlet['city']}, ${outlet['state']}';
+
+                                    for (var i = 0; i < accountImages.length; i++) {
+                                      if (outlet['account_id'].toString().toLowerCase() == accountImages[i]['name']) {
+                                        imagePath = 'assets/account_images/${outlet['account_id'].toString().toLowerCase()}.png'; i = accountImages.length;
+                                      } else {
+                                        imagePath = 'assets/account_images/company.png';
+                                      }
+                                    }
+                                    
+                                    return Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Stack(
                                       children: [
-                                        // first row
-                                        Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Row(
-                                          children: [
-                                            Padding( padding: const EdgeInsets.only(right: 8.0), child: SizedBox(
-                                              width: MySize.Width(context, 0.15),
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                child: Image.asset( imagePath ),
-                                              ),
-                                            )),
-                                  
-                                            Column( crossAxisAlignment: CrossAxisAlignment.start, children:[
-                                              Text(outlet['outlet_id'], style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
-                                              Text(outlet['name'], style: Theme.of(context).textTheme.bodyMedium),
-                                            ]),
-                                          ],
+                                        // switch button
+                                        Opacity( opacity: outlet['active'] ? 1 : 0.5, child: Card(
+                                          elevation: 2,
+                                          color: Theme.of(context).primaryColor,
+                                          shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(12.0), 
+                                            side: BorderSide(color: Theme.of(context).colorScheme.primary)
+                                          ),
+                                        
+                                          child: Padding( padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), child: Column( crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              // first row
+                                              Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Row(
+                                                children: [
+                                                  Padding( padding: const EdgeInsets.only(right: 8.0), child: SizedBox(
+                                                    width: MySize.Width(context, 0.15),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                      child: Image.asset( imagePath ),
+                                                    ),
+                                                  )),
+                                        
+                                                  Column( crossAxisAlignment: CrossAxisAlignment.start, children:[
+                                                    Text(outlet['outlet_id'], style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
+                                                    Text(outlet['name'], style: Theme.of(context).textTheme.bodyMedium),
+                                                  ]),
+                                                ],
+                                              )),
+                                        
+                                              // address
+                                              Padding( padding: const EdgeInsets.only(bottom: 62.0),
+                                                child: Opacity( opacity: 0.5, child: Text(address, style: Theme.of(context).textTheme.bodySmall))),
+                                            ],
+                                          )),
                                         )),
-                                  
-                                        // address
-                                        Padding( padding: const EdgeInsets.only(bottom: 62.0),
-                                          child: Opacity( opacity: 0.5, child: Text(address, style: Theme.of(context).textTheme.bodySmall))),
-                                      ],
-                                    )),
-                                  )),
-                                  
-                                  Positioned( bottom: 12, right: 12,
-                                    child: Padding( padding: const EdgeInsets.only(bottom: 8.0), child:
-                                      MyWidgets.MySwitch(context, active: outlet['active'], activeText: 'Status: Assigned', inactiveText: 'Status: Not assigned',
-                                        onChanged: (_value) async {
-                                          if (activeCount == 1 && outlet['active'] == true) {
-                                            FloatingSnackBar(message: 'This is your only active outlet. You cannnot deactivate this outlet.', context: context);
-                                          } else {
-                                          
-                                            setState(() => isLoading = true);
-                                            String subtitle;
+                                        
+                                        Positioned( bottom: 12, right: 12,
+                                          child: Padding( padding: const EdgeInsets.only(bottom: 8.0), child:
+                                            MyWidgets.MySwitch(context, active: outlet['active'], activeText: 'Status: Assigned', inactiveText: 'Status: Not assigned',
+                                              onChanged: (_value) async {
+                                                if (activeCount == 1 && outlet['active'] == true) {
+                                                  FloatingSnackBar(message: 'This is your only active outlet. You cannnot deactivate this outlet.', context: context);
+                                                } else {
+                                                
+                                                  setState(() => isLoading = true);
+                                                  String subtitle;
 
-                                            if (outlet['active']) {
-                                              subtitle = 'You are DEACTIVATING your status.\n\nThis indicates that you are no longer assigned as a employee in this outlet. Proceed?';
-                                            } else {
-                                              subtitle = 'You are REACTIVATING your status.\n\nThis indicates that you will be assigned as a employee in this outlet. Proceed?';
-                                            }
-                                            
-                                            await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Changing Status',
-                                              subtitle: subtitle, ),).then((res) async {
-                                                if (res ?? false) {
-                                                  updateActiveData.clear();
-                                                  setState(() => outlet['active'] = _value);
+                                                  if (outlet['active']) {
+                                                    subtitle = 'You are DEACTIVATING your status.\n\nThis indicates that you are no longer assigned as a employee in this outlet. Proceed?';
+                                                  } else {
+                                                    subtitle = 'You are REACTIVATING your status.\n\nThis indicates that you will be assigned as a employee in this outlet. Proceed?';
+                                                  }
+                                                  
+                                                  await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Changing Status',
+                                                    subtitle: subtitle, ),).then((res) async {
+                                                      if (res ?? false) {
+                                                        updateActiveData.clear();
+                                                        setState(() => outlet['active'] = _value);
 
-                                                  updateActiveData.addEntries({ "user_id": user['id'] }.entries);
-                                                  updateActiveData.addEntries({ "outlet_id": outlet['outlet_id'] }.entries);
-                                                  updateActiveData.addEntries({ "active": outlet['active'] }.entries);
+                                                        updateActiveData.addEntries({ "user_id": user['id'] }.entries);
+                                                        updateActiveData.addEntries({ "outlet_id": outlet['outlet_id'] }.entries);
+                                                        updateActiveData.addEntries({ "active": outlet['active'] }.entries);
 
-                                                  await Api.user_account_update_active(context, domainName, token, updateActiveData: updateActiveData).then((statusCode) async {
-                                                    print({ statusCode });
+                                                        await Api.user_account_update_active(context, domainName, token, updateActiveData: updateActiveData).then((statusCode) async {
+                                                          print({ statusCode });
 
-                                                    if (statusCode == 200) {
-                                                      await MyPrefs.init().then((prefs) async {
-                                                        prefs!;
-                                                        
-                                                        final String cachedUser = MyPrefs.getUser(prefs: prefs)!;
-                                                        final Map<String, dynamic> mappedUser = jsonDecode(cachedUser);
-                                                        final String password = mappedUser['password'];
-                                                        
-                                                        await Api.user_self(domainName, token, password: password).then((res) {
+                                                          if (statusCode == 200) {
+                                                            await MyPrefs.init().then((prefs) async {
+                                                              prefs!;
+                                                              
+                                                              final String cachedUser = MyPrefs.getUser(prefs: prefs)!;
+                                                              final Map<String, dynamic> mappedUser = jsonDecode(cachedUser);
+                                                              final String password = mappedUser['password'];
+                                                              
+                                                              await Api.user_self(domainName, token, password: password).then((res) {
 
-                                                          if (res == 200) {
-                                                            FloatingSnackBar(message: 'Successful. Outlet status changed.', context: context);
+                                                                if (res == 200) {
+
+                                                                  // success
+                                                                  FloatingSnackBar(message: 'Successful. Outlet status changed.', context: context);
+                                                                  setState(() => outletListEditted = true);
+                                                                  setState(() => canPop = false);
+
+                                                                } else {
+                                                                  FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                                                }
+
+                                                                setState(() { isLoading = false; });
+                                                              });
+
+                                                              setState(() { isLoading = false; });
+                                                            });
+
                                                           } else {
                                                             FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
                                                           }
-
+                                                          
                                                           setState(() { isLoading = false; });
                                                         });
-
-                                                        setState(() { isLoading = false; });
-                                                      });
-
-                                                    } else {
-                                                      FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
-                                                    }
-                                                    
-                                                    setState(() { isLoading = false; });
-                                                  });
-                                                  
-                                                  setActiveCount(outlets);
-                                                  updateActiveData.clear();
+                                                        
+                                                        setActiveCount(outlets);
+                                                        updateActiveData.clear();
+                                                      }
+                                                      
+                                                      setState(() => isLoading = false);
+                                                    });
                                                 }
-                                                
-                                                setState(() => isLoading = false);
-                                              });
-                                          }
+                                              }
+                                            )),
+                                        ),
+                                      ],
+                                    ));
+                                  } else {
+                                    return SizedBox();
+                                  }
+
+                                } else {
+
+                                  return InkWell(
+                                    onTap: () async => myPushNamed( context, setState, ManageOutletAddPage.routeName ,
+                                      arguments: MyArguments(token, prevPath: currentPath, user: jsonEncode(user), outlets: jsonEncode(outlets))).then((res) { print("res: $res");
+                                        if (res == true) {
+                                          setState(() => outletListEditted = res as bool);
+                                          setState(() => canPop = !outletListEditted);
                                         }
-                                      )),
-                                  ),
-                                ],
-                              ));
-                            } else {
-                              return SizedBox();
-                            }
-
-                          } else {
-
-                            return InkWell(
-                              onTap: () {},
-                              
-                              child: Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Card(
-                                elevation: 2,
-                                color: Theme.of(context).colorScheme.secondary,
-                              
-                                child: Padding( padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0), child: Row( mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Icon(Icons.add, color: Theme.of(context).primaryColor,),
-                                    Text('Add new outlet', style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor),)
-                                  ]
-                                ))
-                              )),
-                            );
-                          }
-                        },
-                      ),
+                                      }),
+                                    
+                                    child: Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Card(
+                                      elevation: 2,
+                                      color: Theme.of(context).colorScheme.secondary,
+                                    
+                                      child: Padding( padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0), child: Row( mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Icon(Icons.add, color: Theme.of(context).primaryColor,),
+                                          Text('Add new outlet', style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor),)
+                                        ]
+                                      ))
+                                    )),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                            
+                        // Expanded(child: Center(child: Text('ManageOutletPage'))),
+                      ],
                     ),
                   ),
-                      
-                  // Expanded(child: Center(child: Text('ManageOutletPage'))),
-                ],
-              ),
-            ),
 
-            MyWidgets.MyLoading(context, isLoading, isDarkMode)
-          ],
-        ),),
+                  MyWidgets.MyLoading(context, (isLoading || isRefresing), isDarkMode)
+                ],
+              );
+            } else {
+              return MyWidgets.MyLoading2(context, isDarkMode);
+            }} else { 
+              return MyWidgets.MyLoading2(context, isDarkMode);
+            }
+            
+          }
+        ))
     ));
   }
 }

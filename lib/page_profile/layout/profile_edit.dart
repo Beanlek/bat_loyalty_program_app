@@ -88,7 +88,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
       canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Edit Profile', appVersion: appVersion, canPop: canPop, popDialog: popDialog),
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Edit Profile', appVersion: appVersion, canPop: !stillEditing, refresh: userUpdated, popDialog: popDialog),
 
         body: 
         

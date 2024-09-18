@@ -61,13 +61,17 @@ mixin MyComponents {
   Future<Object?> myPushNamed(BuildContext context, void Function(void Function() fn) setState, String routeName, {
       Object? arguments,
   }) async {
+    bool _res = false;
+    
     await Navigator.pushNamed( context, routeName , arguments: arguments).then((res) async {
+      _res = res as bool;
+
       if (res == true) { print('pushNamed res == true');
         await setIsRefreshTrue().whenComplete(() => setState((){isRefresh = getIsRefresh();}) );
 
-        return true;
-      } else {return false;}
-    }); return false;
+        return res;
+      } else {return res;}
+    }); print("exit await myPushNamed"); return _res;
   }
 
   Future<bool> getIsRefresh() async {

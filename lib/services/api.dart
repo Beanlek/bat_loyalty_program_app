@@ -117,7 +117,7 @@ class Api {
       
       String errMsg = 'Unknown error. $e';
 
-      if (e.response != null) { errMsg = e.response!.data['errMsg']; }
+      if (e.response != null) { errMsg = e.response!.data['errMsg'].toString(); }
       print(errMsg);
     } catch (e) {
       print(e);
@@ -165,7 +165,7 @@ class Api {
       if (e.response != null) {
         statusCode = e.response!.statusCode ?? 503;
         
-        errMsg = e.response!.data['errMsg']; 
+        errMsg = e.response!.data['errMsg'].toString(); 
         result.update("result", (value) => [{ "errMsg": errMsg }]);
 
       } else { statusCode = 503; }
@@ -215,7 +215,7 @@ class Api {
       if (e.response != null) {
         statusCode = e.response!.statusCode ?? 503;
         
-        errMsg = e.response!.data['errMsg']; 
+        errMsg = e.response!.data['errMsg'].toString(); 
         result.update("result", (value) => [{ "errMsg": errMsg }]);
 
       } else { statusCode = 503; }
@@ -259,7 +259,7 @@ class Api {
       
       String errMsg = 'Unknown error. $e';
 
-      if (e.response != null) { errMsg = e.response!.data['errMsg']; }
+      if (e.response != null) { errMsg = e.response!.data['errMsg'].toString(); }
       print(errMsg);
     } catch (e) {
       print(e);
@@ -308,7 +308,7 @@ class Api {
                 if (e.response != null) {
                   statusCode = e.response!.statusCode ?? 503;
                   
-                  errMsg = e.response!.data['errMsg']; 
+                  errMsg = e.response!.data['errMsg'].toString(); 
 
                 } else { statusCode = 503; }
 
@@ -359,7 +359,46 @@ class Api {
       statusCode = e.response!.statusCode ?? 503;
       String errMsg = 'Unknown error.';
 
-      if (e.response != null) { errMsg = e.response!.data; }
+      if (e.response != null) { errMsg = e.response!.data.toString(); }
+      print(errMsg);
+    } catch (e) {
+      print(e);
+      statusCode = 503;
+    }
+
+    return statusCode;
+  }
+
+  static Future<int> user_account_insert(BuildContext context, String domainName, String token, 
+    { required String outletId }
+  ) async {
+    int statusCode = 0;
+    
+    if (outletId == '') { statusCode = 400; FloatingSnackBar(message: 'Error ${statusCode}. Outlet Id is empty.', context: context); }
+    if ( statusCode == 400 ) { return statusCode; }
+
+    final Dio dio = Dio();
+
+    String url = '${domainName}/api/user_account/app/insert';
+
+    try {
+      final response = await dio.post(
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+
+        url,
+        data: { "data": { "outlet_id" : outletId } }
+      );
+
+      statusCode = response.statusCode!;
+
+    } on DioException catch (e) {
+      statusCode = e.response!.statusCode ?? 503;
+      String errMsg = 'Unknown error.';
+
+      if (e.response != null) { errMsg = e.response!.data.toString(); }
       print(errMsg);
     } catch (e) {
       print(e);
@@ -449,7 +488,7 @@ class Api {
       statusCode = e.response!.statusCode ?? 503;
       String errMsg = 'Unknown error.';
 
-      if (e.response != null) { errMsg = e.response!.data; }
+      if (e.response != null) { errMsg = e.response!.data.toString(); }
       print(errMsg);
     } catch (e) {
       print(e);
@@ -488,7 +527,7 @@ class Api {
       statusCode = e.response!.statusCode ?? 503;
       String errMsg = 'Unknown error.';
 
-      if (e.response != null) { errMsg = e.response!.data['errMsg']; }
+      if (e.response != null) { errMsg = e.response!.data['errMsg'].toString(); }
       print(errMsg);
     } catch (e) {
       print(e);

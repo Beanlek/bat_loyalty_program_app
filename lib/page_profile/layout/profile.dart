@@ -75,10 +75,15 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: ProfilePage.routeName);
 
     return PopScope(
-      canPop: canPop,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+
+        Navigator.pop(context, userUpdated);
+      },
+      canPop: !userUpdated,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Profile', appVersion: appVersion),
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Profile', appVersion: appVersion, refresh: userUpdated),
         
         body:
     
@@ -107,7 +112,7 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
                         padding: const EdgeInsets.all(12.0),
                         child: Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths)),
+                            Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths, refresh: userUpdated)),
                               
                             Expanded( child: MyWidgets.MyScroll1( context, controller: mainScrollController, height: MySize.Height(context, 0.85), child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -140,8 +145,13 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
                                             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                                               Text('Joined ${createdAt}', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),),
                                               MyWidgets.MyTileButton(context, 'Edit', icon: FontAwesomeIcons.pen, iconSize: MySize.Height(context, 0.01), buttonHeight: MySize.Height(context, 0.03),
-                                                onPressed: () => myPushNamed( context, setState, ProfileEditPage.routeName ,
-                                                  arguments: MyArguments(token, prevPath: currentPath, user: jsonEncode(user)))),
+                                                onPressed: () async => await myPushNamed( context, setState, ProfileEditPage.routeName ,
+                                                  arguments: MyArguments(token, prevPath: currentPath, user: jsonEncode(user))).then((res) { print("res: $res");
+                                                    if (res == true) {
+                                                      setState(() => userUpdated = res as bool);
+                                                      print("profile.dart :: userUpdated: $userUpdated");
+                                                    }
+                                                  })),
                                             ],
                                             ),
                                           ],),

@@ -798,7 +798,7 @@ class MyWidgets {
   }
 
   static PreferredSizeWidget MyAppBar(BuildContext context, bool isDarkMode, String title,
-    {key, required String appVersion, bool canPop = true, Future<dynamic> Function()? popDialog}
+    {key, required String appVersion, bool canPop = true, bool refresh = false, Future<dynamic> Function()? popDialog}
   ) {
     final Color DATA_COLOR = Theme.of(context).colorScheme.secondary;
     
@@ -808,9 +808,9 @@ class MyWidgets {
       leading: IconButton(onPressed: () {
         if (!canPop) {
           popDialog!().then((res) async { print('appbar_res: $res');
-            canPop = res; if (res) Navigator.pop(context);
+            canPop = res; if (res) Navigator.pop(context, refresh);
           });
-        } else { Navigator.pop(context); }
+        } else { Navigator.pop(context, refresh); }
       }, icon: Icon(Icons.arrow_back, color: DATA_COLOR,)),
       leadingWidth: MySize.Width(context, 0.15),
       

@@ -36,6 +36,7 @@ class ProfileWidgets {
       void Function()? onPressed,
       void Function()? onTap,
       void Function(String)? onChanged,
+      void Function(String)? onSubmitted,
       required FocusNode focusNode,
       bool readOnly = false,
       bool isPassword = false,
@@ -139,7 +140,8 @@ class ProfileWidgets {
               digitOnly: digitOnly,
             
               onTap: onTap,
-              onChanged: onChanged
+              onChanged: onChanged,
+              onSubmitted: onSubmitted,
             ),
           
             trailing: (isPassword || isImage) ? SizedBox(
@@ -167,6 +169,7 @@ class ProfileWidgets {
       required bool obscureText, bool readOnly = false,
       void Function()? onTap,
       void Function(String)? onChanged,
+      void Function(String)? onSubmitted,
       bool digitOnly = false
     }
   ) {
@@ -179,6 +182,7 @@ class ProfileWidgets {
 
       onTap: onTap,
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
 
       decoration: InputDecoration(border: InputBorder.none, isDense: true,
         hintText: title, hintStyle: TextStyle( color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5), fontWeight: FontWeight.normal),

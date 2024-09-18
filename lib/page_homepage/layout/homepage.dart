@@ -270,7 +270,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
             Divider(color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.5),),
 
             HomeWidgets.Item(context, icon: FontAwesomeIcons.history, label: 'Tracking History',
-              onTap: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
+              onTap: () => myPushNamed( context, setState, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
             HomeWidgets.Item(context, icon: FontAwesomeIcons.images, label: 'Images Status',
               onTap: () => myPushNamed( context, setState, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
 
