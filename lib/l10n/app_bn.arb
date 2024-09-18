@@ -5,5 +5,28 @@
     "description": "বাংলা ভাষা"
   },   
   "loyalty_points": "আনুগত্য পয়েন্ট",  
-  "tracking_history":"ট্র্যাকিং ইতিহাস"
+  "tracking_history":"ট্র্যাকিং ইতিহাস",
+  "image_status": "ছবির অবস্থা",
+  "product_catalogue": "প্রোডাক্ট ক্যাটালগ",
+  "home": "হোম",
+  "track_history": "ট্র্যাকিং ইতিহাস",
+  "profile": "প্রোফাইল",
+  "manage_outlet": "আউটলেট পরিচালনা করুন",
+  "settings": "সেটিংস",
+  "log_out": "লগ আউট",
+  "select_language":"ভাষা নির্বাচন করুন",
+  "information": "তথ্য",
+  "username": "ব্যবহারকারীর নাম",
+  "fullname": "সম্পূর্ণ নাম",
+  "email": "ইমেইল",
+  "mobile": "মোবাইল",
+  "shipping_address": "শিপিং ঠিকানা",
+  "join_at": "যোগদান তারিখ",
+  "joined": "যোগদান",
+  "you_are_logging_out": "আপনি লগ আউট করতে যাচ্ছেন। চালিয়ে যাবেন?",
+  "progress_not_saved": "লগ আউটের পরে, সমস্ত অগ্রগতি সংরক্ষিত হবে না।",
+  "cancel": "বাতিল করুন",
+  "confirm": "নিশ্চিত করুন",
+   "logging_out": "লগ আউট হচ্ছে"
+              
 }

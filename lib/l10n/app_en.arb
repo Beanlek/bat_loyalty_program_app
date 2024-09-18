@@ -5,5 +5,31 @@
     "description": "selected language"
   },   
   "loyalty_points": "Loyalty Points",  
-  "tracking_history":"Tracking History"
+  "tracking_history":"Tracking History",
+  "image_status": "Image Status",
+  "product_catalogue": "Product Catalogue", 
+  "home":"Home",
+  "track_history":"Tracking History",
+  "profile":"Profile",
+  "manage_outlet":"Manage Outlets",
+  "settings":"Settings",
+  "log_out":"Log Out",
+  "select_language":"Select Language",
+  "information": "Information",
+  "username": "Username",
+  "fullname": "Full Name",
+  "email": "Email",
+  "mobile": "Mobile",
+  "shipping_address": "Shipping Address",
+  "join_at": "Join At",
+  "joined": "Joined",
+  "you_are_logging_out": "You are logging out. Proceed?",
+  "progress_not_saved": "Once logged out, progress will not be saved.",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+   "logging_out": "Logging Out"
+
+
 }
+
+ 

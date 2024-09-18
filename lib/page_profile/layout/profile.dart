@@ -13,6 +13,8 @@ import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/page_profile/component/local_components.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -53,12 +55,17 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
     String createdAt = monthYear!.format(createdAtParsed);
     String createdAtDetail = dateTime!.format(createdAtParsed);
 
+    final Localizations = AppLocalizations.of(context);
+    if (Localizations == null) {
+      print("localizations is null");
+    }
+
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: ProfilePage.routeName);
 
     return PopScope(
       canPop: true,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : Scaffold(
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Profile', appVersion: appVersion),
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, Localizations!.profile, appVersion: appVersion),
         
         body:
     
@@ -98,8 +105,8 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
                                     Text(user['id'], style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),),
                                     Text('+6${user['mobile']}', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),),
                                   ],),
-                                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                    Text('Joined ${createdAt}', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),),
+                                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [                                    
+                                    Text('${Localizations.joined} ${createdAt}', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onPrimaryContainer),),                                    
                                     Row(children: [Icon(FontAwesomeIcons.pen, size: MySize.Height(context, 0.01),), SizedBox(width: 10,), Text('Edit', style: Theme.of(context).textTheme.labelSmall)],)
                                   ],
                                   ),
@@ -124,32 +131,32 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
                             child: Column( mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Column( crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                  Text('Information', style: Theme.of(context).textTheme.titleMedium!.copyWith( color: Theme.of(context).colorScheme.onSecondary),),
+                                  Text(Localizations.information, style: Theme.of(context).textTheme.titleMedium!.copyWith( color: Theme.of(context).colorScheme.onSecondary),),
                                   SizedBox(height: 12,),
                                 
-                                  ProfileWidgets.InfoTile(context, 'Username', subtitle: user['id']),
-                                  ProfileWidgets.InfoTile(context, 'Full Name', subtitle: user['name']),
-                                  ProfileWidgets.InfoTile(context, 'Mobile', subtitle: user['mobile']),
-                                  ProfileWidgets.InfoTile(context, 'Email', subtitle: user['email']),
+                                  ProfileWidgets.InfoTile(context, Localizations.username, subtitle: user['id']),
+                                  ProfileWidgets.InfoTile(context, Localizations.fullname, subtitle: user['name']),
+                                  ProfileWidgets.InfoTile(context, Localizations.mobile, subtitle: user['mobile']),
+                                  ProfileWidgets.InfoTile(context, Localizations.email, subtitle: user['email']),
                                 
                                   SizedBox(height: 16,),
                                   
-                                  ProfileWidgets.InfoTile(context, 'Shipping\nAddress', subtitle:
+                                  ProfileWidgets.InfoTile(context, Localizations.shipping_address, subtitle:
                                     '${user['address1']}, ${user['address2']},\n${user['address3']}, ${user['postcode']},\n${user['city']}, ${user['state']}'
                                   ),
                                 
                                   SizedBox(height: 16,),
                                   
-                                  ProfileWidgets.InfoTile(context, 'Joined At', subtitle: createdAtDetail),
+                                  ProfileWidgets.InfoTile(context, Localizations.join_at, subtitle: createdAtDetail),
                                 
                                   SizedBox(height: 12,),
                                   Divider( color: Theme.of(context).colorScheme.onSecondary.withOpacity(0.5),),
                                 ],),
 
-                                MyWidgets.MyTileButton(context, 'Log Out', icon: FontAwesomeIcons.signOut, color: Theme.of(context).primaryColor, iconSize: MySize.Width(context, 0.04),
+                                MyWidgets.MyTileButton(context, Localizations.log_out, icon: FontAwesomeIcons.signOut, color: Theme.of(context).primaryColor, iconSize: MySize.Width(context, 0.04),
                                   onPressed: () async {
-                                    await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Logging Out',
-                                      subtitle: 'You are logging out. Proceed?', warning: 'Once logged out, all progress will not be saved.'),).then((res) async {
+                                    await showDialog(context: context, builder: (context) => PopUps.Default(context, Localizations.log_out,
+                                      subtitle: Localizations.you_are_logging_out, warning:Localizations.progress_not_saved ),).then((res) async {
                                         if (res) await Api.logout().whenComplete(() => Navigator.pushNamed( context, LoginPage.routeName ));
                                       });
                                   }

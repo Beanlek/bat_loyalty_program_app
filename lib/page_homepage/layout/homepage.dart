@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Homepage extends StatefulWidget {
@@ -244,7 +243,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               MyWidgets.MyTileButton(
-                                                  context, 'Tracking History',
+                                                  context, Localizations.tracking_history,
                                                   icon: Icons.history,
                                                   onPressed: () =>
                                                       Navigator.pushNamed(
@@ -256,7 +255,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                               prevPath:
                                                                   "/home"))),
                                               MyWidgets.MyTileButton(
-                                                  context, 'Images Status',
+                                                  context, Localizations.image_status,
                                                   icon: Icons.image),
                                             ],
                                           )),
@@ -273,7 +272,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Product Catalogue',
+                                      Localizations.product_catalogue,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium!
@@ -403,7 +402,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                       items: [
                         HomeWidgets.Item(context,
                             icon: FontAwesomeIcons.userAlt,
-                            label: 'Profile',
+                            label: Localizations.profile,
                             onTap: () => Navigator.pushNamed(
                                 context, ProfilePage.routeName,
                                 arguments: MyArguments(token,
@@ -411,7 +410,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                     user: jsonEncode(user)))),
                         HomeWidgets.Item(context,
                             icon: FontAwesomeIcons.storeAlt,
-                            label: 'Manage Outlets',
+                            label: Localizations.manage_outlet,
                             onTap: () => false),
                         Divider(
                           color: Theme.of(context)
@@ -421,14 +420,14 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                         ),
                         HomeWidgets.Item(context,
                             icon: FontAwesomeIcons.history,
-                            label: 'Tracking History',
+                            label: Localizations.tracking_history,
                             onTap: () => Navigator.pushNamed(
                                 context, TrackingHistoryPage.routeName,
                                 arguments:
                                     MyArguments(token, prevPath: "/home"))),
                         HomeWidgets.Item(context,
                             icon: FontAwesomeIcons.images,
-                            label: 'Images Status',
+                            label: Localizations.image_status,
                             onTap: () => false),
                         Divider(
                           color: Theme.of(context)
@@ -438,18 +437,18 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                         ),
                         HomeWidgets.Item(context,
                             icon: FontAwesomeIcons.gear,
-                            label: 'Settings',
+                            label: Localizations.settings,
                             onTap: () => false),
                         HomeWidgets.Item(context,
                             icon: FontAwesomeIcons.signOut,
-                            label: 'Log Out', onTap: () async {
+                            label: Localizations.log_out, onTap: () async {
                           await showDialog(
                             context: context,
                             builder: (context) => PopUps.Default(
-                                context, 'Logging Out',
-                                subtitle: 'You are logging out. Proceed?',
+                                context, Localizations.logging_out,
+                                subtitle:Localizations.you_are_logging_out,
                                 warning:
-                                    'Once logged out, all progress will not be saved.'),
+                                    Localizations.progress_not_saved),
                           ).then((res) async {
                             if (res) {
                               await Api.logout().whenComplete(() =>

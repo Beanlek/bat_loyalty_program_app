@@ -6,6 +6,8 @@ import 'package:lottie/lottie.dart';
 
 import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 const PLACEHOLDER_ICON = Icon(Icons.abc, color: Colors.transparent);
 
@@ -737,6 +739,7 @@ class PopUps {
   static Color CONFIRM_TEXT_COLOR = MyColors.hijauImran2;
   static Color WARNING_COLOR = MyColors.merahImran;
 
+
   static AlertDialog Default(BuildContext context, String title,
       {key,
       required String subtitle,
@@ -744,6 +747,7 @@ class PopUps {
       String? confirmText,
       String? cancelText}) {
     final Color BACKGROUND_COLOR = Theme.of(context).primaryColor;
+    final Localizations = AppLocalizations.of(context);
 
     final _dialog = AlertDialog(
       backgroundColor: BACKGROUND_COLOR,
@@ -796,7 +800,7 @@ class PopUps {
         SizedBox(
           child: TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(cancelText ?? "Cancel"),
+            child: Text(cancelText ?? Localizations!.cancel),
           ),
         ),
         Container(
@@ -806,7 +810,7 @@ class PopUps {
               color: CONFIRM_COLOR.withOpacity(0.3)),
           child: TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(confirmText ?? "Confirm",
+            child: Text(confirmText ?? Localizations!.confirm,
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium!
@@ -1190,7 +1194,7 @@ class Breadcrumb extends StatelessWidget {
                       }
                     },
                     child: Text(
-                      path,
+                      path,//AppLocalizations.getTranslatedPath(path),// .getTranslatedPath(path),//  path,
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium!

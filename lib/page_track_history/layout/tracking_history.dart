@@ -7,6 +7,7 @@ import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrackingHistoryPage extends StatefulWidget {
   const TrackingHistoryPage({super.key});
@@ -59,6 +60,11 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+    final Localizations = AppLocalizations.of(context);
+    if (Localizations == null) {
+      print("localizations is null");
+    }
+
     if (!launchLoading)setPath(prevPath: args.prevPath, routeName: TrackingHistoryPage.routeName);
 
     return PopScope(
@@ -66,7 +72,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
             ? MyWidgets.MyLoading2(context, isDarkMode)
             : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
                 appBar: MyWidgets.MyAppBar(
-                    context, isDarkMode, 'Tracking History',
+                    context, isDarkMode,Localizations!.tracking_history,
                     appVersion: appVersion),
                 body: Stack(
                   children: [

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:flag/flag.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeWidgets {
   static Widget MyDrawer(BuildContext context, bool isDarkMode,
@@ -86,6 +87,8 @@ class HomeWidgets {
       required GlobalKey<ScaffoldState> scaffoldKey,
       void Function()? onTap,
       required Locale selectedLocal}) {
+ final Localizations = AppLocalizations.of(context);
+
     final _widget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
       leading: IconButton(
@@ -105,7 +108,7 @@ class HomeWidgets {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: Center(
-                    child: const Text('Select Language',
+                    child: Text(Localizations!.select_language,
                         style: TextStyle(
                             fontWeight: FontWeight.w700, fontSize: 16)),
                   ),
