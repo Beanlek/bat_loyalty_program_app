@@ -1,7 +1,12 @@
+import 'package:bat_loyalty_program_app/streams/general_stream.dart';
+import 'package:flag/flag_enum.dart';
+import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeWidgets {
   static Widget MyDrawer(BuildContext context, bool isDarkMode,
@@ -59,13 +64,69 @@ class HomeWidgets {
   }
 
   static PreferredSizeWidget MyAppBar(BuildContext context, bool isDarkMode,
-    {key, required String appVersion, required GlobalKey<ScaffoldState> scaffoldKey, void Function()? onTap}
+    {key, required String appVersion, required GlobalKey<ScaffoldState> scaffoldKey, void Function()? onTap, required Locale selectedLocal}
   ) {
+    final Localizations = AppLocalizations.of(context);
+
     final _widget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
       leading: IconButton(onPressed: () { scaffoldKey.currentState!.openDrawer(); }, icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.secondary,),),
       actions: [
-        IconButton(onPressed: () {}, icon: Icon(Icons.language, color: Theme.of(context).colorScheme.secondary),),
+        IconButton(onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Center(
+                    child: Text(Localizations!.select_language,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 16)),
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        leading: Flag.fromCode(
+                          FlagsCode.GB,
+                          height: 25,
+                          width: 30,
+                          borderRadius: 100,
+                        ),
+                        title: const Text('English',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            )),
+                        onTap: () {
+                          Locale newLocale = const Locale('en');
+                          GeneralStreams.languageStream.add(newLocale);
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                      ListTile(
+                        leading: Flag.fromCode(
+                          FlagsCode.BD,
+                          height: 25,
+                          width: 30,
+                          borderRadius: 100,
+                        ),
+                        title: const Text('Bangladesh',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            )),
+                        onTap: () {
+                          Locale newLocale = const Locale('bn');
+                          GeneralStreams.languageStream.add(newLocale);
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+        }, icon: Icon(Icons.language, color: Theme.of(context).colorScheme.secondary),),
     
         Padding(
           padding: const EdgeInsets.only(right: 12.0, top: 12, bottom: 12),

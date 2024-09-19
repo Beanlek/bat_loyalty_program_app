@@ -1,11 +1,16 @@
 import 'dart:convert';
+import 'package:bat_loyalty_program_app/l10n/l10n.dart';
 import 'package:bat_loyalty_program_app/services/awss3.dart';
-import 'package:flutter/material.dart';
+import 'package:bat_loyalty_program_app/streams/general_stream.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,18 +49,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return StreamBuilder<Locale>(
+      stream: GeneralStreams.languageStream.stream,
+      builder: (context, snapshot) {
+        Locale locale = snapshot.data ?? const Locale('en');
 
-      title: 'BAT Loyalty Program',
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+        
+          title: 'BAT Loyalty Program',
+        
+          routes: MyRoutes.routes,
+        
+          theme: MyTheme.light,
+          darkTheme: MyTheme.dark,
+        
+          initialRoute: initRoute,
 
-      routes: MyRoutes.routes,
-
-      theme: MyTheme.light,
-      darkTheme: MyTheme.dark,
-
-      initialRoute: initRoute,
-      // home: LoginPage(),
+          supportedLocales: L10n.locals,
+          locale: locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          
+          // home: LoginPage(),
+        );
+      }
     );
   }
 }

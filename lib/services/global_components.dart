@@ -4,6 +4,7 @@ import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 extension StringExtension on String {
@@ -56,7 +57,15 @@ mixin MyComponents {
   late String deviceID;
   late String token;
 
+  late Locale currentLocale;
   late Future<bool> isRefresh;
+  late Future<AppLocalizations?> futureLocale;
+
+  Future<AppLocalizations?> getFutureLocale(BuildContext context) async {
+    final _futureLocale = AppLocalizations.of(context);
+    
+    return _futureLocale; 
+  }
 
   Future<Object?> myPushNamed(BuildContext context, void Function(void Function() fn) setState, String routeName, {
       Object? arguments,
