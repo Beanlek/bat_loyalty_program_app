@@ -246,12 +246,13 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                                                               final Map<String, dynamic> mappedUser = jsonDecode(cachedUser);
                                                               final String password = mappedUser['password'];
                                                               
-                                                              await Api.user_self(domainName, token, password: password).then((res) {
+                                                              await Api.user_self(domainName, token, password: password).then((res) async {
 
                                                                 if (res == 200) {
 
                                                                   // success
                                                                   FloatingSnackBar(message: 'Successful. Outlet status changed.', context: context);
+                                                                  await refreshPage(context, setState);
                                                                   setState(() => outletListEditted = true);
                                                                   setState(() => canPop = false);
 
