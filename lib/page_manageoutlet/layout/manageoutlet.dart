@@ -55,9 +55,39 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
         final _outlets = MyPrefs.getOutlets(prefs: prefs) ?? '{}';
         setState(() { outlets = jsonDecode(_outlets); });
 
+        // page cache
+        outletsTemp = Map.from(outlets);
+
+        setAccountFilter();
       });
       
     });
+  }
+
+  @override
+  void applyFilters(BuildContext context, { dynamic key, required String data }) {
+    super.applyFilters(context, data: data); print('filter on $data');
+
+    List<dynamic> filteredOutlets = [];
+    final rows = outletsTemp['rows'];
+
+    if (filtersApplied.isNotEmpty) {
+      for (var i = 0; i < filtersApplied.length; i++) {
+        List<dynamic> filterTemp = [];
+          
+        filterTemp = rows.where((_outlet) {
+          final account_id = _outlet['account_id'];
+
+          return account_id == filtersApplied[i];
+        }).toList(); print('filter on temp $filterTemp');
+
+        filteredOutlets = List.from(filteredOutlets)..addAll(filterTemp);
+      }
+
+      Map<String, dynamic> filteredOutletsMap = { "count" : filteredOutlets.length, "rows": filteredOutlets };
+      setState(() => outlets = Map.from(filteredOutletsMap));
+      
+    } else { setState(() => outlets = Map.from(outletsTemp)); }
   }
   
   @override
@@ -68,7 +98,11 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
     if (launchLoading) {
       final userMap = jsonDecode(args.user); user = Map.from(userMap); print('user: $user');
       final outletsMap = jsonDecode(args.outlets); outlets = Map.from(outletsMap);
+
+      // page cache
+      outletsTemp = Map.from(outlets);
       
+      setAccountFilter();
       setActiveCount(outlets); print("outlesMap init: $outlets");
     }
     
@@ -84,6 +118,14 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Manage Outlets', appVersion: appVersion, canPop: canPop, refresh: outletListEditted, popDialog: popDialog),
+
+        // debug
+        floatingActionButton: Debug.FloatingButton(context, 60, onTap: () async { await showDialog(context: context, builder: (context) {
+          return PopUps.Debug(context, data: [accounts.toString(), filtersApplied.toString(), outletsTemp.toString(), outlets.toString()]);
+        }); }),
+        
+
+        // debug
         
         body:
 

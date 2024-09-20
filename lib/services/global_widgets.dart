@@ -821,6 +821,7 @@ class MyWidgets {
   
     return _widget;
   }
+
   static Widget MySwitch(BuildContext context,
     {key, required bool active,
     required String activeText,
@@ -853,6 +854,44 @@ class MyWidgets {
       ))
     ]);
   
+    return _widget;
+  }
+}
+
+class Debug {
+  static Widget FloatingButton(
+      BuildContext context, double? dimension,
+      {key, bool active = true, void Function()? onTap}) {
+    final _widget = Material(
+      color: Colors.transparent,
+      elevation: !active ? 0 : 3,
+      borderRadius: BorderRadius.circular(100),
+      child: SizedBox.square(
+        dimension: dimension ?? 60,
+        child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                    color: !active
+                        ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                        : Theme.of(context).colorScheme.onTertiary),
+                gradient: !active
+                    ? null
+                    : LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                            MyColors.biruImran2,
+                            MyColors.biruImran,
+                          ]),
+                color: active ? null : Colors.transparent),
+            child: InkWell(
+              onTap: active ? onTap : null,
+              child: Icon(Icons.info_outline, color: MyColors.myWhite),
+            )),
+      ),
+    );
+
     return _widget;
   }
 }
@@ -896,6 +935,45 @@ class PopUps {
           child: TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text( confirmText ?? "Confirm", style: Theme.of(context).textTheme.bodyMedium!.copyWith( color: CONFIRM_TEXT_COLOR) ),
+          ),
+        ),
+      ],
+    );
+  
+    return _dialog;
+  }
+  
+  static AlertDialog Debug(BuildContext context,
+    {key, required List<String> data}
+  ) {
+    final Color BACKGROUND_COLOR = Theme.of(context).primaryColor;
+    final scrollController = ScrollController();
+
+    final _dialog = AlertDialog(
+      backgroundColor: BACKGROUND_COLOR,
+      
+      content: MyWidgets.MyScroll2( context, controller: scrollController, height: MySize.Height(context, 0.9),
+        child: Column( crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+          Align( alignment: Alignment.center, child: Text('Debug', style: Theme.of(context).textTheme.titleMedium!.copyWith( fontWeight: FontWeight.bold),)),
+          SizedBox(height: 12,),
+        
+          Column( children: 
+            data.map((singleData) =>
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Text(singleData),
+              )
+            ).toList()
+          ,),
+        ],),
+      ),
+
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actions: [
+        SizedBox(
+          child: TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text( "Okay" ),
           ),
         ),
       ],

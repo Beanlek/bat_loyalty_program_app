@@ -156,6 +156,7 @@ mixin MyComponents {
   void applyFilters(BuildContext context, { key, required String data }) {
     filtersApplied.contains(data) ? filtersApplied.removeWhere((item) => item == data) : filtersApplied.add(data);
   }
+  
   void clearFilters() {
     filtersApplied.clear();
   }
