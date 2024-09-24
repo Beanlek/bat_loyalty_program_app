@@ -7,6 +7,10 @@ import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:flutter/material.dart';
+<<<<<<< Updated upstream
+=======
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+>>>>>>> Stashed changes
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrackingHistoryPage extends StatefulWidget {
@@ -50,6 +54,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
     });
   }
 
+
   @override
   void dispose() {
     super.dispose();
@@ -59,6 +64,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Localizations = AppLocalizations.of(context);
 
     final Localizations = AppLocalizations.of(context);
     if (Localizations == null) {
@@ -71,10 +77,18 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
         child: launchLoading
             ? MyWidgets.MyLoading2(context, isDarkMode)
             : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
+<<<<<<< Updated upstream
                 appBar: MyWidgets.MyAppBar(
                     context, isDarkMode,Localizations!.tracking_history,
                     appVersion: appVersion),
                 body: Stack(
+=======
+                appBar: MyWidgets.MyAppBar(context, isDarkMode, Localizations!.tracking_history, appVersion: appVersion),
+
+                body: 
+
+                Stack(
+>>>>>>> Stashed changes
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(12.0),

@@ -9,6 +9,7 @@ import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RegisterStepsPage extends StatefulWidget {
   const RegisterStepsPage({super.key});
@@ -69,7 +70,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+    final Localizations = AppLocalizations.of(context);
     return PopScope(
       onPopInvoked: (value) {
         if (activeStep > 1) previousPage(setState);
@@ -117,7 +118,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                           ],
                         ),
                     
-                        Text('Step $activeStep of $totalSteps', style: Theme.of(context).textTheme.labelMedium,)
+                        Text(' ${Localizations!.step_of} $activeStep ${Localizations.step_of2} $totalSteps', style: Theme.of(context).textTheme.labelMedium,)
                       ],
                     ),
                   ),
@@ -273,6 +274,7 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
 
                                     FloatingSnackBar(message: 'Account successfully registered! Log in to proceed.', context: context);
 
+<<<<<<< Updated upstream
                                     Navigator.pushNamed(
                                       context,
                                       LoginPage.routeName
@@ -285,6 +287,61 @@ class _RegisterStepsPageState extends State<RegisterStepsPage> with RegisterComp
                                   
                                   setState(() { isLoading = false; });
                                 });
+=======
+                          accounts: accounts,
+                          accountFilters: accountFilters,
+                          accountController: accountController,
+
+                          outlets: outlets,
+                          outletFilters: outletFilters,
+                          outletController: outletController,
+
+                          outletPostcodeController: outletPostcodeController,
+                          outletPostcodeFocusnode: outletPostcodeFocusnode,
+
+                          postcodeChanged: postcodeChanged,
+                          postcodeChangedTrue: () { setState(() => postcodeChanged = true); },
+                          postcodeChangedFalse: () { setState(() => postcodeChanged = false); },
+
+                          setOutletList: () { setOutletList(context, domainName, setState); },
+                          
+                          isDarkMode: isDarkMode);
+                        } else if (index == 5) {
+                          return RegisterWidgets.MyPage(context, index: 5, onSubmit: () async {
+                            await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Registering New Cashier',
+                              confirmText: Localizations.register,
+                              cancelText: Localizations.back,
+                              subtitle: Localizations.ensure_info_correct_before_registering,
+                              warning: Localizations.info_cannot_be_edited_once_registered),).then((res) async {
+                                if (res ?? false) {
+                                  setState(() { isLoading = true; phoneController.text = args.phone; });
+                            
+                                  await registrationDataValidation(context, domainName).then((valid) async {
+                                    if (valid) {
+                                      await Api.user_register(context, domainName, registrationData: registrationData).then((statusCode) {
+                                        print({ statusCode });
+
+                                        if (statusCode == 200) {
+                                          setState(() { isLoading = false; });
+
+                                          FloatingSnackBar(message: Localizations.account_successfully_registered, context: context);
+
+                                          Navigator.pushNamed(
+                                            context,
+                                            LoginPage.routeName
+                                          );
+                                        } else if (statusCode == 422) {
+                                          FloatingSnackBar(message: 'Error ${statusCode}. ${Localizations.error_phone_or_username_exists}', context: context);
+                                        } else {
+                                          FloatingSnackBar(message: '${Localizations.something_went_wrong} ${statusCode}.', context: context);
+                                        }
+                                        
+                                        setState(() { isLoading = false; });
+                                      });
+                                    }
+                                  });
+                                }
+>>>>>>> Stashed changes
                               }
                             });
                           },

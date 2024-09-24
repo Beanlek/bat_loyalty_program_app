@@ -7,6 +7,7 @@ import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
 import 'package:bat_loyalty_program_app/page_register/component/local_components.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -41,6 +42,7 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Localizations = AppLocalizations.of(context);
     
     return PopScope(
       canPop: false,
@@ -68,7 +70,7 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
                           children: [
                             Column(
                               children: [
-                                GradientText('Register',
+                                GradientText(Localizations!.register,
                                   style: Theme.of(context).textTheme.displaySmall!.copyWith(fontWeight: FontWeight.w800),
                                   gradient: LinearGradient(colors: [
                                     Theme.of(context).colorScheme.secondary,
@@ -76,9 +78,14 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
                                   ]),
                                 ),
                                 SizedBox(height: 12,),
-                                Text('Enter your phone number to start registration.', style: Theme.of(context).textTheme.bodySmall),
+                                Text(Localizations.enter_phone_to_start_registration, style: Theme.of(context).textTheme.bodySmall),
                                 SizedBox(height: 24,),
+<<<<<<< Updated upstream
                                 MyWidgets.MyTextField1(context, 'Phone', phoneController, digitOnly: true, onSubmit: (value) async {
+=======
+
+                                MyWidgets.MyTextField1(context, Localizations.phone, phoneController, digitOnly: true, onSubmit: (value) async {
+>>>>>>> Stashed changes
                                   setState(() {
                                     isLoading = true;
                                   });
@@ -86,19 +93,26 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
                                   await mainButtonValidation(context).whenComplete(() { setState(() { isLoading = false; }); });
 
                                 }, onChanged: (_) => setState(() { print('Changed!'); mainButtonActive = false; }),),
+<<<<<<< Updated upstream
+=======
+
+                                !pagePhoneError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['phoneErrorMsg']!) : SizedBox(),
+                                !pagePhoneError[1] ? MyWidgets.MyInfoTextField2(context, errMsgs['phoneErrorMsg']!) : SizedBox(),
+                                pagePhoneValid ? MyWidgets.MySuccessTextField(context, Localizations.phone_number_valid) : SizedBox(),
+>>>>>>> Stashed changes
                             
                                 Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('Forgot Password', style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                      Text(Localizations.forgot_password, style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                               color: Theme.of(context).colorScheme.outline,
                                       ),),
                                       Text.rich(style: Theme.of(context).textTheme.bodySmall,
-                                        TextSpan(text: 'Registered? ',
+                                        TextSpan(text: Localizations.already_registered,
                                           children: [
-                                            TextSpan(text: 'Login Here.', style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                            TextSpan(text: Localizations.login_here, style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                               color: Theme.of(context).colorScheme.outline,
                                             ),
                                               recognizer: TapGestureRecognizer()..onTap = () {
@@ -117,7 +131,7 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
                               ],
                             ),
                         
-                            MyWidgets.MyButton1(context, 150, 'Next', active: mainButtonActive,
+                            MyWidgets.MyButton1(context, 150, Localizations.next, active: mainButtonActive,
                               () async {
                                 final phone = phoneController.text.trim();
                                 

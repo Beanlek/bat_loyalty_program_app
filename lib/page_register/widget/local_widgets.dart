@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class RegisterWidgets {
@@ -339,6 +340,8 @@ class RegisterWidgets {
     final ScrollController page3ScrollController = ScrollController();
     final ScrollController page4ScrollController = ScrollController();
 
+    final Localizations = AppLocalizations.of(context);
+
     Widget _widget;
 
     switch (index) {
@@ -355,7 +358,7 @@ class RegisterWidgets {
                   children: [
                     Column(
                       children: [
-                        GradientText('Personal Information',
+                        GradientText(Localizations!.personal_information,
                           style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w800),
                           gradient: LinearGradient(colors: [
                             Theme.of(context).colorScheme.secondary,
@@ -363,34 +366,34 @@ class RegisterWidgets {
                           ]),
                         ),
                         SizedBox(height: 12,),
-                        Text('Enter your personal information.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
+                        Text( Localizations.enter_your_personal_information, style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
                         SizedBox(height: 24,),
                                     
-                        MyWidgets.MyTextField1(context, 'Username', usernameController!, focusNode: usernameFocusnode, compulsory: true,
+                        MyWidgets.MyTextField1(context, Localizations.username, usernameController!, focusNode: usernameFocusnode, compulsory: true,
                           onChanged: (_) => stepButtonValidation(),
                           onSubmit: (_) => fullNameFocusnode!.requestFocus(),
                         ),
                         !pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['usernameErrorMsg']! ) : SizedBox(),
                         SizedBox(height: 12,),
-                        MyWidgets.MyTextField1(context, 'Full Name', fullNameController!, focusNode: fullNameFocusnode, compulsory: true,
+                        MyWidgets.MyTextField1(context, Localizations.fullname, fullNameController!, focusNode: fullNameFocusnode, compulsory: true,
                           onChanged: (_) => stepButtonValidation(),
                           onSubmit: (_) => emailFocusnode!.requestFocus(),
                         ),
                         !pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['fullNameErrorMsg']! ) : SizedBox(),
                         SizedBox(height: 12,),
-                        MyWidgets.MyTextField1(context, 'Email', emailController!, focusNode: emailFocusnode,
+                        MyWidgets.MyTextField1(context,Localizations.email, emailController!, focusNode: emailFocusnode,
                           onChanged: (_) => stepButtonValidation(),
                           onSubmit: (_) => passwordFocusnode!.requestFocus(),
                         ),
                         !pageError[2] ? MyWidgets.MyErrorTextField(context, errMsgs['emailErrorMsg']! ) : SizedBox(),
                         SizedBox(height: 12,),
-                        MyWidgets.MyTextField1(context, 'Password', passwordController!, focusNode: passwordFocusnode, compulsory: true, isPassword: true,
+                        MyWidgets.MyTextField1(context, Localizations.password, passwordController!, focusNode: passwordFocusnode, compulsory: true, isPassword: true,
                           onChanged: (_) => stepButtonValidation(),
                           onSubmit: (_) => confirmPasswordFocusnode!.requestFocus(),
                         ),
                         !pageError[3] ? MyWidgets.MyErrorTextField(context, errMsgs['passwordErrorMsg']! ) : SizedBox(),
                         SizedBox(height: 12,),
-                        MyWidgets.MyTextField1(context, 'Confirm Password', confirmPasswordController!, focusNode: confirmPasswordFocusnode, compulsory: true, isPassword: true,
+                        MyWidgets.MyTextField1(context, Localizations.confirm_password, confirmPasswordController!, focusNode: confirmPasswordFocusnode, compulsory: true, isPassword: true,
                           onChanged: (_) => stepButtonValidation(),
                           onSubmit: (_) { confirmPasswordFocusnode!.unfocus(); onSubmit!(); },
                         ),
@@ -398,7 +401,7 @@ class RegisterWidgets {
                       ],
                     ),
                 
-                    MyWidgets.MyButton1(context, 150, 'Next', active: stepButtonActive,
+                    MyWidgets.MyButton1(context, 150, Localizations.next, active: stepButtonActive,
                       onSubmit
                     ),
                   ],
@@ -422,7 +425,7 @@ class RegisterWidgets {
                   children: [
                     Column(
                       children: [
-                        GradientText('Address',
+                        GradientText(Localizations!.address,
                           style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.w800),
                           gradient: LinearGradient(colors: [
                             Theme.of(context).colorScheme.secondary,
@@ -430,24 +433,24 @@ class RegisterWidgets {
                           ]),
                         ),
                         SizedBox(height: 12,),
-                        Text('Enter your shipping address.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
+                        Text(Localizations.enter_your_shipping_address, style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
                         SizedBox(height: 24,),
                                         
-                        MyWidgets.MyTextField1(context, 'Unit No. / House No.', address1Controller!, focusNode: address1Focusnode, compulsory: true,
+                        MyWidgets.MyTextField1(context, Localizations.unit_no_house_no , address1Controller!, focusNode: address1Focusnode, compulsory: true,
                           onChanged: (_) => stepButtonValidation(),
                           onSubmit: (_) => address2Focusnode!.requestFocus(),
                         ),
                         !pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['address1ErrorMsg']! ) : SizedBox(),
                         MyWidgets.MyInfoTextField(context, 'Eg: No. 10 1D/KU6'),
                         SizedBox(height: 12,),
-                        MyWidgets.MyTextField1(context, 'Street Name', address2Controller!, focusNode: address2Focusnode, compulsory: true,
+                        MyWidgets.MyTextField1(context, Localizations.street_name, address2Controller!, focusNode: address2Focusnode, compulsory: true,
                           onChanged: (_) => stepButtonValidation(),
                           onSubmit: (_) => address3Focusnode!.requestFocus(),
                         ),
                         !pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['address2ErrorMsg']! ) : SizedBox(),
                         MyWidgets.MyInfoTextField(context, 'Eg: Jalan Sumazau'),
                         SizedBox(height: 12,),
-                        MyWidgets.MyTextField1(context, 'Residential Area', address3Controller!, focusNode: address3Focusnode, compulsory: true,
+                        MyWidgets.MyTextField1(context, Localizations.residential_area, address3Controller!, focusNode: address3Focusnode, compulsory: true,
                           onChanged: (_) => stepButtonValidation(),
                           onSubmit: (_) => address3Focusnode!.unfocus(),
                         ),
@@ -455,7 +458,7 @@ class RegisterWidgets {
                         MyWidgets.MyInfoTextField(context, 'Eg: Bandar Bukit Raja'),
                         SizedBox(height: 24,),
                         
-                        MyWidgets.MyTextField3(context, 'State', selectedFilter: stateController!.text, filters: stateFilters!, onChanged: (String? _filter) async {
+                        MyWidgets.MyTextField3(context, Localizations.state, selectedFilter: stateController!.text, filters: stateFilters!, onChanged: (String? _filter) async {
                           isLoadingTrue!();
                     
                           if (stateController.text == _filter) {
@@ -513,7 +516,7 @@ class RegisterWidgets {
                         },),
                         !pageError[3] ? MyWidgets.MyErrorTextField(context, errMsgs['stateErrorMsg']! ) : SizedBox(),
                         SizedBox(height: 12,),
-                        MyWidgets.MyTextField3(context, 'City', selectedFilter: cityController!.text, filters: cityFilters!,
+                        MyWidgets.MyTextField3(context, Localizations.city, selectedFilter: cityController!.text, filters: cityFilters!,
                           active: stateController.text == 'State' ? false : true, onChanged: (String? _filter) async{
                             isLoadingTrue!();
                     
@@ -572,7 +575,7 @@ class RegisterWidgets {
                         !pageError[4] ? MyWidgets.MyErrorTextField(context, errMsgs['cityErrorMsg']! ) : SizedBox(),
                         SizedBox(height: 12,),
                     
-                        MyWidgets.MyTextField1(context, 'PostCode', postcodeController!, digitOnly: true, focusNode: postcodeFocusnode, compulsory: true,
+                        MyWidgets.MyTextField1(context,Localizations.postcode, postcodeController!, digitOnly: true, focusNode: postcodeFocusnode, compulsory: true,
                           onChanged: (_) => stepButtonValidation(),
                           onSubmit: (_) { postcodeFocusnode!.unfocus(); onSubmit!(); },
                         ),
@@ -580,7 +583,7 @@ class RegisterWidgets {
                       ],
                     ),
                 
-                    MyWidgets.MyButton1(context, 150, 'Next', active: stepButtonActive,
+                    MyWidgets.MyButton1(context, 150, Localizations.next, active: stepButtonActive,
                       onSubmit
                     ),
                   ],
@@ -613,7 +616,7 @@ class RegisterWidgets {
                   children: [
                     Column(
                       children: [
-                        GradientText('Security',
+                        GradientText(Localizations!.security,
                           style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.w800),
                           gradient: LinearGradient(colors: [
                             Theme.of(context).colorScheme.secondary,
@@ -621,10 +624,10 @@ class RegisterWidgets {
                           ]),
                         ),
                         SizedBox(height: 12,),
-                        Text('Please choose a security phrase along with\na security image.', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
+                        Text(Localizations.please_choose_security_phrase_image, style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
                         SizedBox(height: 24,),
                         
-                        Header(context, title: 'Choose a phrase',
+                        Header(context, title: Localizations.choose_a_phrase,
                           trailing: IconButton(onPressed: onPhraseRefresh, icon: Icon(FontAwesomeIcons.arrowsRotate, color: Theme.of(context).colorScheme.primary, size: 16,)),
                           secondTrailing: IconButton(onPressed: changeViewPhrase, icon: Icon(viewPhrase ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
                         ),
@@ -662,7 +665,7 @@ class RegisterWidgets {
                           ),
                         ),
                         
-                        Header(context, title: 'Choose an image',
+                        Header(context, title: Localizations.choose_an_image,
                           trailing: IconButton(onPressed: onImageRefresh, icon: Icon(FontAwesomeIcons.arrowsRotate, color: Theme.of(context).colorScheme.primary, size: 16,)),
                         ),
                         SizedBox(
@@ -727,7 +730,7 @@ class RegisterWidgets {
                       ],
                     ),
                 
-                    MyWidgets.MyButton1(context, 150, 'Next', active: stepButtonActive,
+                    MyWidgets.MyButton1(context, 150, Localizations.next, active: stepButtonActive,
                       onSubmit
                     ),
                   ],
@@ -740,7 +743,131 @@ class RegisterWidgets {
       case 4:
         _widget = StatefulBuilder(
           builder: (context, setState) {
+<<<<<<< Updated upstream
             double multiplier = 1.5;
+=======
+            double pageHeight = MySize.Height(context, 0.75);
+
+            return MyWidgets.MyScroll1( context,
+            height: pageHeight,
+              controller: page4ScrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: [
+                        GradientText(Localizations!.outlet_information,
+                          style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.w800),
+                          gradient: LinearGradient(colors: [
+                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context).colorScheme.primary,
+                          ]),
+                        ),
+                        SizedBox(height: 12,),
+                        Text(Localizations.please_choose_main_workplace_location , style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
+                        SizedBox(height: 24,),
+                        
+                        MyWidgets.MyTextField3(context, Localizations.company , selectedFilter: accountController!.text, filters: accountFilters!,
+                          onChanged: (String? _filter) async{
+                            if (_filter! == 'Company') {
+                              accountController.text = _filter;
+                              outletController!.text = 'Outlet';
+                              
+                              setOutletList!();
+                              stepButtonValidation();
+                            }
+                            
+                            isLoadingTrue!();
+
+                            if (accountController.text == _filter) {
+                              isLoadingFalse!(); return;
+                            }
+
+                            await Future.delayed(const Duration(milliseconds: 400)).whenComplete(() async{
+                              if (accountController.text != _filter) setState((){outletController!.text = 'Outlet';});
+                              
+                              setState((){
+                                accountController.text = _filter;
+                                print('outletController!.text: ${outletController!.text}');
+                                
+                                if ( outletPostcodeController!.text != "" ) setOutletList!();
+                                isLoadingFalse!();
+
+                                stepButtonValidation();
+                              });
+                            });
+                        }),
+                        !pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['accountErrorMsg']! ) : SizedBox(),
+                        SizedBox(height: 12,),
+                        
+                        MyWidgets.MyTextField1(context, Localizations.postcode, outletPostcodeController!, focusNode: outletPostcodeFocusnode, compulsory: true, digitOnly: true,
+                          onChanged: (_) { stepButtonValidation(); setState((){ postcodeChangedTrue!(); outletController!.text = 'Outlet';}); print('postcodeChanged onChanged: $postcodeChanged');},
+                          onSubmit: (_) async {
+                            if (outletPostcodeController.text == "") {
+                              return;
+                            }
+
+                            isLoadingTrue!();
+
+                            await Future.delayed(const Duration(milliseconds: 400)).whenComplete(() async{
+                              setState((){ print('postcodeChanged onSubmit: $postcodeChanged');
+                                if (postcodeChanged ?? false) { setOutletList!(); postcodeChangedFalse!(); print('postcodeChanged falsed: $postcodeChanged');}
+                                isLoadingFalse!();
+
+                                stepButtonValidation();
+                              });
+                            });
+                            
+                            outletPostcodeFocusnode!.unfocus();
+                          },
+                        ),
+                        !pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['usernameErrorMsg']! ) : SizedBox(),
+                        SizedBox(height: 12,),
+
+                        MyWidgets.MyTextField3(context, Localizations.outlet, selectedFilter: outletController!.text, filters: outletFilters!,
+                          active: (accountController.text == 'Company' || outletPostcodeController.text == "") ? false : true, onChanged: (String? _filter) async{
+                            isLoadingTrue!();
+
+                            if (outletController.text == _filter!) {
+                              isLoadingFalse!(); return;
+                            }
+
+                            setState((){
+                              outletController.text = _filter;
+                              isLoadingFalse!();
+
+                              stepButtonValidation();
+                            });
+                            
+                        }),
+                        !pageError[2] ? MyWidgets.MyErrorTextField(context, errMsgs['outletErrorMsg']! ) : SizedBox(),
+                      ],
+                    ),
+                
+                    Column(
+                      children: [
+                        MyWidgets.MyButton1(context, 150, Localizations.next, active: stepButtonActive,
+                          onSubmit
+                        ),
+                        SizedBox(height: 12,),
+                        MyWidgets.MyInfoTextField2(context, Localizations.choose_main_outlet,
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        );
+        break;
+      case 5:
+        _widget = StatefulBuilder(
+          builder: (context, setState) {
+            double multiplier = 1.8;
+>>>>>>> Stashed changes
             double multiplierPersonalInfo = 0;
             double multiplierAddress = 0;
             double multiplierSecurity = 0;
@@ -764,7 +891,7 @@ class RegisterWidgets {
                   children: [
                     Column(
                       children: [
-                        GradientText('Confirmation',
+                        GradientText(Localizations!.confirmation,
                           style: Theme.of(context).textTheme.headlineLarge!.copyWith(fontWeight: FontWeight.w800),
                           gradient: LinearGradient(colors: [
                             Theme.of(context).colorScheme.secondary,
@@ -772,49 +899,68 @@ class RegisterWidgets {
                           ]),
                         ),
                         SizedBox(height: 12,),
-                        Text('Double check your information and you are all set!', style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
+                        Text(Localizations.double_check_info_and_all_set, style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center,),
                         SizedBox(height: 24,),
                         
-                        Header(context, title: 'Personal Information',
+                        Header(context, title:Localizations.personal_information,
                           trailing: IconButton(onPressed: changeViewPersonalInfo, icon: Icon(viewPersonalInfo ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
                         ),
                         !viewPersonalInfo ? SizedBox() :
                         Column(children: [
-                          ConfirmationListTile(context, title: 'Phone No', subtitle: phone, isPhone: true, onEdit: null),
-                          ConfirmationListTile(context, title: 'Username', subtitle: usernameController!.text.trim(), onEdit: toPage1),
-                          ConfirmationListTile(context, title: 'Full Name', subtitle: fullNameController!.text.trim(), onEdit: toPage1),
+                          ConfirmationListTile(context, title: Localizations.phone_no , subtitle: phone, isPhone: true, onEdit: null),
+                          ConfirmationListTile(context, title: Localizations.username, subtitle: usernameController!.text.trim(), onEdit: toPage1),
+                          ConfirmationListTile(context, title: Localizations.fullname , subtitle: fullNameController!.text.trim(), onEdit: toPage1),
                         ],),
                     
                         Divider(color: Theme.of(context).colorScheme.onTertiary,),
                         
-                        Header(context, title: 'Address Information',
+                        Header(context, title: Localizations.address_information,
                           trailing: IconButton(onPressed: changeViewAddress, icon: Icon(viewAddress ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
                         ),
                         !viewAddress ? SizedBox() :
                         Column(children: [
-                          ConfirmationListTile(context, title: 'Unit No. / House No.', subtitle: address1Controller!.text.trim(), onEdit: toPage2),
-                          ConfirmationListTile(context, title: 'Street Name', subtitle: address2Controller!.text.trim(), onEdit: toPage2),
-                          ConfirmationListTile(context, title: 'Residential Area', subtitle: address3Controller!.text.trim(), onEdit: toPage2),
-                          ConfirmationListTile(context, title: 'State', subtitle: stateController!.text.trim(), onEdit: toPage2),
-                          ConfirmationListTile(context, title: 'City', subtitle: cityController!.text.trim(), onEdit: toPage2),
-                          ConfirmationListTile(context, title: 'PostCode', subtitle: postcodeController!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: Localizations.unit_no_house_no, subtitle: address1Controller!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: Localizations.street_name, subtitle: address2Controller!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: Localizations.residential_area, subtitle: address3Controller!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: Localizations.state, subtitle: stateController!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: Localizations.city, subtitle: cityController!.text.trim(), onEdit: toPage2),
+                          ConfirmationListTile(context, title: Localizations.postcode, subtitle: postcodeController!.text.trim(), onEdit: toPage2),
                         ],),
                     
                         Divider(color: Theme.of(context).colorScheme.onTertiary,),
                         
+<<<<<<< Updated upstream
                         Header(context, title: 'Security Information',
+=======
+                        Header(context, title: Localizations.outlet_information,
+                          trailing: IconButton(onPressed: changeViewOutlet, icon: Icon(viewOutlet ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
+                        ),
+                        !viewOutlet ? SizedBox() :
+                        Column(children: [
+                          ConfirmationListTile(context, title: Localizations.company, subtitle: accountController!.text.trim(), onEdit: toPage4),
+                          ConfirmationListTile(context, title: Localizations.outlet, subtitle: outletController!.text.trim(), onEdit: toPage4),
+                        ],),
+                    
+                        Divider(color: Theme.of(context).colorScheme.onTertiary,),
+                        
+                        Header(context, title: Localizations.security_information,
+>>>>>>> Stashed changes
                           trailing: IconButton(onPressed: changeViewSecurity, icon: Icon(viewSecurity ? FontAwesomeIcons.chevronDown : FontAwesomeIcons.chevronLeft, color: Theme.of(context).colorScheme.primary, size: 16,)),
                         ),
                         !viewSecurity ? SizedBox() :
                         Column(children: [
-                          ConfirmationListTile(context, title: 'Password', subtitle: passwordController!.text.trim(), isPassword: true, onEdit: toPage1),
-                          ConfirmationListTile(context, title: 'Security Image', subtitle: securityImageController!.text.trim(), isImage: true, onEdit: toPage3),
-                          ConfirmationListTile(context, title: 'Security Phrase', subtitle: securityPhraseController!.text.trim(), isPassword: true, onEdit: toPage3),
+                          ConfirmationListTile(context, title: Localizations.password , subtitle: passwordController!.text.trim(), isPassword: true, onEdit: toPage1),
+                          ConfirmationListTile(context, title: Localizations.security_image, subtitle: securityImageController!.text.trim(), isImage: true, onEdit: toPage3),
+                          ConfirmationListTile(context, title: Localizations.security_phrase, subtitle: securityPhraseController!.text.trim(), isPassword: true, onEdit: toPage3),
                         ],),
                       ],
                     ),
                 
+<<<<<<< Updated upstream
                     MyWidgets.MyButton1(context, 150, 'Next',
+=======
+                    MyWidgets.MyButton1(context, 150, Localizations.register, active: stepButtonActive,
+>>>>>>> Stashed changes
                       onSubmit
                     ),
                   ],

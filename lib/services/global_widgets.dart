@@ -7,7 +7,10 @@ import 'package:lottie/lottie.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 const PLACEHOLDER_ICON = Icon(Icons.abc, color: Colors.transparent);
 
@@ -467,9 +470,14 @@ class MyWidgets {
               SizedBox(
                 width: 12,
               ),
-              Text(text,
-                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      color: ERROR_COLORS, fontWeight: FontWeight.normal)),
+              Flexible(
+                child: Text(text,
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        color: ERROR_COLORS, fontWeight: FontWeight.normal),
+                        maxLines: null, // Allows the text to take multiple lines
+                        overflow: TextOverflow.visible, // Ensures that the text wraps instead of getting clipped                        
+                    ),
+              ),
             ],
           ),
         ));
@@ -486,6 +494,8 @@ class MyWidgets {
       elevation: 0,
       backgroundColor: Colors.transparent,
       onPressed: () {
+
+        final Localizations = AppLocalizations.of(context)!;
         showModalBottomSheet(
             context: context,
             builder: (context) {
@@ -505,7 +515,7 @@ class MyWidgets {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       GradientText(
-                        'Environment Change',
+                        Localizations.environment_change,
                         style: Theme.of(context)
                             .textTheme
                             .headlineSmall!
@@ -589,6 +599,7 @@ class MyWidgets {
   }
 
   static Widget MyFooter1(BuildContext context) {
+    final Localizations = AppLocalizations.of(context);
     final _widget = Column(
       children: [
         Divider(
@@ -599,9 +610,9 @@ class MyWidgets {
         ),
         Text.rich(
             style: Theme.of(context).textTheme.bodySmall,
-            TextSpan(text: 'Need any help? ', children: [
+            TextSpan(text: Localizations!.need_help, children: [
               TextSpan(
-                text: 'Contact Us.',
+                text: Localizations.contact_us,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.outline,
                     ),
@@ -659,6 +670,7 @@ static Widget MyScrollBar1(BuildContext context,
       height: 35,
       child: TextButton.icon(
         onPressed: onPressed,
+<<<<<<< Updated upstream
         label: Text(label,
             style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 fontWeight: FontWeight.w500,
@@ -666,6 +678,17 @@ static Widget MyScrollBar1(BuildContext context,
         icon: Icon(icon ?? Icons.abc,
             size: iconSize ?? MySize.Width(context, 0.05),
             color: color ?? Theme.of(context).colorScheme.primary),
+=======
+        label: Text(label, style: (textStyle ?? Theme.of(context).textTheme.bodySmall)!.copyWith(fontWeight: FontWeight.w500,
+          color: color ?? Theme.of(context).colorScheme.primary,
+          
+        )
+        ),
+        icon: Icon(icon ?? Icons.abc, size: iconSize ?? MySize.Width(context, 0.05),
+          color: color ?? Theme.of(context).colorScheme.primary,
+          
+        ),
+>>>>>>> Stashed changes
       ),
     );
 
@@ -738,6 +761,7 @@ class PopUps {
   static Color CONFIRM_COLOR = MyColors.hijauImran;
   static Color CONFIRM_TEXT_COLOR = MyColors.hijauImran2;
   static Color WARNING_COLOR = MyColors.merahImran;
+ 
 
 
   static AlertDialog Default(BuildContext context, String title,
@@ -747,7 +771,11 @@ class PopUps {
       String? confirmText,
       String? cancelText}) {
     final Color BACKGROUND_COLOR = Theme.of(context).primaryColor;
+<<<<<<< Updated upstream
     final Localizations = AppLocalizations.of(context);
+=======
+     final Localizations = AppLocalizations.of(context);
+>>>>>>> Stashed changes
 
     final _dialog = AlertDialog(
       backgroundColor: BACKGROUND_COLOR,
@@ -800,7 +828,11 @@ class PopUps {
         SizedBox(
           child: TextButton(
             onPressed: () => Navigator.pop(context, false),
+<<<<<<< Updated upstream
             child: Text(cancelText ?? Localizations!.cancel),
+=======
+            child: Text( cancelText ?? Localizations!.cancel ),
+>>>>>>> Stashed changes
           ),
         ),
         Container(
@@ -810,11 +842,15 @@ class PopUps {
               color: CONFIRM_COLOR.withOpacity(0.3)),
           child: TextButton(
             onPressed: () => Navigator.pop(context, true),
+<<<<<<< Updated upstream
             child: Text(confirmText ?? Localizations!.confirm,
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium!
                     .copyWith(color: CONFIRM_TEXT_COLOR)),
+=======
+            child: Text( confirmText ?? Localizations!.confirm, style: Theme.of(context).textTheme.bodyMedium!.copyWith( color: CONFIRM_TEXT_COLOR) ),
+>>>>>>> Stashed changes
           ),
         ),
       ],

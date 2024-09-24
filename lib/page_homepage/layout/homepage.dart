@@ -189,6 +189,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                         children: [
                                           Expanded(
                                               child: Column(
+<<<<<<< Updated upstream
                                             mainAxisAlignment:
                                                 MainAxisAlignment.end,
                                             crossAxisAlignment:
@@ -265,6 +266,113 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                   )),
                               SizedBox(
                                 height: 12,
+=======
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(Localizations.loyalty_points, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),),
+                                                  Expanded(child: Row(
+                                                    children: [
+                                                      Expanded(child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.end,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(user['id']!, style: Theme.of(context).textTheme.labelMedium!.copyWith(fontWeight: FontWeight.normal),),
+                                                          Text.rich(
+                                                            TextSpan(text: user['points'].toString(), style: Theme.of(context).textTheme.displayMedium!.copyWith(fontWeight: FontWeight.bold,
+                                                                color: Theme.of(context).colorScheme.outlineVariant),
+                                                                children: [
+                                                                  TextSpan(text: ' pts', style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w500,
+                                                                  color: Theme.of(context).colorScheme.outlineVariant
+                                                                )
+                                                              )
+                                                            ])
+                                                          )
+                                                        ],
+                                                      )),
+                                                      Expanded(child: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.end,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          MyWidgets.MyTileButton(context, Localizations.tracking_history, icon: Icons.history,
+                                                            onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
+                                                          MyWidgets.MyTileButton(context, Localizations.image_status, icon: Icons.image,
+                                                            onPressed: () => myPushNamed( context, setState, ImageStatusPage.routeName , arguments: MyArguments(token, prevPath: "/home", username: user['id'] ))),
+                                                        ],
+                                                      )),
+                                                    ],
+                                                  )),
+                                                ],
+                                              )
+                                            ),
+                                    
+                                            SizedBox(height: 12,),
+                                            Text(Localizations.product_catalogue, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500)),
+                                          ]);
+                                        } else if (index == 1) {
+                                          return StickyHeader(
+                                            header: Container( color: Theme.of(context).primaryColor, child: Padding( padding: const EdgeInsets.only(bottom: 3.0),
+                                              child: GradientSearchBar( pageSetState: setState,
+                                                applyFilters: applyFilters,
+                                                filtersApplied: filtersApplied,
+                                                datas: [ brandMap, categoryMap ],
+                                                
+                                                controller: searchController,
+                                                focusNode: searchFocusNode,
+                                              
+                                                items: [
+                                                  GradientSearchBar.filterMenu(context, title: Localizations.brand, data: brandMap,
+                                                    applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
+                                                  GradientSearchBar.filterMenu(context, title: Localizations.category , data: categoryMap,
+                                                    applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState),
+                                                ],
+                                                onSearch: () {},
+                                              )),
+                                            ),
+                                                
+                                            content: GridView.builder(
+                                            padding: const EdgeInsets.all(15),
+                                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2, // row
+                                              childAspectRatio: 2.5 / 4,
+                                              mainAxisSpacing: 20,
+                                              crossAxisSpacing: 20,
+                                            ),
+                                            itemCount: 12,
+                                            shrinkWrap: true,
+                                            
+                                            physics: NeverScrollableScrollPhysics(),
+                                            // controller: productController,
+                                            itemBuilder: (BuildContext context, int i) {
+                                              return ProductCard(
+                                                  imageUrl: Image.asset(
+                                                    'assets/images_examples/headphone.jpeg',
+                                                  ),
+                                                  title: "Headphone",
+                                                  points: 1000,
+                                                  onLoveIconTap: () {},
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .tertiary,
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimary,
+                                                    ],
+                                                  ));
+                                              },
+                                            ),
+                                          );
+                                        } else { return SizedBox(); }
+                                      }
+                                    )),
+                                  ),
+                                          
+                                ],
+>>>>>>> Stashed changes
                               ),
                               Expanded(
                                 child: Column(
