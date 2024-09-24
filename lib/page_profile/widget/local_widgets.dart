@@ -15,8 +15,6 @@ class ProfileWidgets {
   
     return _widget;
   }
-<<<<<<< Updated upstream
-=======
 
   static Widget Header(BuildContext context,
     {key, required String title, Widget trailing = PLACEHOLDER_ICON, Widget? secondTrailing}
@@ -256,5 +254,4 @@ class ProfileWidgets {
 
     return _widget;
   }
->>>>>>> Stashed changes
 }
