@@ -60,6 +60,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+
     final Localizations = AppLocalizations.of(context);
     if (Localizations == null) {
       print("localizations is null");
