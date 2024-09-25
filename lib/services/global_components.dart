@@ -1,3 +1,4 @@
+import 'package:bat_loyalty_program_app/l10n/l10n.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
@@ -57,13 +58,19 @@ mixin MyComponents {
   late String deviceID;
   late String token;
 
-  late Locale currentLocale;
+ 
   late Future<bool> isRefresh;
+  
+  late Locale currentLocale = L10n.locals[0]; // Initialize with the first locale
+  bool isnitialized = false;
+
+  
   late Future<AppLocalizations?> futureLocale;
 
+
+
   Future<AppLocalizations?> getFutureLocale(BuildContext context) async {
-    final _futureLocale = AppLocalizations.of(context);
-    
+    final _futureLocale = AppLocalizations.of(context);    
     return _futureLocale; 
   }
 

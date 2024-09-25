@@ -6,6 +6,7 @@ import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrackingHistoryPage extends StatefulWidget {
   const TrackingHistoryPage({super.key});
@@ -38,10 +39,12 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Localizations = AppLocalizations.of(context);
 
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: TrackingHistoryPage.routeName);
 
@@ -49,7 +52,7 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
         child: launchLoading
             ? MyWidgets.MyLoading2(context, isDarkMode)
             : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
-                appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Tracking History', appVersion: appVersion),
+                appBar: MyWidgets.MyAppBar(context, isDarkMode, Localizations!.tracking_history, appVersion: appVersion),
 
                 body: 
 

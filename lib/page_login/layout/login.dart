@@ -14,6 +14,7 @@ import 'package:bat_loyalty_program_app/page_login/component/local_components.da
 
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -61,6 +62,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Localizations = AppLocalizations.of(context);
     
     return PopScope(
       canPop: false,
@@ -97,7 +99,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                           children: [
                             Column(
                               children: [
-                                GradientText('Log In',
+                                GradientText(Localizations!.log_in,
                                   style: Theme.of(context).textTheme.displaySmall!.copyWith(fontWeight: FontWeight.w800),
                                   gradient: LinearGradient(colors: [
                                     Theme.of(context).colorScheme.secondary,
@@ -105,10 +107,10 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                                   ]),
                                 ),
                                 SizedBox(height: 24,),
-                                MyWidgets.MyTextField1(context, 'Username or Phone', phoneController, focusNode: phoneFocusnode, onSubmit: (_) => passwordFocusnode.requestFocus(),),
+                                MyWidgets.MyTextField1(context, Localizations.username_or_phone, phoneController, focusNode: phoneFocusnode, onSubmit: (_) => passwordFocusnode.requestFocus(),),
                                 pageError[0] ? MyWidgets.MyErrorTextField(context, errMsgs['phoneErrorMsg']! ) : SizedBox(),
                                 SizedBox(height: 12,),
-                                MyWidgets.MyTextField1(context, 'Password', passwordController, focusNode: passwordFocusnode, isPassword: true, onSubmit: (_) => passwordFocusnode.unfocus()),
+                                MyWidgets.MyTextField1(context, Localizations.password, passwordController, focusNode: passwordFocusnode, isPassword: true, onSubmit: (_) => passwordFocusnode.unfocus()),
                                 pageError[1] ? MyWidgets.MyErrorTextField(context, errMsgs['passwordErrorMsg']! ) : SizedBox(),
                         
                                 Padding(
@@ -116,13 +118,13 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('Forgot Password', style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                      Text(Localizations.forgot_password, style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                               color: Theme.of(context).colorScheme.outline,
                                       ),),
                                       Text.rich(style: Theme.of(context).textTheme.bodySmall,
-                                        TextSpan(text: 'New? ',
+                                        TextSpan(text: Localizations.new_register,
                                           children: [
-                                            TextSpan(text: 'Register Here.', style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                            TextSpan(text: Localizations.register_here, style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                               color: Theme.of(context).colorScheme.outline,
                                             ),
                                               recognizer: TapGestureRecognizer()..onTap = () {
@@ -141,11 +143,11 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                               ],
                             ),
                         
-                            MyWidgets.MyButton1(context, 150, 'Log In', 
+                            MyWidgets.MyButton1(context, 150, Localizations.log_in, 
                               () async {
                                 setState(() { isLoading = true; 
-                                  errMsgs.update('phoneErrorMsg', (value) => 'Please enter your username or phone.');
-                                  errMsgs.update('passwordErrorMsg', (value) => 'Please enter your password.');
+                                  errMsgs.update('phoneErrorMsg', (value) => Localizations.please_enter_username_or_phone);
+                                  errMsgs.update('passwordErrorMsg', (value) => Localizations.please_enter_password);
                                 });
                         
                                 final String mobile = phoneController.text.trim();
@@ -169,9 +171,9 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                                           Homepage.routeName
                                         );
                           
-                                        FloatingSnackBar(message: 'Successfully Log In.', context: context);
+                                        FloatingSnackBar(message: Localizations.successfully_login, context: context);
                                       } else if (statusCode == 422) {
-                                        String msg = 'Wrong username or password.';
+                                        String msg = Localizations.wrong_username_or_password;
                                         
                                         setState(() { 
                                           pageError[0] = true;
@@ -182,7 +184,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
 
                                         FloatingSnackBar(message: msg, context: context);
                                       } else {
-                                        FloatingSnackBar(message: 'Unable to Log In. Error ${statusCode}.', context: context);
+                                        FloatingSnackBar(message: '${Localizations.unable_to_log_in_error} ${statusCode}.', context: context);
                                       }
                                     });
                                     
@@ -196,7 +198,7 @@ class _LoginPageState extends State<LoginPage> with LoginComponents, MyComponent
                       ),
                     ),
                   ),
-                  Text('Running on ${domainName}', style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w300, fontSize: 10),),
+                  Text('${Localizations.running_on} ${domainName}', style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w300, fontSize: 10),),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: MyWidgets.MyFooter1(context),

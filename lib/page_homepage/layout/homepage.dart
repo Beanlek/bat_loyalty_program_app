@@ -189,9 +189,9 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents{
                                                 focusNode: searchFocusNode,
                                               
                                                 items: [
-                                                  GradientSearchBar.filterMenu(context, title: 'Brand', data: brandMap,
+                                                  GradientSearchBar.filterMenu(context, title: Localizations.brand, data: brandMap,
                                                     applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
-                                                  GradientSearchBar.filterMenu(context, title: 'Category', data: categoryMap,
+                                                  GradientSearchBar.filterMenu(context, title: Localizations.category , data: categoryMap,
                                                     applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState),
                                                 ],
                                                 onSearch: () {},

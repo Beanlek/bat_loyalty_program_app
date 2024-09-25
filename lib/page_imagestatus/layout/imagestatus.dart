@@ -4,6 +4,7 @@ import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ImageStatusPage extends StatefulWidget {
   const ImageStatusPage({super.key});
@@ -31,13 +32,14 @@ class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusCompo
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Localizations = AppLocalizations.of(context);
 
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: ImageStatusPage.routeName);
     
     return PopScope(
       canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Image Status', appVersion: appVersion),
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, Localizations!.image_status, appVersion: appVersion),
         body:
     
         Stack(
