@@ -40,6 +40,7 @@ class _HomepagePreviewState extends State<HomepagePreview> with HomeComponents, 
   Widget build(BuildContext context) { 
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
 
     if (!launchLoading) { setPath(prevPath: args.prevPath, routeName: HomepagePreview.routeName); receiptImage = args.receiptImage!;}
 

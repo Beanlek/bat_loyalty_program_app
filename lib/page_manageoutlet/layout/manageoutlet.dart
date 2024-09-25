@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
+
 class ManageOutletPage extends StatefulWidget {
   const ManageOutletPage({super.key});
 
@@ -112,7 +113,7 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                           applyFilters: applyFilters,
                           filtersApplied: filtersApplied,
                           datas: [ accounts ],
-                                          
+                          
                           controller: searchController,
                           focusNode: searchFocusNode,
 

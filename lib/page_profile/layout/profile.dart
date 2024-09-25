@@ -19,6 +19,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -53,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
   @override
   void dispose() { super.dispose(); }
   
-  @override
+   @override
   Future<void> initParam(BuildContext context, {key, bool needToken = true}) async {
     super.initParam(context);
     

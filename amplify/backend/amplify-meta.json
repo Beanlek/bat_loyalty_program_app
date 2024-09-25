@@ -1,0 +1,78 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-batloyalty-dev-af057-authRole",
+      "UnauthRoleArn": "arn:aws:iam::030343898211:role/amplify-batloyalty-dev-af057-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::030343898211:role/amplify-batloyalty-dev-af057-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-batloyalty-dev-af057-deployment",
+      "UnauthRoleName": "amplify-batloyalty-dev-af057-unauthRole",
+      "StackName": "amplify-batloyalty-dev-af057",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:030343898211:stack/amplify-batloyalty-dev-af057/f61ede60-4408-11ef-92d3-028e5d558b59",
+      "AmplifyAppId": "d37fkxvxx8piv7"
+    }
+  },
+  "auth": {
+    "batloyaltystorage": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL",
+          "PHONE_NUMBER"
+        ],
+        "signupAttributes": [
+          "EMAIL",
+          "PHONE_NUMBER"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "PHONE_NUMBER"
+        ]
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-batloyalty-dev-af057-deployment/amplify-cfn-templates/auth/batloyaltystorage-cloudformation-template.json",
+        "logicalId": "authbatloyaltystorage"
+      },
+      "lastPushTimeStamp": "2024-07-17T07:14:24.159Z",
+      "output": {
+        "CreatedSNSRole": "arn:aws:iam::030343898211:role/sns2baff827af057-dev",
+        "UserPoolId": "ap-southeast-1_9yi7lTnrq",
+        "AppClientIDWeb": "5rlbpumvf2qasj7a15bvoc0og3",
+        "AppClientID": "786d07fut26u33j2r1mc5b9t2g",
+        "IdentityPoolId": "ap-southeast-1:1c50e742-326d-4105-80c9-68665c67159e",
+        "UserPoolArn": "arn:aws:cognito-idp:ap-southeast-1:030343898211:userpool/ap-southeast-1_9yi7lTnrq",
+        "IdentityPoolName": "batloyaltyidpool__dev",
+        "UserPoolName": "batloyaltyuserpool"
+      },
+      "lastPushDirHash": "rvmvFwv2EsmyGZDU/CoLwziOtIQ="
+    }
+  },
+  "storage": {
+    "batloyaltystorage2": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "lastPushTimeStamp": "2024-07-17T07:14:24.539Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-batloyalty-dev-af057-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storagebatloyaltystorage2"
+      },
+      "output": {
+        "BucketName": "batloyalty-bucket-devaf057-dev",
+        "Region": "ap-southeast-1"
+      },
+      "lastPushDirHash": "mzd5qpVzDQsADNs2VIjrF7+lH4c="
+    }
+  }
+}

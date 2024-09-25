@@ -86,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
                                     isLoading = true;
                                   });
 
-                                  await mainButtonValidation(context, domainName).whenComplete(() { setState(() { isLoading = false; }); });
+                                  await mainButtonValidation(context,domainName).whenComplete(() { setState(() { isLoading = false; }); });
 
                                 }, onChanged: (_) => setState(() { print('Changed!'); mainButtonActive = false; }),),
 
@@ -134,8 +134,6 @@ class _RegisterPageState extends State<RegisterPage> with RegisterComponents, My
 
                                   arguments: MyArguments('_', phone: phone)
                                 );
-
-                                unfocusAllNode();
                               }
                             ),
                           ],

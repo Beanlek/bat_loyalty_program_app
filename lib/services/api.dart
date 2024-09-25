@@ -10,6 +10,7 @@ import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:bat_loyalty_program_app/model/product.dart';
 
 class Api {
   static Future<bool> checkToken(String domainName, {key, bool main = false}) async {
@@ -535,5 +536,49 @@ class Api {
     }
 
     return statusCode;
+  }
+
+
+ static Future<List<Product>> fetchProducts(
+      String domainName, String token) async {
+    String url = '${domainName}/api/product/app/list';   
+   // print('url : $url');
+    final Dio dio = Dio();
+    int statusCode = 0;    
+    try {
+      final response = await dio.get(
+        url,
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+        
+      );
+
+      statusCode = response.statusCode!;
+     // print('statusCode fetch product : ${statusCode}');
+      if (statusCode == 200) {
+
+        //  print('response.data type: ${response.data.runtimeType}');
+        // print('response.data: ${response.data}');
+
+        // Cast the response data to List<Map<String, dynamic>>
+        if (response.data is List) {
+          List<Product> products = (response.data as List)
+              .map((productJson) => Product.fromJson(productJson as Map<String, dynamic>))
+              .toList();
+          return products;
+        } else {
+          throw Exception('Unexpected data format');
+        }              
+
+      } else {
+        print(statusCode);
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      print('Errorrr: $e');
+      throw Exception('Failed to load the products');
+    }
   }
 }

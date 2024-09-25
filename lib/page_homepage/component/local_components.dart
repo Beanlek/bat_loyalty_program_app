@@ -1,17 +1,40 @@
+import 'package:bat_loyalty_program_app/model/product.dart';
+import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 mixin HomeComponents {
+  final TextEditingController searchController = TextEditingController();
+
+  final FocusNode searchFocusNode = FocusNode();
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
-  
+
   final ScrollController productController = ScrollController();
   final ScrollController stickyController = ScrollController();
 
-
   bool imageTaken = false;
   bool imageRetake = false;
-  int loyaltyPoints = 0;
+  int loyaltyPoints = 2000;
+    
 
+  String token = '';
+
+  late Map<String, dynamic> user;
+  late Map<String, dynamic> outlets;
+  late Future<List<Product>> futureProduct;
+ late Future<List<Product>> _futureProducts;
+
+  final List<Product> _filteredDataList = [];
+  final List<Product> _allProducts = [];
+  final bool _showFilterOptions = false;
+  bool isSearching = false;
+
+  final Api api = Api();
+  final Locale locale = const Locale('en');
+
+  late Locale _currentLocale;
+  
   final List<Map<dynamic,dynamic>> brandMap = [
     {
       "data": "Apple",
@@ -45,9 +68,8 @@ mixin HomeComponents {
       "filter": false
     },
   ];
-
-  late Map<String, dynamic> user;
-  late Map<String, dynamic> outlets;
+  
+  
   late XFile receiptImage;
 
   Future<bool> takeImage() async {
@@ -60,4 +82,5 @@ mixin HomeComponents {
     return imageTaken;
   }
 
+  
 }
