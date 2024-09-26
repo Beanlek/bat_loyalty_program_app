@@ -89,7 +89,28 @@ class _ManageOutletAddPageState extends State<ManageOutletAddPage> with ManageOu
         }
       },
       canPop: canPop,
-      child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
+      child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () async {
+        if (outletPostcodeFocusnode.hasFocus) {
+          if (outletPostcodeController.text == "") {
+            return;
+          }
+
+          setState(() => isLoading = true);
+
+          await Future.delayed(const Duration(milliseconds: 400)).whenComplete(() async{
+            setState((){ print('postcodeChanged onSubmit: $postcodeChanged');
+              if (postcodeChanged) {  setOutletList(context, domainName, setState); setState(() => postcodeChanged = false); print('postcodeChanged falsed: $postcodeChanged');}
+              setState(() => isLoading = false);
+              
+            });
+          });
+          
+          saveButtonValidation(setState);
+          outletPostcodeFocusnode.unfocus();
+        }
+        FocusManager.instance.primaryFocus?.unfocus();
+      
+      }, child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: MyWidgets.MyAppBar(context, isDarkMode, Localizations!.add_outlet , appVersion: appVersion, refresh: outletAdded, canPop: canPop, popDialog: popDialog),
 
