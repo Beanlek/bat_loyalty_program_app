@@ -103,7 +103,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
               child: Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths, canPop: !stillEditing, refresh: userUpdated, popDialog: popDialog,)),
-
+                  
                   Expanded(
                     child: MyWidgets.MyScroll2( context,
                       height: MySize.Height(context, 1.5),

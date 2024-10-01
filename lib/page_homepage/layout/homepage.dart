@@ -6,6 +6,7 @@ import 'package:bat_loyalty_program_app/page_homepage/component/local_components
 import 'package:bat_loyalty_program_app/page_homepage/widget/local_widgets.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
 import 'package:bat_loyalty_program_app/page_manageoutlet/layout/manageoutlet.dart';
+import 'package:bat_loyalty_program_app/page_product/layout/product.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
 import 'package:bat_loyalty_program_app/page_settings/layout/settings.dart';
 import 'package:bat_loyalty_program_app/page_track_history/layout/tracking_history.dart';
@@ -34,11 +35,10 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
+  
   List<Product> _filteredDataList = [];
-
   List<Product> _dataList = [];
   bool _showFilterOptions = false;
-  late Locale _currentLocale;
 
   @override
   void initState() {
@@ -112,6 +112,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
 
   void onSearchChanged(String query) {
     setState(() {
+      _filteredDataList = _filterProducts(query);
       isSearching = true;
     });
 
@@ -337,11 +338,8 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                                     ),
                                                                     content:
                                                                         FutureBuilder(
-                                                                      future:
-                                                                          futureProduct,
-                                                                      builder:
-                                                                          (context,
-                                                                              snapshot) {
+                                                                      future:futureProduct,
+                                                                      builder:(context,snapshot) {
                                                                         if (snapshot.connectionState ==
                                                                             ConnectionState
                                                                                 .waiting) {
@@ -380,21 +378,22 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                                                       // controller: productController,
                                                                                       itemBuilder: (BuildContext context, int i) {
                                                                                         final product = _filteredDataList[i];
-                                                                                        return ProductCard(
-                                                                                            imageUrl: Image.memory(
-                                                                                              product.imageData,
-                                                                                            ),
-                                                                                            title: product.name,
-                                                                                            points: product.points,
-                                                                                            onLoveIconTap: () {},
-                                                                                            gradient: LinearGradient(
-                                                                                              begin: Alignment.topLeft,
-                                                                                              end: Alignment.bottomRight,
-                                                                                              colors: [
-                                                                                                Theme.of(context).colorScheme.tertiary,
-                                                                                                Theme.of(context).colorScheme.onPrimary,
-                                                                                              ],
-                                                                                            ));
+                                                                                        return GestureDetector(
+                                                                                            onTap: () => Navigator.pushNamed(context,ProductPage.routeName,arguments: MyArguments(token,prevPath: "/home"),
+                                                                                                ),
+                                                                                            child: ProductCard(
+                                                                                                imageUrl: Image.asset('assets/images_examples/headphone.jpeg'),
+                                                                                                title: product.name,
+                                                                                                points: product.points,
+                                                                                                onLoveIconTap: () => Navigator.pushNamed(context, ProductPage.routeName, arguments: MyArguments(token, prevPath: "/home")),
+                                                                                                gradient: LinearGradient(
+                                                                                                  begin: Alignment.topLeft,
+                                                                                                  end: Alignment.bottomRight,
+                                                                                                  colors: [
+                                                                                                    Theme.of(context).colorScheme.tertiary,
+                                                                                                    Theme.of(context).colorScheme.onPrimary,
+                                                                                                  ],
+                                                                                                )));
                                                                                       },
                                                                                     );
                                                                         }
@@ -548,10 +547,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                         warning:
                                             Localizations.progress_not_saved),
                                   ).then((res) async {
-                                    if (res ?? false)
-                                      await Api.logout().whenComplete(() =>
-                                          Navigator.pushNamed(
-                                              context, LoginPage.routeName));
+                                    if (res ?? false) await Api.logout().whenComplete(() => Navigator.pushNamed(context, LoginPage.routeName));
                                   });
                                 }),
                               ]))),

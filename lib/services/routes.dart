@@ -1,8 +1,10 @@
 import 'package:bat_loyalty_program_app/dummy.dart';
+import 'package:bat_loyalty_program_app/page_cart/layout/cart.dart';
 import 'package:bat_loyalty_program_app/page_homepage/layout/homepage_preview.dart';
 import 'package:bat_loyalty_program_app/page_imagestatus/layout/imagestatus.dart';
 import 'package:bat_loyalty_program_app/page_manageoutlet/layout/manageoutlet.dart';
 import 'package:bat_loyalty_program_app/page_manageoutlet/layout/manageoutlet_add.dart';
+import 'package:bat_loyalty_program_app/page_product/layout/product.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile_edit.dart';
 import 'package:bat_loyalty_program_app/page_settings/layout/settings.dart';
@@ -61,6 +63,9 @@ class MyRoutes {
 
     ProfilePage.routeName: (context) => ProfilePage(),
     ProfileEditPage.routeName: (context) => ProfileEditPage(),
+
+    ProductPage.routeName: (context) => ProductPage(),
+    CartPage.routeName: (context) => CartPage(),
 
     ManageOutletPage.routeName: (context) => ManageOutletPage(),
     ManageOutletAddPage.routeName: (context) => ManageOutletAddPage(),

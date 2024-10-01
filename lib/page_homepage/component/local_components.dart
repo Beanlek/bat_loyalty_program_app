@@ -16,6 +16,8 @@ mixin HomeComponents {
   bool imageTaken = false;
   bool imageRetake = false;
   int loyaltyPoints = 2000;
+
+  
     
 
   String token = '';
@@ -24,6 +26,8 @@ mixin HomeComponents {
   late Map<String, dynamic> outlets;
   late Future<List<Product>> futureProduct;
  late Future<List<Product>> _futureProducts;
+   late Locale _currentLocale;
+
 
   final List<Product> _filteredDataList = [];
   final List<Product> _allProducts = [];
@@ -33,7 +37,7 @@ mixin HomeComponents {
   final Api api = Api();
   final Locale locale = const Locale('en');
 
-  late Locale _currentLocale;
+
   
   final List<Map<dynamic,dynamic>> brandMap = [
     {

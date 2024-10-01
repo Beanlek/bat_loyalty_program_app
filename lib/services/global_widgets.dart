@@ -77,6 +77,59 @@ class MyWidgets {
     return _widget;
   }
 
+  static Widget MyButton3(
+  BuildContext context, 
+  double? width, 
+  String text, 
+  void Function()? onTap,
+  {Key? key, 
+  bool active = true, 
+  IconData? icon,  // Add icon parameter
+}) {
+  return Material(
+    color: Colors.transparent,
+    elevation: !active ? 0 : 3,
+    borderRadius: BorderRadius.circular(10),
+    child: Container(
+      width: width ?? null,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: !active
+              ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+              : Theme.of(context).colorScheme.onTertiary,
+        ),
+        gradient: !active
+            ? null
+            : LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  MyColors.biruImran2,
+                  MyColors.biruImran,
+                ],
+              ),
+        color: active ? null : Colors.transparent,
+      ),
+      child: ListTile(
+        leading: icon != null ? Icon(icon, color: active ? MyColors.myWhite : Theme.of(context).colorScheme.primary.withOpacity(0.5)) : null,  // Add icon here
+        title: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: !active
+                  ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                  : MyColors.myWhite,
+            ),
+          ),
+        ),
+        onTap: active ? onTap : null,
+      ),
+    ),
+  );
+}
+
+
   static Widget MyTextField1(
       BuildContext context, String text, TextEditingController controller,
       {key,
@@ -833,6 +886,52 @@ class MyWidgets {
   
     return _widget;
   }
+
+  static PreferredSizeWidget MyAppBarCart(BuildContext context, bool isDarkMode, String title,
+
+    {key, required String appVersion, bool canPop = true, bool refresh = false, Future<dynamic> Function()? popDialog ,  void Function()? onCartTap}
+  ) {
+    final Color DATA_COLOR = Theme.of(context).colorScheme.secondary;
+    
+    final _widget = AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
+
+      leading: IconButton(onPressed: () {
+        if (!canPop) {
+          popDialog!().then((res) async { print('appbar_res: $res');
+            canPop = res; if (res) Navigator.pop(context, refresh);
+          });
+        } else { Navigator.pop(context, refresh); }
+      }, icon: Icon(Icons.arrow_back, color: DATA_COLOR,)),
+      leadingWidth: MySize.Width(context, 0.15),
+      
+      title: Text( title, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.normal, color: DATA_COLOR), ),
+
+      actions: [ 
+        Padding(          
+          padding: const EdgeInsets.only(right: 16.0),
+           child: GestureDetector(
+          onTap: onCartTap ?? () {},
+          child: Row(          
+            children: [                
+            Text("Cart", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: DATA_COLOR)),
+            const SizedBox(width: 5),
+            Icon(
+              Icons.shopping_cart,
+              color: DATA_COLOR,
+            ),
+            
+            
+            ]
+          ),
+        ),
+        ),
+        ],
+    );
+  
+    return _widget;
+  }
+
   static Widget MySwitch(BuildContext context,
     {key, required bool active,
     required String activeText,
@@ -1062,9 +1161,11 @@ class GradientSearchBar extends StatelessWidget {
   final List<String> filtersApplied;
   final List<List<Map<dynamic, dynamic>>> datas;
   
+
   void Function(void Function()) pageSetState;
   void Function()? onSearch;
-  void Function(BuildContext, {required String data, dynamic key}) applyFilters;
+  void Function(BuildContext, {
+    required String data, dynamic key}) applyFilters;
 
   GradientSearchBar({
     super.key,
@@ -1315,3 +1416,5 @@ class Breadcrumb extends StatelessWidget {
     );
   }
 }
+
+
