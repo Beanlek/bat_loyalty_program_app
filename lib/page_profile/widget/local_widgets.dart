@@ -1,6 +1,5 @@
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileWidgets {
   
@@ -204,7 +203,7 @@ class ProfileWidgets {
 
     final DATA_COLOR = Theme.of(context).colorScheme.primary;
     final MENU_HEIGHT = MySize.Height(context, 0.3);
-    final Localizations = AppLocalizations.of(context);
+    // final Localizations = AppLocalizations.of(context);
     final _widget = StatefulBuilder(builder: (context, setState) {
 
       return SizedBox(

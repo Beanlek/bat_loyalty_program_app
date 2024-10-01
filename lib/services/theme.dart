@@ -28,98 +28,116 @@ class MyTheme {
   static final light = ThemeData(
     useMaterial3: true,
     fontFamily: 'Poppins',
-    pageTransitionsTheme: PageTransitionsTheme(
-        builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder()}),
+
     primaryColor: MyColors.myWhite,
     brightness: Brightness.light,
 
-   // pageTransitionsTheme: PageTransitionsTheme(builders: { TargetPlatform.android: CupertinoPageTransitionsBuilder() }),
+    pageTransitionsTheme: PageTransitionsTheme(builders: { TargetPlatform.android: CupertinoPageTransitionsBuilder() }),
 
     textTheme: TextTheme(
       displayLarge: TextStyle(),
       displayMedium: TextStyle(),
       displaySmall: TextStyle(),
+
       headlineLarge: TextStyle(),
       headlineMedium: TextStyle(),
       headlineSmall: TextStyle(),
+
       titleLarge: TextStyle(),
       titleMedium: TextStyle(),
       titleSmall: TextStyle(),
+
       bodyLarge: TextStyle(),
       bodyMedium: TextStyle(),
       bodySmall: TextStyle(),
+
       labelLarge: TextStyle(),
       labelMedium: TextStyle(),
       labelSmall: TextStyle(),
     ).apply(
-        bodyColor: MyColors.biruImran2,
-        displayColor: MyColors.biruImran2,
-        decorationColor: MyColors.biruImran2),
-    iconTheme: IconThemeData(color: MyColors.biruImran2),
+      bodyColor: MyColors.biruImran2,
+      displayColor: MyColors.biruImran2,
+      decorationColor: MyColors.biruImran2
+    ),
+
+    iconTheme: IconThemeData(
+      color: MyColors.biruImran2
+    ),
+
     scaffoldBackgroundColor: MyColors.myWhite,
     colorScheme: ColorScheme.fromSeed(
       brightness: Brightness.light,
       seedColor: MyColors.biruImran,
+
       primary: MyColors.biruImran,
       secondary: MyColors.biruImran2,
       tertiary: MyColors.biruImran3,
       onPrimary: MyColors.biruImran4,
+
       onSecondary: MyColors.myWhite,
       onTertiary: MyColors.biruImran5,
       onPrimaryContainer: MyColors.greyImran,
+
       outline: MyColors.biruSelect,
       outlineVariant: MyColors.hijauImran3,
-      filterbutton: MyColors.hijauImran,
-      filterbutton1: MyColors.hijauImran2,
     ),
   );
 
   static final dark = ThemeData(
     useMaterial3: true,
     fontFamily: 'Poppins',
-    pageTransitionsTheme: PageTransitionsTheme(
-        builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder()}),
+
     primaryColor: MyColors.myBlack,
     brightness: Brightness.dark,
 
-    //pageTransitionsTheme: PageTransitionsTheme(builders: { TargetPlatform.android: CupertinoPageTransitionsBuilder() }),
+    pageTransitionsTheme: PageTransitionsTheme(builders: { TargetPlatform.android: CupertinoPageTransitionsBuilder() }),
 
     textTheme: TextTheme(
       displayLarge: TextStyle(),
       displayMedium: TextStyle(),
       displaySmall: TextStyle(),
+
       headlineLarge: TextStyle(),
       headlineMedium: TextStyle(),
       headlineSmall: TextStyle(),
+
       titleLarge: TextStyle(),
       titleMedium: TextStyle(),
       titleSmall: TextStyle(),
+
       bodyLarge: TextStyle(),
       bodyMedium: TextStyle(),
       bodySmall: TextStyle(),
+
       labelLarge: TextStyle(),
       labelMedium: TextStyle(),
       labelSmall: TextStyle(),
     ).apply(
-        bodyColor: MyColors.myWhite,
-        displayColor: MyColors.myWhite,
-        decorationColor: MyColors.myWhite),
-    iconTheme: IconThemeData(color: MyColors.biruImran3),
+      bodyColor: MyColors.myWhite,
+      displayColor: MyColors.myWhite,
+      decorationColor: MyColors.myWhite
+    ),
+
+    iconTheme: IconThemeData(
+      color: MyColors.biruImran3
+    ),
+
     scaffoldBackgroundColor: MyColors.myBlack,
     colorScheme: ColorScheme.fromSeed(
       brightness: Brightness.dark,
       seedColor: MyColors.biruImran,
+
       primary: MyColors.biruImran4,
       secondary: MyColors.biruImran3,
       tertiary: MyColors.biruImran2,
       onPrimary: MyColors.biruImran,
+
       onSecondary: MyColors.biruImran5,
       onTertiary: MyColors.myWhite,
       onPrimaryContainer: MyColors.greyImran2,
+
       outline: MyColors.biruImran3,
       outlineVariant: MyColors.hijauImran2,
-      filterbutton: MyColors.biruImran3,
-      filterbutton1: MyColors.biruImran2,
     ),
   );
 }
