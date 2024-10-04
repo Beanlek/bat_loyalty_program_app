@@ -5,6 +5,8 @@ import 'package:bat_loyalty_program_app/page_manageoutlet/layout/manageoutlet.da
 import 'package:bat_loyalty_program_app/page_manageoutlet/layout/manageoutlet_add.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile_edit.dart';
+import 'package:bat_loyalty_program_app/page_resetpassword/layout/resetpassword.dart';
+import 'package:bat_loyalty_program_app/page_resetpassword/layout/resetpassword_steps.dart';
 import 'package:bat_loyalty_program_app/page_settings/layout/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +15,6 @@ import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
 import 'package:bat_loyalty_program_app/page_register/layout/register.dart';
 import 'package:bat_loyalty_program_app/page_register/layout/register_steps.dart';
 import 'package:bat_loyalty_program_app/page_track_history/layout/tracking_history.dart';
-import 'package:image_picker/image_picker.dart';
 
 class MyArguments {
   const MyArguments(
@@ -27,7 +28,10 @@ class MyArguments {
       this.appVersion = '0.0.0',
 
       this.prevPath = '/null',
-      this.receiptImage,
+
+      // this.receiptImage,
+      this.urlOriginal,
+      this.urlOcr,
 
       this.user = '{}',
       this.outlets = '{}',
@@ -43,7 +47,10 @@ class MyArguments {
   final String appVersion;
 
   final String prevPath;
-  final XFile? receiptImage;
+  
+  // final XFile? receiptImage;
+  final String? urlOriginal;
+  final String? urlOcr;
 
   final String user;
   final String outlets;
@@ -58,6 +65,8 @@ class MyRoutes {
     LoginPage.routeName: (context) => LoginPage(),
     RegisterPage.routeName: (context) => RegisterPage(),
     RegisterStepsPage.routeName: (context) => RegisterStepsPage(),
+    ResetPasswordPage.routeName: (context) => ResetPasswordPage(),
+    ResetPasswordStepsPage.routeName: (context) => ResetPasswordStepsPage(),
 
     ProfilePage.routeName: (context) => ProfilePage(),
     ProfileEditPage.routeName: (context) => ProfileEditPage(),

@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:bat_loyalty_program_app/l10n/l10n.dart';
-import 'package:bat_loyalty_program_app/services/awss3.dart';
 import 'package:bat_loyalty_program_app/streams/general_stream.dart';
 
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
+import 'package:bat_loyalty_program_app/services/awss3.dart';
+
 import 'package:bat_loyalty_program_app/services/api.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -14,16 +15,16 @@ import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await AwsS3.configure();
   await Api.setAllDomain();
   String initRoute = '/login';
   String? domainName;
 
-  await Api.checkToken('_', main: true).then((res) async {
+  await Api.checkToken('_',main: true).then((res) async {
     await MyPrefs.init().then((prefs) {
       prefs!;
-      
+
       final allDomainString = MyPrefs.getAllDomain(prefs: prefs)!;
       Map<String, dynamic> allDomain = jsonDecode(allDomainString);
 

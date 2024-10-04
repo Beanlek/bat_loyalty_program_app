@@ -200,9 +200,10 @@ class ProfileWidgets {
       bool active = true,
       void Function(String?)? onChanged}) {
 
+
     final DATA_COLOR = Theme.of(context).colorScheme.primary;
     final MENU_HEIGHT = MySize.Height(context, 0.3);
-
+    // final Localizations = AppLocalizations.of(context);
     final _widget = StatefulBuilder(builder: (context, setState) {
 
       return SizedBox(

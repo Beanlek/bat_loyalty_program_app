@@ -10,6 +10,7 @@ import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ManageOutletAddPage extends StatefulWidget {
   const ManageOutletAddPage({super.key});
@@ -46,12 +47,14 @@ class _ManageOutletAddPageState extends State<ManageOutletAddPage> with ManageOu
 
   @override
   Future<bool> popDialog() async {
+    final Localizations = AppLocalizations.of(context);
+    
     bool res = false;
 
-    await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Unsaved Data',
-      confirmText: 'Yes',
-      cancelText: 'Continue Editing',
-      subtitle: 'Are you sure you want to exit this page?', warning: 'Once exit, all progress will not be saved.'
+    await showDialog(context: context, builder: (context) => PopUps.Default(context, Localizations!.unsaved_data ,
+      confirmText: Localizations.yes,
+      cancelText: Localizations.continue_editing,
+      subtitle: Localizations.are_you_sure_exit, warning: Localizations.progress_not_saved_on_exit,
       
     )).then((_res) async { print('_res: $_res'); res = _res; });
 
@@ -62,6 +65,8 @@ class _ManageOutletAddPageState extends State<ManageOutletAddPage> with ManageOu
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Localizations = AppLocalizations.of(context);
+    
 
     if (launchLoading) {
       final userMap = jsonDecode(args.user); user = Map.from(userMap);
@@ -107,7 +112,7 @@ class _ManageOutletAddPageState extends State<ManageOutletAddPage> with ManageOu
       
       }, child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Add Outlet', appVersion: appVersion, refresh: outletAdded, canPop: canPop, popDialog: popDialog),
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, Localizations!.add_outlet , appVersion: appVersion, refresh: outletAdded, canPop: canPop, popDialog: popDialog),
 
         body: 
         
@@ -130,10 +135,10 @@ class _ManageOutletAddPageState extends State<ManageOutletAddPage> with ManageOu
                             children: [
                               Column(
                                 children: [
-                                  ProfileWidgets.Header(context, title: 'Outlet Information'),
+                                  ProfileWidgets.Header(context, title: Localizations.outlet_information),
                                   Column(children: [
                                     
-                                    ProfileWidgets.dropdownField(context, 'Company', selectedFilter: accountController.text, filters: accountFilters, onChanged: (String? _filter) async {
+                                    ProfileWidgets.dropdownField(context, Localizations.company, selectedFilter: accountController.text, filters: accountFilters, onChanged: (String? _filter) async {
                                       if (_filter! == 'Company') {
                                         accountController.text = _filter;
                                         outletController.text = 'Outlet';
@@ -164,7 +169,7 @@ class _ManageOutletAddPageState extends State<ManageOutletAddPage> with ManageOu
 
                                     errorMarks[0] ? MyWidgets.MyErrorTextField(context, errMsgs['accountErrorMsg']! ) : SizedBox(),
 
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'PostCode', controller: outletPostcodeController, focusNode: outletPostcodeFocusnode, digitOnly: true,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.postcode, controller: outletPostcodeController, focusNode: outletPostcodeFocusnode, digitOnly: true,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true; postcodeChanged = true;} ), onSubmitted: (_) async {
                                         if (outletPostcodeController.text == "") {
                                           return;
@@ -185,7 +190,7 @@ class _ManageOutletAddPageState extends State<ManageOutletAddPage> with ManageOu
                                       },
                                     ), errorMarks[1] ? MyWidgets.MyErrorTextField(context, errMsgs['outletPostcodeErrorMsg']! ) : SizedBox(),
 
-                                    ProfileWidgets.dropdownField(context, 'Outlet', selectedFilter: outletController.text, filters: outletFilters, active: (accountController.text == 'Company' || outletPostcodeController.text == "") ? false : true, onChanged: (String? _filter) async{
+                                    ProfileWidgets.dropdownField(context, Localizations.outlet, selectedFilter: outletController.text, filters: outletFilters, active: (accountController.text == 'Company' || outletPostcodeController.text == "") ? false : true, onChanged: (String? _filter) async{
                                       setState(() => isLoading = true);
 
                                       if (outletController.text == _filter!) {
@@ -207,13 +212,13 @@ class _ManageOutletAddPageState extends State<ManageOutletAddPage> with ManageOu
                           
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 80.0),
-                                child: MyWidgets.MyButton1(context, 150, 'Add', active: saveButtonActive,
+                                child: MyWidgets.MyButton1(context, 150, Localizations.add, active: saveButtonActive,
                                   () async {
 
-                                    await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Adding New Outlet',
-                                      confirmText: 'Add',
-                                      cancelText: 'Cancel',
-                                      subtitle: 'Add this outlet as your other outlet?'),).then((res) async {
+                                    await showDialog(context: context, builder: (context) => PopUps.Default(context, Localizations.adding_new_outlet,
+                                      confirmText: Localizations.add,
+                                      cancelText: Localizations.cancel,
+                                      subtitle: Localizations.add_this_outlet_as_other),).then((res) async {
                                         if (res ?? false) {
                                           setState(() { isLoading = true; });
 
@@ -240,20 +245,20 @@ class _ManageOutletAddPageState extends State<ManageOutletAddPage> with ManageOu
 
                                                   if (res == 200) {
                                                     // success
-                                                    FloatingSnackBar(message: 'Successful. Edit saved', context: context);
+                                                    FloatingSnackBar(message: Localizations.successful_edit_saved, context: context);
                                                     setState(() => outletAdded = true );
                                                     setState(() => stillEditing = false );
 
                                                     Navigator.pop(context, outletAdded);
 
-                                                  } else { FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                                  } else { FloatingSnackBar(message: '${Localizations.something_went_wrong} ${statusCode}.', context: context);
                                                   } setState(() { isLoading = false; });
                                                 }); setState(() { isLoading = false; });
                                               });
                                             } else {
 
-                                              if (statusCode == 422) {FloatingSnackBar(message: 'Outlet is already added.', context: context);}
-                                              else {FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);}
+                                              if (statusCode == 422) {FloatingSnackBar(message: Localizations.outlet_already_added, context: context);}
+                                              else {FloatingSnackBar(message: '${Localizations.something_went_wrong} ${statusCode}.', context: context);}
                                               
                                             } setState(() { isLoading = false; });
                                           });

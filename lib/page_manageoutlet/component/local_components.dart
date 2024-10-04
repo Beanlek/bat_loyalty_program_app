@@ -7,7 +7,16 @@ import 'package:intl/intl.dart';
 mixin ManageOutletComponents {
   DateFormat? dateTime;
 
-  final List<Map<dynamic,dynamic>> accounts = [];
+  final List<Map<dynamic,dynamic>> accounts = [
+    {
+      "data": "7-11",
+      "filter": false
+    },
+    {
+      "data": "Family Mart",
+      "filter": false
+    },
+  ];
 
   int activeCount = 0;
 
@@ -45,51 +54,12 @@ mixin ManageOutletComponents {
   
   Map<String, dynamic> user = {};
   Map<String, dynamic> outlets = {};
-  Map<String, dynamic> outletsTemp = {};
   Map<String, dynamic> updateActiveData = {};
 
   void disposeAll() {
     accountController.dispose();
     outletController.dispose();
     outletPostcodeController.dispose();
-  }
-
-  void setAccountFilter() {
-    accounts.clear();
-    bool dataExist = false;
-    Map<String, dynamic> map = { "data": '', "filter": false };
-    final rows = outlets['rows'];
-
-    for (var i = 0; i < rows.length; i++) {
-      var mapTemp = {};
-      
-      if (accounts.isNotEmpty) {
-        for (var j = 0; j < accounts.length; j++) {
-          if (accounts[j]['data'] == rows[i]['account_id']) {
-            dataExist = true;
-            j = accounts.length;
-          } else { dataExist = false; }
-        }
-
-        if (!dataExist) {
-          print('run filter :: ${rows[i]['account_id']}');
-          map.update("data", (value) => value = rows[i]['account_id']);
-          map.putIfAbsent("filter", () => false);
-
-          mapTemp = Map.from(map);
-
-          accounts.add(mapTemp);
-        }
-      } else {
-        print('run filter first :: ${rows[i]['account_id']}');
-        map.update("data", (value) => value = rows[i]['account_id']);
-        map.putIfAbsent("filter", () => false);
-
-        mapTemp = Map.from(map);
-
-        accounts.add(mapTemp);
-      }
-    }
   }
 
   void setActiveCount(Map<String, dynamic> outlets) { activeCount = 0;

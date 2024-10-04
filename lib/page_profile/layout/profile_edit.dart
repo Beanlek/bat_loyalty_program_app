@@ -11,6 +11,7 @@ import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileEditPage extends StatefulWidget {
   const ProfileEditPage({super.key});
@@ -47,12 +48,14 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
 
   @override
   Future<bool> popDialog() async {
+    final Localizations = AppLocalizations.of(context);
+    
     bool res = false;
 
-    await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Unsaved Data',
-      confirmText: 'Yes',
-      cancelText: 'Continue Editing',
-      subtitle: 'Are you sure you want to exit this page?', warning: 'Once exit, all progress will not be saved.'
+    await showDialog(context: context, builder: (context) => PopUps.Default(context, Localizations!.unsaved_data,
+      confirmText: Localizations.yes,
+      cancelText: Localizations.cancel,
+      subtitle: Localizations.are_you_sure_exit, warning:Localizations.progress_not_saved_on_exit,
       
     )).then((_res) async { print('_res: $_res'); res = _res; });
 
@@ -63,6 +66,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Localizations = AppLocalizations.of(context);
 
     final userMap = jsonDecode(args.user); user = Map.from(userMap);
 
@@ -88,7 +92,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
       canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Edit Profile', appVersion: appVersion, canPop: !stillEditing, refresh: userUpdated, popDialog: popDialog),
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, Localizations!.edit_profile, appVersion: appVersion, canPop: !stillEditing, refresh: userUpdated, popDialog: popDialog),
 
         body: 
         
@@ -112,46 +116,46 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
                               Column(
                                 children: [
                                   
-                                  ProfileWidgets.Header(context, title: 'Personal Information'),
+                                  ProfileWidgets.Header(context, title: Localizations.personal_information),
                                   Column(children: [
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'Phone No', controller: phoneController, readOnly: true, focusNode: dummyFocusnode,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.phone_no, controller: phoneController, readOnly: true, focusNode: dummyFocusnode,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[0] ? MyWidgets.MyErrorTextField(context, "Error TextField" ) : SizedBox(),
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'Username', controller: usernameController, readOnly: true, focusNode: usernameFocusnode,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.username, controller: usernameController, readOnly: true, focusNode: usernameFocusnode,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[1] ? MyWidgets.MyErrorTextField(context, "Error TextField" ) : SizedBox(),
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'Full Name', controller: fullNameController, focusNode: fullNameFocusnode,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.fullname, controller: fullNameController, focusNode: fullNameFocusnode,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[2] ? MyWidgets.MyErrorTextField(context, errMsgs['fullNameErrorMsg']! ) : SizedBox(),
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'Email', controller: emailController, focusNode: emailFocusnode,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.email, controller: emailController, focusNode: emailFocusnode,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[3] ? MyWidgets.MyErrorTextField(context, errMsgs['emailErrorMsg']! ) : SizedBox(),
                                   ],),
 
                                   Divider(color: Theme.of(context).colorScheme.onTertiary,),
                                   
-                                  ProfileWidgets.Header(context, title: 'Security Information'),
+                                  ProfileWidgets.Header(context, title: Localizations.security_information),
                                   Column(children: [
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'Password', controller: passwordController, isPassword: true, focusNode: passwordFocusnode, readOnly: true,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.password, controller: passwordController, isPassword: true, focusNode: passwordFocusnode, readOnly: true,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[4] ? MyWidgets.MyErrorTextField(context, errMsgs['passwordErrorMsg']! ) : SizedBox(),
                                   ],),
                               
                                   Divider(color: Theme.of(context).colorScheme.onTertiary,),
                                   
-                                  ProfileWidgets.Header(context, title: 'Address Information'),
+                                  ProfileWidgets.Header(context, title: Localizations.address_information),
                                   Column(children: [
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'Unit No. / House No.', controller: address1Controller, focusNode: address1Focusnode,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.unit_no_house_no, controller: address1Controller, focusNode: address1Focusnode,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[5] ? MyWidgets.MyErrorTextField(context, errMsgs['address1ErrorMsg']! ) : SizedBox(),
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'Street Name', controller: address2Controller, focusNode: address2Focusnode,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.street_name, controller: address2Controller, focusNode: address2Focusnode,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[6] ? MyWidgets.MyErrorTextField(context, errMsgs['address2ErrorMsg']! ) : SizedBox(),
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'Residential Area', controller: address3Controller, focusNode: address3Focusnode,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.residential_area, controller: address3Controller, focusNode: address3Focusnode,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[7] ? MyWidgets.MyErrorTextField(context, errMsgs['address3ErrorMsg']! ) : SizedBox(),
                                     
-                                    ProfileWidgets.dropdownField(context, 'State', selectedFilter: stateController.text, filters: statesFilters, onChanged: (String? _filter) async {
+                                    ProfileWidgets.dropdownField(context, Localizations.state, selectedFilter: stateController.text, filters: statesFilters, onChanged: (String? _filter) async {
                                       setState(() => isLoading = true);
                                 
                                       if (stateController.text == _filter) {
@@ -187,7 +191,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
 
                                     errorMarks[8] ? MyWidgets.MyErrorTextField(context, errMsgs['stateErrorMsg']! ) : SizedBox(),
 
-                                    ProfileWidgets.dropdownField(context, 'City', selectedFilter: cityController.text, filters: cityFilters,active: stateController.text == 'State' ? false : true, onChanged: (String? _filter) async{
+                                    ProfileWidgets.dropdownField(context, Localizations.city, selectedFilter: cityController.text, filters: cityFilters,active: stateController.text == 'State' ? false : true, onChanged: (String? _filter) async{
                                       setState(() => isLoading = true);
                               
                                       if (cityController.text == _filter) {
@@ -245,7 +249,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
                                     
                                     errorMarks[9] ? MyWidgets.MyErrorTextField(context, errMsgs['cityErrorMsg']! ) : SizedBox(),
                                     
-                                    ProfileWidgets.ConfirmationListTile(context, title: 'PostCode', controller: postcodeController, focusNode: postcodeFocusnode, digitOnly: true,
+                                    ProfileWidgets.ConfirmationListTile(context, title: Localizations.postcode, controller: postcodeController, focusNode: postcodeFocusnode, digitOnly: true,
                                       onTap: () => setState( () {} ), onChanged: (_) => setState(() {canPop = false; stillEditing = true;} ),
                                     ), errorMarks[10] ? MyWidgets.MyErrorTextField(context, errMsgs['postcodeErrorMsg']! ) : SizedBox(),
                                   ],),
@@ -254,13 +258,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
                           
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 80.0),
-                                child: MyWidgets.MyButton1(context, 150, 'Save', active: saveButtonActive,
+                                child: MyWidgets.MyButton1(context, 150, Localizations.save, active: saveButtonActive,
                                   () async {
 
-                                    await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Save Changes',
-                                      confirmText: 'Save',
-                                      cancelText: 'Cancel',
-                                      subtitle: 'Save your changes?'),).then((res) async {
+                                    await showDialog(context: context, builder: (context) => PopUps.Default(context, Localizations.save_changes,
+                                      confirmText: Localizations.save,
+                                      cancelText: Localizations.cancel,
+                                      subtitle: Localizations.save_your_changes),).then((res) async {
                                         if (res ?? false) {
                                           setState(() { isLoading = true; phoneController.text = args.phone; });
                                     
@@ -281,19 +285,19 @@ class _ProfileEditPageState extends State<ProfileEditPage> with ProfileComponent
 
                                                       if (res == 200) {
                                                         // success
-                                                        FloatingSnackBar(message: 'Successful. Edit saved', context: context);
+                                                        FloatingSnackBar(message: ' ${Localizations.successful} ${Localizations.edit_saved} ', context: context);
                                                         setState(() => userUpdated = true );
                                                         setState(() => stillEditing = false );
 
-                                                      } else { FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                                      } else { FloatingSnackBar(message: '${Localizations.something_went_wrong} ${statusCode}.', context: context);
                                                       } setState(() { isLoading = false; });
                                                     }); setState(() { isLoading = false; });
                                                   });
-                                                } else { FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                                } else { FloatingSnackBar(message: '${Localizations.something_went_wrong} ${statusCode}.', context: context);
                                                 } setState(() { isLoading = false; });
                                               });
                                             } else { print('failed');
-                                              FloatingSnackBar(message: 'Unsuccessful. Please enter your info correctly.', context: context);
+                                              FloatingSnackBar(message: Localizations.unsuccessful, context: context);
                                             } setState(() { isLoading = false; });
                                           }); setState(() { isLoading = false; });
                                         }

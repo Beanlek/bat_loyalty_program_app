@@ -3,6 +3,7 @@ import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -40,7 +41,7 @@ class _SettingsPageState extends State<SettingsPage> with SettingsComponents, My
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
+    final Localizations = AppLocalizations.of(context);
     // final outletsMap = jsonDecode(args.outlets); outlets = Map.from(outletsMap);
     
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: SettingsPage.routeName);
@@ -59,7 +60,7 @@ class _SettingsPageState extends State<SettingsPage> with SettingsComponents, My
       canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'SettingsPage', appVersion: appVersion),
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, Localizations!.settings, appVersion: appVersion),
         
         body:
         
@@ -71,7 +72,7 @@ class _SettingsPageState extends State<SettingsPage> with SettingsComponents, My
                 children: [
                   Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths)),
                       
-                  Expanded(child: Center(child: Text('SettingsPage'))),
+                  Expanded(child: Center(child: Text(Localizations.settings))),
                 ],
               ),
             ),

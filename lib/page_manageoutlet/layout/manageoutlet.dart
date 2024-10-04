@@ -10,6 +10,9 @@ import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 
 class ManageOutletPage extends StatefulWidget {
   const ManageOutletPage({super.key});
@@ -55,54 +58,21 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
         final _outlets = MyPrefs.getOutlets(prefs: prefs) ?? '{}';
         setState(() { outlets = jsonDecode(_outlets); });
 
-        // page cache
-        outletsTemp = Map.from(outlets);
-
-        setAccountFilter();
       });
       
     });
-  }
-
-  @override
-  void applyFilters(BuildContext context, { dynamic key, required String data }) {
-    super.applyFilters(context, data: data); print('filter on $data');
-
-    List<dynamic> filteredOutlets = [];
-    final rows = outletsTemp['rows'];
-
-    if (filtersApplied.isNotEmpty) {
-      for (var i = 0; i < filtersApplied.length; i++) {
-        List<dynamic> filterTemp = [];
-          
-        filterTemp = rows.where((_outlet) {
-          final account_id = _outlet['account_id'];
-
-          return account_id == filtersApplied[i];
-        }).toList(); print('filter on temp $filterTemp');
-
-        filteredOutlets = List.from(filteredOutlets)..addAll(filterTemp);
-      }
-
-      Map<String, dynamic> filteredOutletsMap = { "count" : filteredOutlets.length, "rows": filteredOutlets };
-      setState(() => outlets = Map.from(filteredOutletsMap));
-      
-    } else { setState(() => outlets = Map.from(outletsTemp)); }
   }
   
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final Localizations = AppLocalizations.of(context);
     
     if (launchLoading) {
       final userMap = jsonDecode(args.user); user = Map.from(userMap); print('user: $user');
       final outletsMap = jsonDecode(args.outlets); outlets = Map.from(outletsMap);
-
-      // page cache
-      outletsTemp = Map.from(outlets);
       
-      setAccountFilter();
       setActiveCount(outlets); print("outlesMap init: $outlets");
     }
     
@@ -117,15 +87,7 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
       canPop: canPop,
       child: launchLoading ? MyWidgets.MyLoading2(context, isDarkMode) : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(), child: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: MyWidgets.MyAppBar(context, isDarkMode, 'Manage Outlets', appVersion: appVersion, canPop: canPop, refresh: outletListEditted, popDialog: popDialog),
-
-        // debug
-        floatingActionButton: Debug.FloatingButton(context, 60, onTap: () async { await showDialog(context: context, builder: (context) {
-          return PopUps.Debug(context, data: [accounts.toString(), filtersApplied.toString(), outletsTemp.toString(), outlets.toString()]);
-        }); }),
-        
-
-        // debug
+        appBar: MyWidgets.MyAppBar(context, isDarkMode, Localizations!.manage_outlet, appVersion: appVersion, canPop: canPop, refresh: outletListEditted, popDialog: popDialog),
         
         body:
 
@@ -151,7 +113,7 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                           applyFilters: applyFilters,
                           filtersApplied: filtersApplied,
                           datas: [ accounts ],
-                                          
+                          
                           controller: searchController,
                           focusNode: searchFocusNode,
 
@@ -168,13 +130,13 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                               child: Column( crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Active Outlets: ${activeCount}', style: Theme.of(context).textTheme.bodyMedium),
-                                  Text('Total Outlets: ${outlets['count']}', style: Theme.of(context).textTheme.bodyMedium),
+                                  Text('${Localizations.active_outlets}: ${activeCount}', style: Theme.of(context).textTheme.bodyMedium),
+                                  Text('${Localizations.total_outlets}: ${outlets['count']}', style: Theme.of(context).textTheme.bodyMedium),
                                 ],
                               ),
                             ),
                             Padding( padding: const EdgeInsets.only(bottom: 8.0), child:
-                              MyWidgets.MySwitch(context, active: showInactiveOutlets, activeText: 'Show Past Outlets', inactiveText: 'Show Past Outlets',
+                              MyWidgets.MySwitch(context, active: showInactiveOutlets, activeText:Localizations.show_past_outlets, inactiveText: Localizations.show_past_outlets,
                               activeColor: Theme.of(context).colorScheme.secondary,
                               inactiveColor: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
                                 onChanged: (_value) { setState(() => showInactiveOutlets = _value); }
@@ -252,22 +214,22 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                                         
                                         Positioned( bottom: 12, right: 12,
                                           child: Padding( padding: const EdgeInsets.only(bottom: 8.0), child:
-                                            MyWidgets.MySwitch(context, active: outlet['active'], activeText: 'Status: Assigned', inactiveText: 'Status: Not assigned',
+                                            MyWidgets.MySwitch(context, active: outlet['active'], activeText: Localizations.status_assigned, inactiveText: Localizations.status_not_assigned,
                                               onChanged: (_value) async {
                                                 if (activeCount == 1 && outlet['active'] == true) {
-                                                  FloatingSnackBar(message: 'This is your only active outlet. You cannnot deactivate this outlet.', context: context);
+                                                  FloatingSnackBar(message: Localizations.only_active_outlet, context: context);
                                                 } else {
                                                 
                                                   setState(() => isLoading = true);
                                                   String subtitle;
 
                                                   if (outlet['active']) {
-                                                    subtitle = 'You are DEACTIVATING your status.\n\nThis indicates that you are no longer assigned as a employee in this outlet. Proceed?';
+                                                    subtitle = Localizations.deactivating_status;
                                                   } else {
-                                                    subtitle = 'You are REACTIVATING your status.\n\nThis indicates that you will be assigned as a employee in this outlet. Proceed?';
+                                                    subtitle = Localizations.reactivating_status;
                                                   }
                                                   
-                                                  await showDialog(context: context, builder: (context) => PopUps.Default(context, 'Changing Status',
+                                                  await showDialog(context: context, builder: (context) => PopUps.Default(context, Localizations.changing_status,
                                                     subtitle: subtitle, ),).then((res) async {
                                                       if (res ?? false) {
                                                         updateActiveData.clear();
@@ -293,13 +255,13 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                                                                 if (res == 200) {
 
                                                                   // success
-                                                                  FloatingSnackBar(message: 'Successful. Outlet status changed.', context: context);
+                                                                  FloatingSnackBar(message:  Localizations.successful_status_change, context: context);
                                                                   await refreshPage(context, setState);
                                                                   setState(() => outletListEditted = true);
                                                                   setState(() => canPop = false);
 
                                                                 } else {
-                                                                  FloatingSnackBar(message: 'Something went wrong. Error ${statusCode}.', context: context);
+                                                                  FloatingSnackBar(message: '${Localizations.something_went_wrong} ${statusCode}.', context: context);
                                                                 }
 
                                                                 setState(() { isLoading = false; });
@@ -349,7 +311,7 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                                       child: Padding( padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0), child: Row( mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           Icon(Icons.add, color: Theme.of(context).primaryColor,),
-                                          Text('Add new outlet', style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor),)
+                                          Text(Localizations.add_new_outlets , style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor),)
                                         ]
                                       ))
                                     )),

@@ -1,23 +1,21 @@
 import 'package:bat_loyalty_program_app/streams/general_stream.dart';
-import 'package:flag/flag_enum.dart';
-import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
-
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
-
+import 'package:flag/flag.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeWidgets {
   static Widget MyDrawer(BuildContext context, bool isDarkMode,
-    {key, required String appVersion, required String domainName, required List<Widget> items}
-  ) {
+      {key,
+      required String appVersion,
+      required String domainName,
+      required List<Widget> items}) {
     final _widget = Drawer(
       width: MySize.Width(context, 0.6),
       backgroundColor: Theme.of(context).primaryColor,
-
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24.0,  24.0, 12 , 24.0),
+        padding: const EdgeInsets.fromLTRB(24.0, 24.0, 12, 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -25,41 +23,60 @@ class HomeWidgets {
               child: Padding(
                 padding: const EdgeInsets.only(top: 32.0, left: 10, right: 44),
                 child: Image.asset(
-                  isDarkMode ?
-                  'assets/logos/bat-logo-white.png' :
-                  'assets/logos/bat-logo-default.png',
+                  isDarkMode
+                      ? 'assets/logos/bat-logo-white.png'
+                      : 'assets/logos/bat-logo-default.png',
                 ),
               ),
             ),
-
-            SizedBox(height: 12,),
-            Text('Version ${appVersion}\nDomain ${domainName}', style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w300, fontSize: 8),),
-            SizedBox(height: 24,),
-
-            Column( crossAxisAlignment: CrossAxisAlignment.start, children: items, )
+            SizedBox(
+              height: 12,
+            ),
+            Text(
+              'Version ${appVersion}\nDomain ${domainName}',
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall!
+                  .copyWith(fontWeight: FontWeight.w300, fontSize: 8),
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: items,
+            )
           ],
         ),
       ),
     );
-  
+
     return _widget;
   }
 
   static Widget Item(BuildContext context,
-    {key, required IconData icon, required String label, void Function()? onTap}
-  ) {
+      {key,
+      required IconData icon,
+      required String label,
+      void Function()? onTap}) {
     final Color ITEM_COLOR = Theme.of(context).colorScheme.onTertiary;
-    
-    final _widget = ListTile(
-      leading: Icon(icon, color: ITEM_COLOR, size: 16,),
-      title: Text(label, style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: ITEM_COLOR, fontWeight: FontWeight.w500)),
 
+    final _widget = ListTile(
+      leading: Icon(
+        icon,
+        color: ITEM_COLOR,
+        size: 16,
+      ),
+      title: Text(label,
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium!
+              .copyWith(color: ITEM_COLOR, fontWeight: FontWeight.w500)),
       dense: true,
       contentPadding: EdgeInsets.zero,
-
       onTap: onTap,
     );
-  
+
     return _widget;
   }
 
@@ -70,7 +87,15 @@ class HomeWidgets {
 
     final _widget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
-      leading: IconButton(onPressed: () { scaffoldKey.currentState!.openDrawer(); }, icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.secondary,),),
+      leading: IconButton(
+        onPressed: () {
+          scaffoldKey.currentState!.openDrawer();
+        },
+        icon: Icon(
+          Icons.menu,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+      ),
       actions: [
         IconButton(onPressed: () {
           showDialog(
@@ -142,7 +167,6 @@ class HomeWidgets {
           ),
         ),
       ],
-    
       title: Stack(
         children: [
           SizedBox(
@@ -150,28 +174,30 @@ class HomeWidgets {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Image.asset(
-                isDarkMode ?
-                'assets/logos/bat-logo-white.png' :
-                'assets/logos/bat-logo-default.png',
+                isDarkMode
+                    ? 'assets/logos/bat-logo-white.png'
+                    : 'assets/logos/bat-logo-default.png',
               ),
             ),
           ),
           Positioned(
-            bottom: 7,
-            right: 0,
-            child: Text(appVersion,
-              style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.normal, fontSize: 8),
-            )
-          )
+              bottom: 7,
+              right: 0,
+              child: Text(
+                appVersion,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall!
+                    .copyWith(fontWeight: FontWeight.normal, fontSize: 8),
+              ))
         ],
       ),
     );
-  
+
     return _widget;
   }
 
-  static Widget MyFloatingButton(
-      BuildContext context, double? dimension,
+  static Widget MyFloatingButton(BuildContext context, double? dimension,
       {key, bool active = true, void Function()? onTap}) {
     final _widget = Material(
       color: Colors.transparent,

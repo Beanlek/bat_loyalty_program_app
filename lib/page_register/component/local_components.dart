@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:country_state_city/country_state_city.dart' as country;
 import 'package:flutter/widgets.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 mixin RegisterComponents {
   final PageController pageController = PageController(initialPage: 1);
@@ -309,19 +310,19 @@ mixin RegisterComponents {
 
   Future<bool> usernameValidation(BuildContext context, String domainName, {bool snackBar = true}) async {
     bool valid = false; pagePhoneValid = valid;
-    String msg = 'Your username are already taken.';
-
+    final Localizations = AppLocalizations.of(context);
+    String msg = Localizations!.username_taken;
     String pattern = Regex.REGEX_USERNAME;
     RegExp regex = RegExp(pattern);
 
     if (regex.hasMatch(usernameController.text.trim())) { valid = true; }
-      else { msg = 'Invalid username. Please follow the guideline.'; }
+      else { msg = Localizations.invalid_username_follow_guideline; }
 
     if (valid) {
       await Api.registration_validate(domainName, mobile: '_', id: usernameController.text.trim() ).then((statusCode) {
         if (statusCode == 422) { valid = false; }
           else if (statusCode == 200) {}
-          else { msg = 'Something went wrong. Error ${statusCode}.'; valid = false; }
+          else { msg = '${Localizations.something_went_wrong}  ${statusCode}.'; valid = false; }
 
         if (!valid && snackBar) FloatingSnackBar(message: msg, context: context);
       });
@@ -336,20 +337,21 @@ mixin RegisterComponents {
     { required String pattern, required String data, bool password = false, bool snackBar = true }
   ) async {
     bool valid = false;
-    String msg = 'Invalid ${label}. Please double check.';
+    final Localizations = AppLocalizations.of(context)!;
+    String msg = '${Localizations.invalid} ${label}. ${Localizations.please_double_check}';
 
     switch (label) {
       case 'fullName':
-        msg = 'Make sure your name contains only alphabet.';
+        msg = Localizations.name_contains_only_alphabet;
         break;
       case 'email':
         msg = 'Eg: emailName@gmail.com';
         break;
       case 'password':
-        msg = 'At least 1 digit and 1 special character';
+        msg = Localizations.password_criteria;
         break;
       case 'postcode':
-        msg = 'Make sure contains 5 digit.';
+        msg = Localizations.password_criteria;
         break;
       default:
     }
@@ -359,12 +361,12 @@ mixin RegisterComponents {
     if (password) {
       if ( data == passwordController.text ) {
         if (regex.hasMatch(data)) { valid = true; }
-      } else { msg = 'Password does not match.'; }
+      } else { msg = Localizations.password_does_not_match; }
     } else { if (regex.hasMatch(data)) { valid = true; } }
 
     if (!valid && snackBar) FloatingSnackBar(message: msg, context: context);
 
-    if (data.isEmpty || data == '') { msg = '${label.capitalize()} is empty.'; }
+    if (data.isEmpty || data == '') { msg = '${label.capitalize()}  ${Localizations.is_empty}'; }
 
     errMsgs.update('${label}ErrorMsg', (value) => msg);
 

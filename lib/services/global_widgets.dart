@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 
 import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 const PLACEHOLDER_ICON = Icon(Icons.abc, color: Colors.transparent);
 
@@ -487,9 +488,14 @@ class MyWidgets {
               SizedBox(
                 width: 12,
               ),
-              Text(text,
-                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      color: ERROR_COLORS, fontWeight: FontWeight.normal)),
+              Flexible(
+                child: Text(text,
+                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        color: ERROR_COLORS, fontWeight: FontWeight.normal),
+                        maxLines: null, // Allows the text to take multiple lines
+                        overflow: TextOverflow.visible, // Ensures that the text wraps instead of getting clipped                        
+                    ),
+              ),
             ],
           ),
         ));
@@ -506,6 +512,8 @@ class MyWidgets {
       elevation: 0,
       backgroundColor: Colors.transparent,
       onPressed: () {
+
+        final Localizations = AppLocalizations.of(context)!;
         showModalBottomSheet(
             context: context,
             builder: (context) {
@@ -525,7 +533,7 @@ class MyWidgets {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       GradientText(
-                        'Environment Change',
+                        Localizations.environment_change,
                         style: Theme.of(context)
                             .textTheme
                             .headlineSmall!
@@ -658,6 +666,7 @@ class MyWidgets {
   }
 
   static Widget MyFooter1(BuildContext context) {
+    final Localizations = AppLocalizations.of(context);
     final _widget = Column(
       children: [
         Divider(
@@ -668,9 +677,9 @@ class MyWidgets {
         ),
         Text.rich(
             style: Theme.of(context).textTheme.bodySmall,
-            TextSpan(text: 'Need any help? ', children: [
+            TextSpan(text: Localizations!.need_help, children: [
               TextSpan(
-                text: 'Contact Us.',
+                text: Localizations.contact_us,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.outline,
                     ),
@@ -754,10 +763,13 @@ class MyWidgets {
         
         onPressed: onPressed,
         label: Text(label, style: (textStyle ?? Theme.of(context).textTheme.bodySmall)!.copyWith(fontWeight: FontWeight.w500,
-          color: color ?? Theme.of(context).colorScheme.primary
-        )),
+          color: color ?? Theme.of(context).colorScheme.primary,
+          
+        )
+        ),
         icon: Icon(icon ?? Icons.abc, size: iconSize ?? MySize.Width(context, 0.05),
-          color: color ?? Theme.of(context).colorScheme.primary
+          color: color ?? Theme.of(context).colorScheme.primary,
+          
         ),
       ),
     );
@@ -821,7 +833,6 @@ class MyWidgets {
   
     return _widget;
   }
-
   static Widget MySwitch(BuildContext context,
     {key, required bool active,
     required String activeText,
@@ -858,53 +869,17 @@ class MyWidgets {
   }
 }
 
-class Debug {
-  static Widget FloatingButton(
-      BuildContext context, double? dimension,
-      {key, bool active = true, void Function()? onTap}) {
-    final _widget = Material(
-      color: Colors.transparent,
-      elevation: !active ? 0 : 3,
-      borderRadius: BorderRadius.circular(100),
-      child: SizedBox.square(
-        dimension: dimension ?? 60,
-        child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(
-                    color: !active
-                        ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                        : Theme.of(context).colorScheme.onTertiary),
-                gradient: !active
-                    ? null
-                    : LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                            MyColors.biruImran2,
-                            MyColors.biruImran,
-                          ]),
-                color: active ? null : Colors.transparent),
-            child: InkWell(
-              onTap: active ? onTap : null,
-              child: Icon(Icons.info_outline, color: MyColors.myWhite),
-            )),
-      ),
-    );
-
-    return _widget;
-  }
-}
-
 class PopUps {
   static Color CONFIRM_COLOR = MyColors.hijauImran;
   static Color CONFIRM_TEXT_COLOR = MyColors.hijauImran2;
   static Color WARNING_COLOR = MyColors.merahImran;
+ 
 
   static AlertDialog Default(BuildContext context, String title,
     {key, required String subtitle, String? warning, String? confirmText, String? cancelText}
   ) {
     final Color BACKGROUND_COLOR = Theme.of(context).primaryColor;
+     final Localizations = AppLocalizations.of(context);
 
     final _dialog = AlertDialog(
       backgroundColor: BACKGROUND_COLOR,
@@ -927,53 +902,14 @@ class PopUps {
         SizedBox(
           child: TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text( cancelText ?? "Cancel" ),
+            child: Text( cancelText ?? Localizations!.cancel ),
           ),
         ),
         Container( height: 40,
           decoration: BoxDecoration( borderRadius: BorderRadius.circular(12), color: CONFIRM_COLOR.withOpacity(0.3) ),
           child: TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text( confirmText ?? "Confirm", style: Theme.of(context).textTheme.bodyMedium!.copyWith( color: CONFIRM_TEXT_COLOR) ),
-          ),
-        ),
-      ],
-    );
-  
-    return _dialog;
-  }
-  
-  static AlertDialog Debug(BuildContext context,
-    {key, required List<String> data}
-  ) {
-    final Color BACKGROUND_COLOR = Theme.of(context).primaryColor;
-    final scrollController = ScrollController();
-
-    final _dialog = AlertDialog(
-      backgroundColor: BACKGROUND_COLOR,
-      
-      content: MyWidgets.MyScroll2( context, controller: scrollController, height: MySize.Height(context, 0.9),
-        child: Column( crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-          Align( alignment: Alignment.center, child: Text('Debug', style: Theme.of(context).textTheme.titleMedium!.copyWith( fontWeight: FontWeight.bold),)),
-          SizedBox(height: 12,),
-        
-          Column( children: 
-            data.map((singleData) =>
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: Text(singleData),
-              )
-            ).toList()
-          ,),
-        ],),
-      ),
-
-      actionsAlignment: MainAxisAlignment.spaceBetween,
-      actions: [
-        SizedBox(
-          child: TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text( "Okay" ),
+            child: Text( confirmText ?? Localizations!.confirm, style: Theme.of(context).textTheme.bodyMedium!.copyWith( color: CONFIRM_TEXT_COLOR) ),
           ),
         ),
       ],

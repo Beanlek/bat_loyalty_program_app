@@ -1,15 +1,20 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:amplify_core/amplify_core.dart';
-import 'package:bat_loyalty_program_app/services/awss3.dart';
+// import 'dart:typed_data';
+// import 'package:amplify_core/amplify_core.dart';
+// import 'package:bat_loyalty_program_app/services/awss3.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:bat_loyalty_program_app/model/product.dart';
 
 class Api {
   static Future<bool> checkToken(String domainName, {key, bool main = false}) async {
@@ -168,7 +173,7 @@ class Api {
         errMsg = e.response!.data['errMsg'].toString(); 
         result.update("result", (value) => [{ "errMsg": errMsg }]);
 
-      } else { statusCode = 503; }
+      } else { statusCode = 503; result.update("result", (value) => [{ "errMsg": errMsg }]);}
       print(errMsg);
     } catch (e) {
       print(e);
@@ -177,6 +182,55 @@ class Api {
     }
 
     result.update("status_code", (value) => statusCode);
+
+    return result;
+  }
+
+  static Future<Map<String, dynamic>> user_validate(String domainName, {required String user_id}) async {
+    int statusCode = 0;
+    Map<String, dynamic> result = {
+      "status_code": statusCode,
+      "result": []
+    };
+    final Dio dio = Dio();
+
+    String url = '${domainName}/api/user/app/userValidate';
+
+    try {
+      final response = await dio.post(
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+        }),
+
+        url,
+        data: {
+          "user_id": user_id,
+        },
+      );
+
+      statusCode = response.statusCode!;
+
+      if (statusCode == 200) {
+        result.update("result", (value) => [response.data] );
+      }
+    } on DioException catch (e) {
+      String errMsg = 'Unknown error. $e';
+
+      if (e.response != null) {
+        statusCode = e.response!.statusCode ?? 503;
+        
+        errMsg = e.response!.data['errMsg'].toString(); 
+        result.update("result", (value) => [{ "errMsg": errMsg }]);
+
+      } else { statusCode = 503; }
+      print(errMsg);
+    } catch (e) {
+      print(e);
+      statusCode = 503;
+      result.update("result", (value) => [{ "errMsg": e }]);
+    }
+
+    result.update("status_code", (value) => statusCode); print('result: $result');
 
     return result;
   }
@@ -269,64 +323,101 @@ class Api {
     return statusCode;
   }
 
-  static Future<int> uploadImageReceipt(String domainName, String token, { required XFile receipt, required String userId, required String outletId }) async{
+  static Future<Map<String, dynamic>> uploadImageReceipt(String domainName, String token, { required XFile receipt, required String outletId }) async{
+    print("OCR:: Api.uploadImageReceipt call start");
     int statusCode = 0;
+    Map<String, dynamic> result = {
+      "status_code": statusCode,
+      "result": []
+    };
+
+    String url_string_uploadReceipt = '${domainName}/a/s3/uploadReceipt/${outletId}';
+    final Uri url_uploadReceipt = Uri.parse(url_string_uploadReceipt);
+    
+    String url_getImage = '${domainName}/a/s3/getReceiptImageUrl';
 
     final Dio dio = Dio();
 
-    String url = '${domainName}/api/user/app/registerValidate';
+    File file = File(receipt.path);
+    String fileName = file.path.split('/').last;
 
     try {
-      await AwsS3.uploadImageReceipt(
-        userId: userId,
-        receipt: receipt
-      ).then((res) async {
-        if (res == true) {
-          await AwsS3.getReceiptImageUrl(userId: userId, receipt: receipt).then((res) async {
-            if (res['status'] == true) {
-              try {
-                final response = await dio.post(
-                  options: Options(headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer $token',
-                  }),
+      print("OCR:: 1st post api call init");
+      
+      final headers = {
+        "Authorization": "Bearer $token",
+        "Content-Type": "multipart/form-data"
+      };
+      var request = http.MultipartRequest('POST', url_uploadReceipt)
+        ..headers.addAll(headers)
+        ..files.add(await http.MultipartFile.fromPath(
+            'file', receipt.path,
+            filename: fileName,
+            contentType: MediaType('image', 'jpg')
+          ));
+      var response = await request.send();
 
-                  url,
-                  data: {
-                    "user_id": userId,
-                    "outlet_id": outletId,
-                    "created_by": userId,
-                    "image": res['result'].toString()
-                  }
-                );
+      statusCode = response.statusCode;
+      print('OCR:: StsCode uploadReceipt : $statusCode');
 
-                statusCode = response.statusCode!;
 
-              } on DioException catch (e) {
-                String errMsg = 'Unknown error. $e';
+      if (statusCode == 201 || statusCode == 200) {
+        var receiptImageId = 'null';
 
-                if (e.response != null) {
-                  statusCode = e.response!.statusCode ?? 503;
-                  
-                  errMsg = e.response!.data['errMsg'].toString(); 
+        await response.stream.bytesToString().then((res) async {
+          var resMap = jsonDecode(res);
+          receiptImageId = resMap["receiptImageId"];
 
-                } else { statusCode = 503; }
+          print("OCR:: 2nd get api call init");
 
-                safePrint(errMsg);
-              } catch (e) {
-                print(e);
-                statusCode = 503;
-              }
-            } else { safePrint(res['result']); statusCode = 503; }
-          });
-        } else { safePrint(res); statusCode = 503; }
-      });
+          final response = await dio.get(
+            options: Options(headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            }),
+
+            url_getImage,
+            data: {
+              "receiptImageId" : receiptImageId
+            }
+          );
+
+          statusCode = response.statusCode!;
+          print('OCR:: StsCode getImage : $statusCode');
+          
+          result.update("result", (value) => [ response.data ]);
+
+        });
+
+      } else {
+        await response.stream.bytesToString().then((res) {
+          result.update("result", (value) => [ res ]);
+          print('OCR:: response.stream : ${res}');
+        });
+      }
+
+    } on DioException catch (e) {
+      String errMsg = 'Unknown error. $e';
+      print("OCR:: error $errMsg");
+
+      if (e.response != null) {
+        statusCode = e.response!.statusCode ?? 503;
+        
+        errMsg = e.response!.data['errMsg'].toString(); 
+        result.update("result", (value) => [{ "errMsg": errMsg }]);
+
+      } else { statusCode = 503; result.update("result", (value) => [{ "errMsg": errMsg }]);}
+
+      print("OCR:: error $errMsg");
     } catch (e) {
-      safePrint(e);
+      print("OCR:: $e");
       statusCode = 503;
+      result.update("result", (value) => [{ "errMsg": e }]);
     }
 
-    return statusCode;
+    result.update("status_code", (value) => statusCode);
+
+    return result;
   }
 
   static Future<int> user_account_update_active(BuildContext context, String domainName, String token, 
@@ -535,5 +626,49 @@ class Api {
     }
 
     return statusCode;
+  }
+
+
+ static Future<List<Product>> fetchProducts(
+      String domainName, String token) async {
+    String url = '${domainName}/api/product/app/list';   
+   // print('url : $url');
+    final Dio dio = Dio();
+    int statusCode = 0;    
+    try {
+      final response = await dio.get(
+        url,
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+        
+      );
+
+      statusCode = response.statusCode!;
+     // print('statusCode fetch product : ${statusCode}');
+      if (statusCode == 200) {
+
+        //  print('response.data type: ${response.data.runtimeType}');
+        // print('response.data: ${response.data}');
+
+        // Cast the response data to List<Map<String, dynamic>>
+        if (response.data is List) {
+          List<Product> products = (response.data as List)
+              .map((productJson) => Product.fromJson(productJson as Map<String, dynamic>))
+              .toList();
+          return products;
+        } else {
+          throw Exception('Unexpected data format');
+        }              
+
+      } else {
+        print(statusCode);
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      print('Errorrr: $e');
+      throw Exception('Failed to load the products');
+    }
   }
 }

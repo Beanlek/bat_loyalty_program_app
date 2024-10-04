@@ -1,4 +1,4 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:amplify_core/amplify_core.dart';
 import 'package:bat_loyalty_program_app/page_homepage/component/local_components.dart';
@@ -6,6 +6,7 @@ import 'package:bat_loyalty_program_app/services/awss3.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:flutter/material.dart';
 
@@ -40,8 +41,13 @@ class _HomepagePreviewState extends State<HomepagePreview> with HomeComponents, 
   Widget build(BuildContext context) { 
     final args = ModalRoute.of(context)!.settings.arguments as MyArguments;
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
 
-    if (!launchLoading) { setPath(prevPath: args.prevPath, routeName: HomepagePreview.routeName); receiptImage = args.receiptImage!;}
+    if (!launchLoading) { setPath(prevPath: args.prevPath, routeName: HomepagePreview.routeName);
+
+      urlOriginal = args.urlOriginal!;
+      urlOcr = args.urlOcr!;
+    }
 
     print('imageRetake: $imageRetake');
     
@@ -57,12 +63,30 @@ class _HomepagePreviewState extends State<HomepagePreview> with HomeComponents, 
               child: Column( mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(child: Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(32),
-                      child: Image.file(
-                        File(receiptImage.path),
-                        fit: BoxFit.cover,
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                        height: MySize.Height(context, 0.5),
+                        viewportFraction: 0.9,
                       ),
+                      items: [urlOriginal, urlOcr].map((i) {
+                        return Builder(
+                          builder: (context) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(32),
+                              child: Image.network(
+                                i,
+                                fit: BoxFit.cover,
+                              ),
+                            
+                              // child: Image.file(
+                              //   File(receiptImage.path),
+                              //   fit: BoxFit.cover,
+                              // ),
+                            
+                            );
+                          }
+                        );
+                      }).toList(),
                     ),
                   )),
 
