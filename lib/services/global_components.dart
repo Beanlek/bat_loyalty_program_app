@@ -1,4 +1,5 @@
 import 'package:bat_loyalty_program_app/l10n/l10n.dart';
+import 'package:bat_loyalty_program_app/model/product.dart';
 import 'package:bat_loyalty_program_app/page_login/layout/login.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
@@ -43,31 +44,35 @@ mixin MyComponents {
   bool isLoading = false;
   bool isRefresing = false;
   bool launchLoading = true;
+  bool isLoadingProduct  = true;
   bool canPop = true;
 
   DateFormat? monthYear;
   DateFormat? monthYear2;
-
+  
+  // product indicator
+  int currentPage = 0;
+  
   String currentPath = '';
   List<String> paths = [];
-
   List<String> filtersApplied = [];
 
   late String domainName;
   late String appVersion;
   late String deviceID;
   late String token;
+  late String receiptImageId;
 
- 
+  late Future<dynamic> productFuture;
   late Future<bool> isRefresh;
+  List<Product> filteredDataList = [];
+  List<Product> dataList = [];
+
   
   late Locale currentLocale = L10n.locals[0]; // Initialize with the first locale
   bool isnitialized = false;
-
   
   late Future<AppLocalizations?> futureLocale;
-
-
 
   Future<AppLocalizations?> getFutureLocale(BuildContext context) async {
     final _futureLocale = AppLocalizations.of(context);    
@@ -167,4 +172,5 @@ mixin MyComponents {
     filtersApplied.clear();
   }
   
+
 }

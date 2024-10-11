@@ -66,20 +66,44 @@ class _ImageStatusPageState extends State<ImageStatusPage> with ImageStatusCompo
                   ),
 
                   Expanded(
-                    child: MyWidgets.MyScrollBar1( context, controller: mainScrollController,
-                      child: ListView.builder( controller: mainScrollController,
+                    child: MyWidgets.MyScrollBar1(context, controller: mainScrollController,
+                      child: ListView.builder(                                                            
+                        controller: mainScrollController,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         itemCount: receipts.length,
-                        physics: AlwaysScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
+                          print('inside listview');
                           List<Map<dynamic, dynamic>> receipt = receipts.values.elementAt(index);
                           String date = receipts.keys.elementAt(index);
-                          
-                          return ImageStatusWidgets.ReceiptSections(context, date, receipt: receipt, userId: args.username);
+                          print('image status page : ${receipt.length}');
+                          print('date: $date');
+                          String imagePath = 'assets/account_images/company.png';                          
+                        
+                        return ImageStatusWidgets.receiptCard(context: context, date: date, imagePath: imagePath, status:'In Proccess' , createdAt: '2024-07-03 09:11:30',);                        
                         },
                       ),
+                   
                     ),
                   ),
+                  
+                  // Expanded(
+                  //   child: MyWidgets.MyScrollBar1( context, controller: mainScrollController,
+                  //     child: ListView.builder( controller: mainScrollController,
+                  //       padding: const EdgeInsets.symmetric(horizontal: 12),
+                  //       itemCount: receipts.length,
+                  //       physics: AlwaysScrollableScrollPhysics(),
+                  //       itemBuilder: (context, index) {
+                  //         List<Map<dynamic, dynamic>> receipt = receipts.values.elementAt(index);
+                  //         String date = receipts.keys.elementAt(index);
+                          
+                  //         return ImageStatusWidgets.ReceiptSections(context, date, receipt: receipt, userId: args.username);
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
+                
+                
                 ],
               )
             ),

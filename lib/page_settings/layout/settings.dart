@@ -72,7 +72,13 @@ class _SettingsPageState extends State<SettingsPage> with SettingsComponents, My
                 children: [
                   Padding(padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0), child: Breadcrumb(paths: paths)),
                       
-                  Expanded(child: Center(child: Text(Localizations.settings))),
+                  Expanded(child: Center(child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(Localizations.settings),
+                      Text('Coming soon'),
+                    ],
+                  ))),
                 ],
               ),
             ),

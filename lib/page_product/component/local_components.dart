@@ -8,6 +8,9 @@ mixin ProductComponents {
   final List<Product> _dataList = [];
   final ScrollController _scrollController = ScrollController();
 
+  
+  
+
   final int _currentPage = 0;
 
   final List<String> imgList = [
@@ -34,6 +37,7 @@ mixin CounterMixin<T extends StatefulWidget> on State<T> {
     });
   }
 }
+
 
 
 

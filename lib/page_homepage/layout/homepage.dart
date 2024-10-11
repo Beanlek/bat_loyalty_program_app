@@ -20,6 +20,7 @@ import 'package:bat_loyalty_program_app/streams/general_stream.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
+import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
@@ -36,9 +37,6 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
   
-  List<Product> _filteredDataList = [];
-  List<Product> _dataList = [];
-  bool _showFilterOptions = false;
 
   @override
   void initState() {
@@ -52,7 +50,6 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
             }));
         futureProduct = _loadProducts();
         print("currentLocale: $currentLocale");
-
         launchLoading = false;
       });
     });
@@ -79,50 +76,14 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
   }
 
   Future<List<Product>> _loadProducts() async {
-    _dataList = await Api.fetchProducts(domainName, token);
-    _filteredDataList = _dataList;
-    print("_dataList: $_dataList");
-    return _dataList;
+    dataList = await Api.fetchProducts(domainName, token);    
+    filteredDataList = dataList;
+    print("dataList: $dataList");
+    return dataList;
   }
 
-  void _filterData() {
-    String query = searchController.text.toLowerCase();
-    setState(() {
-      _filteredDataList = _dataList.where((products) {
-        return products.name.toLowerCase().contains(query) ||
-            products.brand.toLowerCase().contains(query);
-      }).toList();
-    });
-  }
 
-  List<Product> _filterProducts(String query) {
-    return _filteredDataList = _dataList.where((products) {
-      return products.name.toLowerCase().contains(query) ||
-          products.name.contains(query) ||
-          products.brand.toLowerCase().contains(query) ||
-          products.brand.contains(query);
-    }).toList();
-  }
 
-  void _toggleFilterOptions() {
-    setState(() {
-      _showFilterOptions = !_showFilterOptions;
-    });
-  }
-
-  void onSearchChanged(String query) {
-    setState(() {
-      _filteredDataList = _filterProducts(query);
-      isSearching = true;
-    });
-
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        _filteredDataList = _filterProducts(query);
-        isSearching = false;
-      });
-    });
-  }
 
   @override
   void dispose() {
@@ -165,8 +126,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                             isDarkMode,
                             appVersion: appVersion,
                             scaffoldKey: scaffoldKey,
-                            onTap: () => myPushNamed(
-                                context, setState, ProfilePage.routeName,
+                            onTap: () => myPushNamed(context, setState, ProfilePage.routeName,
                                 arguments: MyArguments(token,
                                     prevPath: "/home",
                                     user: jsonEncode(user),
@@ -185,11 +145,9 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                   } else if (snapshot.hasData) {
                                     isRefresing = snapshot.data!;
                                     print('snapshot has data: $isRefresing');
-
                                     if (isRefresing) {
                                       refreshPage(context, setState);
                                     }
-
                                     return Stack(
                                       children: [
                                         CustomMaterialIndicator(
@@ -228,34 +186,22 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                         controller:
                                                             mainScrollController,
                                                         child: ListView.builder(
-                                                            padding:
-                                                                EdgeInsets.all(
-                                                                    9),
+                                                            padding: EdgeInsets.all(9),
                                                             controller:
                                                                 mainScrollController,
                                                             itemCount: 2,
                                                             itemBuilder:
-                                                                (context,
-                                                                    index) {
+                                                                (context,index) {
                                                               if (index == 0) {
                                                                 return Column(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .start,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
+                                                                  mainAxisAlignment:MainAxisAlignment.start,
+                                                                  crossAxisAlignment:CrossAxisAlignment.start,
                                                                     children: [
                                                                       SizedBox(
-                                                                          height: MySize.Height(
-                                                                              context,
-                                                                              0.135),
-                                                                          child:
-                                                                              Column(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
+                                                                          height: MySize.Height(context,0.135),
+                                                                          child:Column(
+                                                                            mainAxisAlignment:MainAxisAlignment.start,
+                                                                            crossAxisAlignment:CrossAxisAlignment.start,
                                                                             children: [
                                                                               Text(
                                                                                 Localizations.loyalty_points,
@@ -291,43 +237,27 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                                               )),
                                                                             ],
                                                                           )),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            12,
-                                                                      ),
+                                                                      SizedBox(height:12),
                                                                       Text(
-                                                                          Localizations
-                                                                              .product_catalogue,
-                                                                          style: Theme.of(context)
-                                                                              .textTheme
-                                                                              .titleMedium!
-                                                                              .copyWith(fontWeight: FontWeight.w500)),
+                                                                          Localizations.product_catalogue,
+                                                                          style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500)),
                                                                     ]);
-                                                              } else if (index ==
-                                                                  1) {
+                                                              } else if (index == 1) {
                                                                 return StickyHeader(
                                                                     header:
                                                                         Container(
-                                                                      color: Theme.of(
-                                                                              context)
-                                                                          .primaryColor,
-                                                                      child: Padding(
-                                                                          padding: const EdgeInsets.only(bottom: 3.0),
+                                                                      color: Theme.of(context).primaryColor,
+                                                                      child: Padding(padding: const EdgeInsets.only(bottom: 3.0),
                                                                           child: GradientSearchBar(
-                                                                            pageSetState:
-                                                                                setState,
-                                                                            applyFilters:
-                                                                                applyFilters,
-                                                                            filtersApplied:
-                                                                                filtersApplied,
+                                                                            pageSetState:setState,
+                                                                            applyFilters:applyFilters,
+                                                                            filtersApplied:filtersApplied,
                                                                             datas: [
                                                                               brandMap,
                                                                               categoryMap
                                                                             ],
-                                                                            controller:
-                                                                                searchController,
-                                                                            focusNode:
-                                                                                searchFocusNode,
+                                                                            controller:searchController,
+                                                                            focusNode:searchFocusNode,
                                                                             items: [
                                                                               GradientSearchBar.filterMenu(context, title: Localizations.brand, data: brandMap, applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState, first: true),
                                                                               GradientSearchBar.filterMenu(context, title: Localizations.category, data: categoryMap, applyFilters: applyFilters, clearFilters: clearFilters, pageSetState: setState),
@@ -336,32 +266,23 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                                                 () {},
                                                                           )),
                                                                     ),
-                                                                    content:
-                                                                        FutureBuilder(
+                                                                    content: FutureBuilder(
                                                                       future:futureProduct,
                                                                       builder:(context,snapshot) {
                                                                         if (snapshot.connectionState ==
-                                                                            ConnectionState
-                                                                                .waiting) {
-                                                                          return MyWidgets.MyLoading2(
-                                                                              context,
-                                                                              isDarkMode);
-                                                                        } else if (snapshot
-                                                                            .hasError) {
+                                                                            ConnectionState.waiting) {
+                                                                          return MyWidgets.MyLoading2(context,isDarkMode);
+                                                                        } else if (snapshot.hasError) {
                                                                           return SnackBar(
-                                                                            content:
-                                                                                Text('${snapshot.error}'),
+                                                                            content:Text('${snapshot.error}'),
                                                                           );
-                                                                        } else if (!snapshot.hasData ||
-                                                                            snapshot.data!.isEmpty) {
-                                                                          return SnackBar(
-                                                                            content:
-                                                                                Text('No product found.'),
+                                                                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                                                          return SnackBar(content:Text('No product found.'),
                                                                           );
                                                                         } else {
                                                                           return isSearching || isLoading
                                                                               ? MyWidgets.MyLoading2(context, isDarkMode)
-                                                                              : _filteredDataList.isEmpty
+                                                                              : filteredDataList.isEmpty
                                                                                   ? Center(child: Text("No matching products"))
                                                                                   : GridView.builder(
                                                                                       padding: const EdgeInsets.all(15),
@@ -371,21 +292,19 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                                                         mainAxisSpacing: 20,
                                                                                         crossAxisSpacing: 20,
                                                                                       ),
-                                                                                      itemCount: _filteredDataList.length,
+                                                                                      itemCount: filteredDataList.length,
                                                                                       shrinkWrap: true,
-
                                                                                       physics: NeverScrollableScrollPhysics(),
                                                                                       // controller: productController,
                                                                                       itemBuilder: (BuildContext context, int i) {
-                                                                                        final product = _filteredDataList[i];
+                                                                                        final product = filteredDataList[i];
                                                                                         return GestureDetector(
-                                                                                            onTap: () => Navigator.pushNamed(context,ProductPage.routeName,arguments: MyArguments(token,prevPath: "/home"),
-                                                                                                ),
+                                                                                            onTap: () => Navigator.pushNamed(context,ProductPage.routeName,arguments: MyArguments(token,prevPath: "/home",productId:product.id)),
                                                                                             child: ProductCard(
-                                                                                                imageUrl: Image.asset('assets/images_examples/headphone.jpeg'),
+                                                                                                imageUrl: Image.asset('assets/images_examples/headphone.jpeg'),                                                                                              
                                                                                                 title: product.name,
                                                                                                 points: product.points,
-                                                                                                onLoveIconTap: () => Navigator.pushNamed(context, ProductPage.routeName, arguments: MyArguments(token, prevPath: "/home")),
+                                                                                               // onLoveIconTap: () => Navigator.pushNamed(context, ProductPage.routeName, arguments: MyArguments(token, prevPath: "/home", productId: product.id)),
                                                                                                 gradient: LinearGradient(
                                                                                                   begin: Alignment.topLeft,
                                                                                                   end: Alignment.bottomRight,
@@ -409,72 +328,85 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                             ),
                                           ),
                                         ),
-                                        MyWidgets.MyLoading(
-                                            context,
-                                            (isLoading || isRefresing),
-                                            isDarkMode)
+                                        MyWidgets.MyLoading(context,(isLoading || isRefresing), isDarkMode)
                                       ],
                                     );
                                   } else {
-                                    return MyWidgets.MyLoading2(
-                                        context, isDarkMode);
+                                    return MyWidgets.MyLoading2(context, isDarkMode);
                                   }
                                 } else {
-                                  return MyWidgets.MyLoading2(
-                                      context, isDarkMode);
+                                  return MyWidgets.MyLoading2(context, isDarkMode);
                                 }
-                              }),
-                          floatingActionButton: HomeWidgets.MyFloatingButton(
-                              context, 60, onTap: () async {
-                            setState(() {
-                              isLoading = true;
-                            });
+                              }),             
+                          floatingActionButton: HomeWidgets.MyFloatingButton(context,60, onTap: () async {
+                              try {
+                                print("OCR:: Starting image capture process");
+                                setState(() {isLoading = true;});
 
-                            do {
-                              await takeImage().then((taken) async {
-                                Object? submit;
-                                setState(() => imageTaken = taken);
-
-                                if (imageTaken || imageRetake) {
-                                  submit = await myPushNamed(context, setState,
+                                bool shouldContinue;
+                                do {
+                                  shouldContinue = false;
+                                  print("OCR:: Attempting to take image");
+                                  bool taken = await takeImage(domainName, setState);
+                                  print("OCR:: takeImage result: $taken");
+                                  
+                                  if (taken) {
+                                    print('OCR:: Image taken successfully, preparing to navigate to HomepagePreview');
+                                    
+                                    print('OCR:: Navigating to HomepagePreview');
+                                    dynamic submit = await Navigator.of(context).pushNamed(
                                       HomepagePreview.routeName,
                                       arguments: MyArguments(
                                         token,
                                         prevPath: "/home",
-                                        receiptImage: receiptImage,
+                                        urlOriginal: urlOriginal,
+                                        urlOcr: urlOcr,
                                         username: user['id'],
-                                      ));
+                                        imageReceiptId: receiptImageId,
+                                        receiptImage: receiptImage                           
+                                      )
+                                    );
+                                    
+                                    print('OCR:: HomepagePreview result: $submit');
+                                    
+                                    if (submit == true) {
+                                      print('OCR:: User confirmed image, refreshing page');
+                                      await refreshPage(context, setState);
+                                    } else if (submit is Map<String, dynamic> && submit['action'] == 'retake') {
+                                      print('OCR:: User requested retake, deleting current image');
+                                      int result = await Api.deleteImage(domainName, token, receiptImageId);                                      
+                                      if (result == 200) {
+                                        print('OCR:: Image deleted successfully');
+                                        FloatingSnackBar(message: 'Image Receipt deleted!', context: context);
+                                        shouldContinue = true;
+                                      } else {
+                                        print('OCR:: Failed to delete image');
+                                        FloatingSnackBar(message: 'Failed to retake!', context: context);
+                                      }
+                                    }
+                                    else{
+                                      print('OCR:: Unexpected result from HomepagePreview: $submit');
 
-                                  if (submit == true) {
-                                    setState(() {
-                                      isLoading = true;
-                                      imageRetake = false;
-                                    });
-                                    await refreshPage(context, setState)
-                                        .whenComplete(() => setState(() {
-                                              isLoading = false;
-                                            }));
-                                  } else if (submit == 'retake') {
-                                    setState(() {
-                                      imageRetake = true;
-                                    });
+                                    }
+
                                   } else {
-                                    setState(() {
-                                      imageRetake = false;
-                                    });
+                                    print('OCR:: Failed to take image');
+                                    FloatingSnackBar(message: 'Failed to capture image', context: context);
                                   }
-                                } else {
-                                  setState(() {
-                                    imageRetake = false;
-                                  });
-                                }
-                              });
-                            } while (imageRetake);
+                                } while (shouldContinue);
 
-                            setState(() {
-                              isLoading = false;
-                            });
-                          }),
+                              } catch (e, stackTrace) {
+                                print("OCR:: Error occurred: $e");
+                                print("OCR:: Stack trace: $stackTrace");
+                                FloatingSnackBar(message: 'An error occurred: $e', context: context);
+                              } finally {
+                                print("OCR:: Ending image capture process");
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            }
+                          ),                                
                           drawer: HomeWidgets.MyDrawer(context, isDarkMode,
                               appVersion: appVersion,
                               domainName: domainName,

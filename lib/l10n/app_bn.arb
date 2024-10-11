@@ -133,7 +133,14 @@
   "password_criteria": "কমপক্ষে ১টি সংখ্যা এবং ১টি বিশেষ অক্ষর থাকতে হবে",
   "password_does_not_match": "পাসওয়ার্ড মেলেনি",
   "is_empty": "ফাঁকা",
-  "ensure_contains_5_digits": "নিশ্চিত করুন যে এটি ৫টি সংখ্যা রয়েছে।"
+  "ensure_contains_5_digits": "নিশ্চিত করুন যে এটি ৫টি সংখ্যা রয়েছে।",
+
+  "reset_password": "পাসওয়ার্ড রিসেট করুন",
+  "enter_username_reset_password": "আপনার ব্যবহারকারীর নাম লিখুন।.",
+  "enter_new_password": "আপনার নতুন পাসওয়ার্ড লিখুন।.",
+  "enter_security_phrase_and_image": "আপনার সিকিউরিটি বাক্যাংশ লিখুন\nএবং আপনার সিকিউরিটি ইমেজ নির্বাচন করুন।.",
+  "choose_previous_security_image": "আপনার পূর্ববর্তী সিকিউরিটি ইমেজ নির্বাচন করুন।.",
+  "dont_remember": "এখনও মনে পড়ছে না? "
 
               
 }

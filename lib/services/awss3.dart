@@ -6,6 +6,7 @@ import 'package:bat_loyalty_program_app/amplifyconfiguration.dart';
 import 'package:amplify_core/amplify_core.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AwsS3 {
@@ -88,4 +89,5 @@ class AwsS3 {
       return result;
     }
   }
+
 }

@@ -60,6 +60,78 @@ class ImageStatusWidgets {
     return _widget;
   }
 
+// add widget for card receipt image 
+
+
+
+  static Widget receiptCard({
+    required BuildContext context,
+    required String date,
+    required String imagePath,
+    required String status,
+    required String createdAt,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end, // Align the entire column to the right
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start, // Align date to the left
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                date,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+            Card(
+              color: Theme.of(context).primaryColor,
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                side: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Image on the left
+                        Padding( padding: const EdgeInsets.only(right: 8.0), 
+                          child: SizedBox(
+                            width: MySize.Width(context, 0.15),
+                              child: Padding(padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Image.asset( imagePath ),
+                                  ),
+                                )
+                              ),
+                        // Status and timestamp in the center and right
+                        Text(
+                          'Status:\n$status',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        Text(
+                          createdAt,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+
+
   static AlertDialog ReceiptPopUp(BuildContext context,
     {key, required String path, required String takenAt, required String userId}
   ) {

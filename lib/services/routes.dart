@@ -7,6 +7,8 @@ import 'package:bat_loyalty_program_app/page_manageoutlet/layout/manageoutlet_ad
 import 'package:bat_loyalty_program_app/page_product/layout/product.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile.dart';
 import 'package:bat_loyalty_program_app/page_profile/layout/profile_edit.dart';
+import 'package:bat_loyalty_program_app/page_resetpassword/layout/resetpassword.dart';
+import 'package:bat_loyalty_program_app/page_resetpassword/layout/resetpassword_steps.dart';
 import 'package:bat_loyalty_program_app/page_settings/layout/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -33,8 +35,13 @@ class MyArguments {
 
       this.user = '{}',
       this.outlets = '{}',
+      this.urlOriginal,
+      this.urlOcr,
+
       this.currentOutlet = '{}',
-    }
+      this.productId = '',
+      this.imageReceiptId = '',  
+    }     
   );
 
   final String TOKEN;
@@ -46,10 +53,16 @@ class MyArguments {
 
   final String prevPath;
   final XFile? receiptImage;
+  final String? urlOriginal;
+  final String? urlOcr;
+  final String? imageReceiptId;
+  
 
   final String user;
   final String outlets;
   final String currentOutlet;
+  final String productId;
+
 }
 
 class MyRoutes {
@@ -60,6 +73,8 @@ class MyRoutes {
     LoginPage.routeName: (context) => LoginPage(),
     RegisterPage.routeName: (context) => RegisterPage(),
     RegisterStepsPage.routeName: (context) => RegisterStepsPage(),
+    ResetPasswordPage.routeName: (context) => ResetPasswordPage(),
+    ResetPasswordStepsPage.routeName: (context) => ResetPasswordStepsPage(),
 
     ProfilePage.routeName: (context) => ProfilePage(),
     ProfileEditPage.routeName: (context) => ProfileEditPage(),

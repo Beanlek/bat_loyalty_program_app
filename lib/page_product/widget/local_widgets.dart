@@ -1,5 +1,6 @@
 import 'package:bat_loyalty_program_app/page_product/component/local_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
+import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
@@ -63,6 +64,7 @@ static Widget buildCarousel({
       ),
     );
   }
+  
  
 
   // Function to build carousel indicators
@@ -80,10 +82,10 @@ static Widget buildCarousel({
             width: 8.0,
             height: 8.0,
             margin: const EdgeInsets.symmetric(horizontal: 4.0),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color:
-                  (currentPage == index) ? Colors.grey[600] : Colors.grey[400],
+            
+            decoration: BoxDecoration( shape: BoxShape.circle,
+            color: (currentPage == index) ? MyColors.biruImran3 : MyColors.biruImran.withOpacity(.5),
+            border: Border.all(color: (currentPage == index) ? MyColors.biruImran : MyColors.biruImran3.withOpacity(.5), )            
             ),
           ),
         );
@@ -167,7 +169,238 @@ final ScrollController _scrollController = ScrollController();
     );
   }
 
+ static Widget buildProductDetails(
+    BuildContext context,
+    List<String> imgList,
+    int currentPage,
+    Function(int) onPageChanged,
+    Function(int) onPageSelected, {
+    required String productName,
+    required String productModel,
+    required String stockLabel,
+    required String descriptionTitle,
+    required String description,
+    required String pointsLabel,
+    required String pointsValue,
+  }) {
+    return Column(
+      children: [
+        imgList.isEmpty
+            ? ProductWidget.buildShimmerImage(
+                context: context,
+                height: MediaQuery.of(context).size.height / 2,
+                width: MediaQuery.of(context).size.width,
+              )
+            : ProductWidget.buildCarousel(
+                context: context,
+                imgList: imgList,
+                currentPage: currentPage,
+                onPageChanged: onPageChanged,
+                onPageSelected: onPageSelected,
+              ),
+        SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      productName,
+                      style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
+                    ),
+                    Text(
+                      productModel,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                    ProductWidget.productCartDisplay(
+                      imagePath: 'assets/images_examples/icon_stock1.png',
+                      label: stockLabel,
+                      textStyle: Theme.of(context).textTheme.labelMedium!.copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                    ),
+                    Text(
+                      descriptionTitle,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                    ProductWidget.buildReadMoreText(
+                      context,
+                      description,
+                    ),
+                    SizedBox(height: 8),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              pointsLabel,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              pointsValue,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                        ProductQuantityWidget(),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+
+static Widget buildSkeletonLoader(BuildContext context) {
+  return Column(
+    children: [
+      // Skeleton for the image carousel
+      Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: Container(
+          height: MediaQuery.of(context).size.height / 2,
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+        ),
+      ),
+      SizedBox(height: 12),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Skeleton for the product name
+            Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                height: 20,
+                width: double.infinity,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 8),
+
+            // Skeleton for the product model
+            Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                height: 16,
+                width: 150,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 8),
+
+            // Skeleton for the stock label
+            Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                height: 16,
+                width: 100,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 12),
+
+            // Skeleton for the description title
+            Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                height: 16,
+                width: 200,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 8),
+
+            // Skeleton for the description text
+            Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                height: 50,
+                width: double.infinity,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 12),
+
+            // Skeleton for the points label
+            Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Row(
+                children: [
+                  Container(
+                    height: 16,
+                    width: 80,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 5),
+                  Container(
+                    height: 16,
+                    width: 100,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 12),
+
+            // Skeleton for the quantity widget
+            Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                height: 40,
+                width: double.infinity,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }
+
+
+
+}
+
+
 
 class ProductQuantityWidget extends StatefulWidget {
   const ProductQuantityWidget({super.key});
@@ -237,7 +470,7 @@ class _ProductQuantityWidgetState extends State<ProductQuantityWidget>
               200,
               'Add to Cart',
               () {
-              
+                // Add the product to the cart              
               },
               icon: Icons.shopping_cart,
             ),
@@ -247,11 +480,4 @@ class _ProductQuantityWidgetState extends State<ProductQuantityWidget>
     );
   }
 }
-
-  
-
-  
-
-
-
   

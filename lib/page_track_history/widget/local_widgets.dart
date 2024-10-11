@@ -15,9 +15,7 @@ class TrackWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(date,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-              ),
+            Text(date,style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),),
           ],
         ),
 
@@ -60,10 +58,7 @@ class TrackWidget {
                         Text(
                           // title,
                           products[index]['title'],
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold,)
                         ),
                         const SizedBox(height: 8),
                         Row(children: [
@@ -84,7 +79,7 @@ class TrackWidget {
                             child: Text(
                               // code,
                               products[index]['code'],
-                              style: const TextStyle(fontSize: 14),
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w400, ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -92,15 +87,13 @@ class TrackWidget {
                         const SizedBox(height: 8),
                         Text(
                           'Redeemed On',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
-                          ),
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.w400,color: Theme.of(context).colorScheme.onPrimaryContainer ),                                                  
                         ),
                         Text(
                           // redeemedDate,
                           products[index]['redeemedDate'],
-                          style: const TextStyle(fontSize: 14),
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w400, ),
                         ),
                       ],
                     ),
@@ -111,22 +104,15 @@ class TrackWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Row(
-                        children: [
-                          Container(
-                            width: 5,
-                            height: 2,
-                            color: Colors.red,
-                          ),
+                        children: [                          
                           const SizedBox(width: 7),
-                          const FaIcon(FontAwesomeIcons.database, color: Colors.red),
+                          FaIcon(FontAwesomeIcons.database, color: Theme.of(context).colorScheme.outlineVariant),
                           const SizedBox(width: 10),
                           Text(
                             // '$points Pts',                      
                             '${products[index]['points']} Pts',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.red,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w400,
+                            color:Theme.of(context).colorScheme.outlineVariant), 
                           ),
                         ],
                       ),

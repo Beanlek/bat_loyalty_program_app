@@ -133,9 +133,14 @@
   "password_criteria": "At least 1 digit and 1 special character",
   "password_does_not_match": "Password does not match",
   "is_empty": "is empty",
-  "ensure_contains_5_digits": "Make sure it contains 5 digits."
+  "ensure_contains_5_digits": "Make sure it contains 5 digits.",
   
-
+  "reset_password": "Reset Password",
+  "enter_username_reset_password": "Enter your username.",
+  "enter_new_password": "Enter your new password.",
+  "enter_security_phrase_and_image": "Enter your security phrase\nand choose your security image.",
+  "choose_previous_security_image": "Choose your previous security image.",
+  "dont_remember": "Still don't remember? "
 
 }
 

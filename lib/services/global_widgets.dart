@@ -9,6 +9,30 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 const PLACEHOLDER_ICON = Icon(Icons.abc, color: Colors.transparent);
 
 class MyWidgets {
+
+
+  static Widget MyCarouselIndicator({
+    required int currentPage,
+    required int itemCount
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(itemCount, (index) {
+
+        return Container( width: 8.0, height: 8.0,
+        
+          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+        
+          decoration: BoxDecoration( shape: BoxShape.circle,
+            color: (currentPage == index) ? MyColors.biruImran3 : MyColors.biruImran.withOpacity(.5),
+            border: Border.all(color: (currentPage == index) ? MyColors.biruImran : MyColors.biruImran3.withOpacity(.5), )
+          ),
+        );
+      }),
+    );
+  }
+
+
   static Widget MyButton1(
       BuildContext context, double? width, String text, void Function()? onTap,
       {key, bool active = true}) {
@@ -78,57 +102,61 @@ class MyWidgets {
   }
 
   static Widget MyButton3(
-  BuildContext context, 
-  double? width, 
-  String text, 
-  void Function()? onTap,
-  {Key? key, 
-  bool active = true, 
-  IconData? icon,  // Add icon parameter
-}) {
-  return Material(
-    color: Colors.transparent,
-    elevation: !active ? 0 : 3,
-    borderRadius: BorderRadius.circular(10),
-    child: Container(
-      width: width ?? null,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: !active
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-              : Theme.of(context).colorScheme.onTertiary,
+    BuildContext context,
+    double? width,
+    String text,
+    void Function()? onTap, {
+    Key? key,
+    bool active = true,
+    IconData? icon, // Add icon parameter
+  }) {
+    return Material(
+      color: Colors.transparent,
+      elevation: !active ? 0 : 3,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: width ?? null,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: !active
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                : Theme.of(context).colorScheme.onTertiary,
+          ),
+          gradient: !active
+              ? null
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    MyColors.biruImran2,
+                    MyColors.biruImran,
+                  ],
+                ),
+          color: active ? null : Colors.transparent,
         ),
-        gradient: !active
-            ? null
-            : LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  MyColors.biruImran2,
-                  MyColors.biruImran,
-                ],
+        child: ListTile(
+          leading: icon != null
+              ? Icon(icon,
+                  color: active
+                      ? MyColors.myWhite
+                      : Theme.of(context).colorScheme.primary.withOpacity(0.5))
+              : null, // Add icon here
+          title: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: !active
+                    ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                    : MyColors.myWhite,
               ),
-        color: active ? null : Colors.transparent,
-      ),
-      child: ListTile(
-        leading: icon != null ? Icon(icon, color: active ? MyColors.myWhite : Theme.of(context).colorScheme.primary.withOpacity(0.5)) : null,  // Add icon here
-        title: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: !active
-                  ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                  : MyColors.myWhite,
             ),
           ),
+          onTap: active ? onTap : null,
         ),
-        onTap: active ? onTap : null,
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   static Widget MyTextField1(
       BuildContext context, String text, TextEditingController controller,
@@ -176,7 +204,6 @@ class MyWidgets {
               child: TextFormField(
                 controller: controller,
                 focusNode: focusNode,
-
                 onChanged: onChanged,
                 onFieldSubmitted: onSubmit,
                 obscureText: isPassword ? !_isPasswordVisible : isPassword,
@@ -268,7 +295,6 @@ class MyWidgets {
               child: TextFormField(
                 controller: controller,
                 focusNode: focusNode,
-
                 onChanged: onChanged,
                 onFieldSubmitted: onSubmit,
                 obscureText: isPassword ? !_isPasswordVisible : isPassword,
@@ -391,84 +417,85 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyDropDown(
-    BuildContext context, String text,
-    {key, required String selectedFilter, required List<String> filters, bool active = true, void Function(String?)? onChanged}
-  ) {
+  static Widget MyDropDown(BuildContext context, String text,
+      {key,
+      required String selectedFilter,
+      required List<String> filters,
+      bool active = true,
+      void Function(String?)? onChanged}) {
     final DATA_COLOR = Theme.of(context).colorScheme.onTertiary;
-    
-    final _widget = StatefulBuilder(
-      builder: (context, setState) {
 
-        return Material(
-          elevation: 0,
-          borderRadius: BorderRadius.circular(24),
-          child: Container(
+    final _widget = StatefulBuilder(builder: (context, setState) {
+      return Material(
+        elevation: 0,
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-        
-                colors: [
-                  Theme.of(context).colorScheme.tertiary,
-                  Theme.of(context).colorScheme.onPrimary,
-                ]
-              )
-            ),
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).colorScheme.tertiary,
+                      Theme.of(context).colorScheme.onPrimary,
+                    ])),
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 24),
               child: DropdownButtonFormField(
-                elevation: 5,
-                isExpanded: true,
-
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none
-                  )
-                ),
-
-                icon: Icon(Icons.arrow_forward_ios_rounded, color: DATA_COLOR.withOpacity(active ? 1 : 0.5),),
-                iconSize: 18,
-                
-                dropdownColor: Theme.of(context).colorScheme.onSecondary,
-
-                value: selectedFilter,
-                items: filters.map((filter) => DropdownMenuItem<String>(
-                  alignment: AlignmentDirectional.centerStart,
-                  value: filter,
-
-                  child: Text(
-                    filter,
-                    style: TextStyle(color: DATA_COLOR.withOpacity(active ? 1 : 0.5), fontWeight: FontWeight.normal),
+                  elevation: 5,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(borderSide: BorderSide.none)),
+                  icon: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: DATA_COLOR.withOpacity(active ? 1 : 0.5),
                   ),
-                )).toList(),
+                  iconSize: 18,
+                  dropdownColor: Theme.of(context).colorScheme.onSecondary,
+                  value: selectedFilter,
+                  items: filters
+                      .map((filter) => DropdownMenuItem<String>(
+                            alignment: AlignmentDirectional.centerStart,
+                            value: filter,
+                            child: Text(
+                              filter,
+                              style: TextStyle(
+                                  color:
+                                      DATA_COLOR.withOpacity(active ? 1 : 0.5),
+                                  fontWeight: FontWeight.normal),
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: active ? onChanged : null),
+            )),
+      );
+    });
 
-                onChanged: active ? onChanged : null
-              ),
-            )
-          ),
-        );
-      }
-    );
-  
     return _widget;
   }
-  
-  static Widget MyLoading(BuildContext context, bool isLoading, bool isDarkMode) {
-    final _widget = isLoading ? Container(
-      color: Theme.of(context).primaryColor.withOpacity(isDarkMode ? 0.8 : 0.5),
-      child: Center(
-        child: SizedBox.square(
-          dimension: MySize.Width(context, 0.5),
-          child: GradientWidget(Lottie.asset('assets/lotties/loading_002.json', fit: BoxFit.contain), gradient: LinearGradient(colors: [
-                  Theme.of(context).colorScheme.secondary,
-                  Theme.of(context).colorScheme.primary,
-          ]),),
-        ),
-      )
-    ) : SizedBox();
-  
+
+  static Widget MyLoading(
+      BuildContext context, bool isLoading, bool isDarkMode) {
+    final _widget = isLoading
+        ? Container(
+            color: Theme.of(context)
+                .primaryColor
+                .withOpacity(isDarkMode ? 0.8 : 0.5),
+            child: Center(
+              child: SizedBox.square(
+                dimension: MySize.Width(context, 0.5),
+                child: GradientWidget(
+                  Lottie.asset('assets/lotties/loading_002.json',
+                      fit: BoxFit.contain),
+                  gradient: LinearGradient(colors: [
+                    Theme.of(context).colorScheme.secondary,
+                    Theme.of(context).colorScheme.primary,
+                  ]),
+                ),
+              ),
+            ))
+        : SizedBox();
+
     return _widget;
   }
 
@@ -542,12 +569,14 @@ class MyWidgets {
                 width: 12,
               ),
               Flexible(
-                child: Text(text,
-                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                        color: ERROR_COLORS, fontWeight: FontWeight.normal),
-                        maxLines: null, // Allows the text to take multiple lines
-                        overflow: TextOverflow.visible, // Ensures that the text wraps instead of getting clipped                        
-                    ),
+                child: Text(
+                  text,
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: ERROR_COLORS, fontWeight: FontWeight.normal),
+                  maxLines: null, // Allows the text to take multiple lines
+                  overflow: TextOverflow
+                      .visible, // Ensures that the text wraps instead of getting clipped
+                ),
               ),
             ],
           ),
@@ -565,7 +594,6 @@ class MyWidgets {
       elevation: 0,
       backgroundColor: Colors.transparent,
       onPressed: () {
-
         final Localizations = AppLocalizations.of(context)!;
         showModalBottomSheet(
             context: context,
@@ -621,22 +649,24 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyInfoTextField(BuildContext context, String text,
-    {key}
-  ) {
-    final _widget = Align(alignment: Alignment.centerLeft, 
-      child: Padding(
-        padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
-        child: Text(text, style: Theme.of(context).textTheme.labelMedium!.copyWith(
-          color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.5),
-          fontWeight: FontWeight.normal
-        )),
-    ));
-  
+  static Widget MyInfoTextField(BuildContext context, String text, {key}) {
+    final _widget = Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24.0, top: 6, bottom: 2),
+          child: Text(text,
+              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onPrimaryContainer
+                      .withOpacity(0.5),
+                  fontWeight: FontWeight.normal)),
+        ));
+
     return _widget;
   }
 
-  static Widget MyInfoTextField2(BuildContext context, String text, {key} ) {
+  static Widget MyInfoTextField2(BuildContext context, String text, {key}) {
     final Color INFO_COLORS = Theme.of(context).colorScheme.onTertiary;
 
     final _widget = Align(
@@ -663,7 +693,7 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MySuccessTextField(BuildContext context, String text, {key} ) {
+  static Widget MySuccessTextField(BuildContext context, String text, {key}) {
     final Color SUCCESS_COLORS = MyColors.hijauImran2;
 
     final _widget = Align(
@@ -699,19 +729,22 @@ class MyWidgets {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Image.asset(
-              isDarkMode ?
-              'assets/logos/bat-logo-white.png' :
-              'assets/logos/bat-logo-default.png',
+              isDarkMode
+                  ? 'assets/logos/bat-logo-white.png'
+                  : 'assets/logos/bat-logo-default.png',
             ),
           ),
         ),
         Positioned(
-          bottom: 8,
-          right: 6,
-          child: Text(appVersion,
-            style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.normal),
-          )
-        )
+            bottom: 8,
+            right: 6,
+            child: Text(
+              appVersion,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall!
+                  .copyWith(fontWeight: FontWeight.normal),
+            ))
       ],
     );
 
@@ -744,14 +777,13 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyScroll1(BuildContext context,
-    {
-      required ScrollController controller,
-      required Widget child,
-      double? height,
-      Axis scrollDirection = Axis.vertical,
-    }
-  ) {
+  static Widget MyScroll1(
+    BuildContext context, {
+    required ScrollController controller,
+    required Widget child,
+    double? height,
+    Axis scrollDirection = Axis.vertical,
+  }) {
     final _widget = RawScrollbar(
       controller: controller,
       thumbVisibility: true,
@@ -759,7 +791,7 @@ class MyWidgets {
       radius: Radius.circular(100),
       thickness: 3,
       child: SingleChildScrollView(
-        scrollDirection: scrollDirection,
+          scrollDirection: scrollDirection,
           controller: controller,
           child: SizedBox(
               width: MySize.Width(context, 1),
@@ -770,14 +802,13 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyScroll2(BuildContext context,
-    {
-      required ScrollController controller,
-      required Widget child,
-      double? height,
-      Axis scrollDirection = Axis.vertical,
-    }
-  ) {
+  static Widget MyScroll2(
+    BuildContext context, {
+    required ScrollController controller,
+    required Widget child,
+    double? height,
+    Axis scrollDirection = Axis.vertical,
+  }) {
     final _widget = RawScrollbar(
       controller: controller,
       thumbVisibility: true,
@@ -785,7 +816,7 @@ class MyWidgets {
       radius: Radius.circular(100),
       thickness: 3,
       child: SingleChildScrollView(
-        scrollDirection: scrollDirection,
+          scrollDirection: scrollDirection,
           controller: controller,
           child: child),
     );
@@ -793,46 +824,53 @@ class MyWidgets {
     return _widget;
   }
 
-  static Widget MyScrollBar1(BuildContext context, {required ScrollController controller, required Widget child, bool thumbVisibility = true} ) {
+  static Widget MyScrollBar1(BuildContext context,
+      {required ScrollController controller,
+      required Widget child,
+      bool thumbVisibility = true}) {
     final _widget = RawScrollbar(
-      controller: controller,
-      thumbVisibility: thumbVisibility,
-      thumbColor: Theme.of(context).colorScheme.secondary,
-      radius: Radius.circular(100),
-      thickness: 3,
-      child: child
-    );
+        controller: controller,
+        thumbVisibility: thumbVisibility,
+        thumbColor: Theme.of(context).colorScheme.secondary,
+        radius: Radius.circular(100),
+        thickness: 3,
+        child: child);
 
     return _widget;
   }
 
   static Widget MyTileButton(BuildContext context, String label,
-    { key, Color? color, void Function()? onPressed, IconData? icon, double? iconSize, TextStyle? textStyle, double buttonHeight = 35}
-  ) {
+      {key,
+      Color? color,
+      void Function()? onPressed,
+      IconData? icon,
+      double? iconSize,
+      TextStyle? textStyle,
+      double buttonHeight = 35}) {
     final _widget = SizedBox(
       height: buttonHeight,
       child: TextButton.icon(
         style: ButtonStyle(visualDensity: VisualDensity.compact),
-        
         onPressed: onPressed,
-        label: Text(label, style: (textStyle ?? Theme.of(context).textTheme.bodySmall)!.copyWith(fontWeight: FontWeight.w500,
+        label: Text(label,
+            style:
+                (textStyle ?? Theme.of(context).textTheme.bodySmall)!.copyWith(
+              fontWeight: FontWeight.w500,
+              color: color ?? Theme.of(context).colorScheme.primary,
+            )),
+        icon: Icon(
+          icon ?? Icons.abc,
+          size: iconSize ?? MySize.Width(context, 0.05),
           color: color ?? Theme.of(context).colorScheme.primary,
-          
-        )
-        ),
-        icon: Icon(icon ?? Icons.abc, size: iconSize ?? MySize.Width(context, 0.05),
-          color: color ?? Theme.of(context).colorScheme.primary,
-          
         ),
       ),
     );
-  
+
     return _widget;
   }
 
   static Widget MyLogoBar(BuildContext context, bool isDarkMode,
-    {key, required String appVersion}
-  ) {
+      {key, required String appVersion}) {
     final _widget = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Stack(
@@ -842,128 +880,161 @@ class MyWidgets {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Image.asset(
-                isDarkMode ?
-                'assets/logos/bat-logo-white.png' :
-                'assets/logos/bat-logo-default.png',
+                isDarkMode
+                    ? 'assets/logos/bat-logo-white.png'
+                    : 'assets/logos/bat-logo-default.png',
               ),
             ),
           ),
           Positioned(
-            bottom: 7,
-            right: 0,
-            child: Text(appVersion,
-              style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.normal, fontSize: 8),
-            )
-          )
+              bottom: 7,
+              right: 0,
+              child: Text(
+                appVersion,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall!
+                    .copyWith(fontWeight: FontWeight.normal, fontSize: 8),
+              ))
         ],
       ),
     );
-  
+
     return _widget;
   }
 
-  static PreferredSizeWidget MyAppBar(BuildContext context, bool isDarkMode, String title,
-    {key, required String appVersion, bool canPop = true, bool refresh = false, Future<dynamic> Function()? popDialog}
-  ) {
+  static PreferredSizeWidget MyAppBar(
+      BuildContext context, bool isDarkMode, String title,
+      {key,
+      required String appVersion,
+      bool canPop = true,
+      bool refresh = false,
+      Future<dynamic> Function()? popDialog}) {
     final Color DATA_COLOR = Theme.of(context).colorScheme.secondary;
-    
+
     final _widget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
-
-      leading: IconButton(onPressed: () {
-        if (!canPop) {
-          popDialog!().then((res) async { print('appbar_res: $res');
-            canPop = res; if (res) Navigator.pop(context, refresh);
-          });
-        } else { Navigator.pop(context, refresh); }
-      }, icon: Icon(Icons.arrow_back, color: DATA_COLOR,)),
+      leading: IconButton(
+          onPressed: () {
+            if (!canPop) {
+              popDialog!().then((res) async {
+                print('appbar_res: $res');
+                canPop = res;
+                if (res) Navigator.pop(context, refresh);
+              });
+            } else {
+              Navigator.pop(context, refresh);
+            }
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: DATA_COLOR,
+          )),
       leadingWidth: MySize.Width(context, 0.15),
-      
-      title: Text( title, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.normal, color: DATA_COLOR), ),
-
-      actions: [ MyLogoBar(context, isDarkMode, appVersion: appVersion) ],
+      title: Text(
+        title,
+        style: Theme.of(context)
+            .textTheme
+            .titleMedium!
+            .copyWith(fontWeight: FontWeight.normal, color: DATA_COLOR),
+      ),
+      actions: [MyLogoBar(context, isDarkMode, appVersion: appVersion)],
     );
-  
+
     return _widget;
   }
 
-  static PreferredSizeWidget MyAppBarCart(BuildContext context, bool isDarkMode, String title,
-
-    {key, required String appVersion, bool canPop = true, bool refresh = false, Future<dynamic> Function()? popDialog ,  void Function()? onCartTap}
-  ) {
+  static PreferredSizeWidget MyAppBarCart(
+      BuildContext context, bool isDarkMode, String title,
+      {key,
+      required String appVersion,
+      bool canPop = true,
+      bool refresh = false,
+      Future<dynamic> Function()? popDialog,
+      void Function()? onCartTap}) {
     final Color DATA_COLOR = Theme.of(context).colorScheme.secondary;
-    
+
     final _widget = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
-
-      leading: IconButton(onPressed: () {
-        if (!canPop) {
-          popDialog!().then((res) async { print('appbar_res: $res');
-            canPop = res; if (res) Navigator.pop(context, refresh);
-          });
-        } else { Navigator.pop(context, refresh); }
-      }, icon: Icon(Icons.arrow_back, color: DATA_COLOR,)),
+      leading: IconButton(
+          onPressed: () {
+            if (!canPop) {
+              popDialog!().then((res) async {
+                print('appbar_res: $res');
+                canPop = res;
+                if (res) Navigator.pop(context, refresh);
+              });
+            } else {
+              Navigator.pop(context, refresh);
+            }
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: DATA_COLOR,
+          )),
       leadingWidth: MySize.Width(context, 0.15),
-      
-      title: Text( title, style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.normal, color: DATA_COLOR), ),
-
-      actions: [ 
-        Padding(          
+      title: Text(
+        title,
+        style: Theme.of(context)
+            .textTheme
+            .titleMedium!
+            .copyWith(fontWeight: FontWeight.normal, color: DATA_COLOR),
+      ),
+      actions: [
+        Padding(
           padding: const EdgeInsets.only(right: 16.0),
-           child: GestureDetector(
-          onTap: onCartTap ?? () {},
-          child: Row(          
-            children: [                
-            Text("Cart", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: DATA_COLOR)),
-            const SizedBox(width: 5),
-            Icon(
-              Icons.shopping_cart,
-              color: DATA_COLOR,
-            ),
-            
-            
-            ]
+          child: GestureDetector(
+            onTap: onCartTap ?? () {},
+            child: Row(children: [
+              Text("Cart",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(color: DATA_COLOR)),
+              const SizedBox(width: 5),
+              Icon(
+                Icons.shopping_cart,
+                color: DATA_COLOR,
+              ),
+            ]),
           ),
         ),
-        ),
-        ],
+      ],
     );
-  
+
     return _widget;
   }
 
   static Widget MySwitch(BuildContext context,
-    {key, required bool active,
-    required String activeText,
-    required String inactiveText,
-
-    Color? activeColor,
-    Color? inactiveColor,
-
-    void Function(bool)? onChanged
-    }
-  ) {
-    final _widget = Row( mainAxisAlignment: MainAxisAlignment.end, children: [
-      Padding( padding: const EdgeInsets.only(right: 8.0),
-        child: Text(active ? activeText : inactiveText,
-          style: Theme.of(context).textTheme.bodySmall!.copyWith(
-            color: active ? activeColor ?? MyColors.hijauImran2 : inactiveColor ?? MyColors.merahImran )
-      )),
-
-      Transform.scale(scale: 0.8, child: Switch(
-        thumbColor: WidgetStatePropertyAll(MyColors.myWhite),
-        activeColor: activeColor ?? MyColors.hijauImran2,
-        trackColor: WidgetStatePropertyAll(
-          active ? activeColor ?? MyColors.hijauImran2 : inactiveColor ?? MyColors.merahImran
-        ),
-
-        inactiveTrackColor: inactiveColor ?? MyColors.merahImran,
-        trackOutlineColor: WidgetStateColor.transparent,
-
-        value: active, onChanged: onChanged
-      ))
+      {key,
+      required bool active,
+      required String activeText,
+      required String inactiveText,
+      Color? activeColor,
+      Color? inactiveColor,
+      void Function(bool)? onChanged}) {
+    final _widget = Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+      Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Text(active ? activeText : inactiveText,
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: active
+                      ? activeColor ?? MyColors.hijauImran2
+                      : inactiveColor ?? MyColors.merahImran))),
+      Transform.scale(
+          scale: 0.8,
+          child: Switch(
+              thumbColor: WidgetStatePropertyAll(MyColors.myWhite),
+              activeColor: activeColor ?? MyColors.hijauImran2,
+              trackColor: WidgetStatePropertyAll(active
+                  ? activeColor ?? MyColors.hijauImran2
+                  : inactiveColor ?? MyColors.merahImran),
+              inactiveTrackColor: inactiveColor ?? MyColors.merahImran,
+              trackOutlineColor: WidgetStateColor.transparent,
+              value: active,
+              onChanged: onChanged))
     ]);
-  
+
     return _widget;
   }
 }
@@ -972,48 +1043,87 @@ class PopUps {
   static Color CONFIRM_COLOR = MyColors.hijauImran;
   static Color CONFIRM_TEXT_COLOR = MyColors.hijauImran2;
   static Color WARNING_COLOR = MyColors.merahImran;
- 
 
   static AlertDialog Default(BuildContext context, String title,
-    {key, required String subtitle, String? warning, String? confirmText, String? cancelText}
-  ) {
+      {key,
+      required String subtitle,
+      String? warning,
+      String? confirmText,
+      String? cancelText}) {
     final Color BACKGROUND_COLOR = Theme.of(context).primaryColor;
-     final Localizations = AppLocalizations.of(context);
+    final Localizations = AppLocalizations.of(context);
 
     final _dialog = AlertDialog(
       backgroundColor: BACKGROUND_COLOR,
-      
-      content: Column( crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-        Align( alignment: Alignment.center, child: Text(title, style: Theme.of(context).textTheme.titleMedium!.copyWith( fontWeight: FontWeight.bold),)),
-        SizedBox(height: 12,),
-
-        Text(subtitle),
-
-        warning == null ? SizedBox() : Padding(padding: EdgeInsets.only(top: 12), child: 
-          Row( mainAxisSize: MainAxisSize.min, children: [ Icon(FontAwesomeIcons.warning, color: WARNING_COLOR, size: 12,), SizedBox(width: 12,),
-            Expanded( child: Text( warning, style: Theme.of(context).textTheme.bodySmall!.copyWith( color: WARNING_COLOR ),)),
-          ],)
-        ),
-      ],),
-
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Align(
+              alignment: Alignment.center,
+              child: Text(
+                title,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(fontWeight: FontWeight.bold),
+              )),
+          SizedBox(
+            height: 12,
+          ),
+          Text(subtitle),
+          warning == null
+              ? SizedBox()
+              : Padding(
+                  padding: EdgeInsets.only(top: 12),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.warning,
+                        color: WARNING_COLOR,
+                        size: 12,
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      Expanded(
+                          child: Text(
+                        warning,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall!
+                            .copyWith(color: WARNING_COLOR),
+                      )),
+                    ],
+                  )),
+        ],
+      ),
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actions: [
         SizedBox(
           child: TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text( cancelText ?? Localizations!.cancel ),
+            child: Text(cancelText ?? Localizations!.cancel),
           ),
         ),
-        Container( height: 40,
-          decoration: BoxDecoration( borderRadius: BorderRadius.circular(12), color: CONFIRM_COLOR.withOpacity(0.3) ),
+        Container(
+          height: 40,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: CONFIRM_COLOR.withOpacity(0.3)),
           child: TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text( confirmText ?? Localizations!.confirm, style: Theme.of(context).textTheme.bodyMedium!.copyWith( color: CONFIRM_TEXT_COLOR) ),
+            child: Text(confirmText ?? Localizations!.confirm,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .copyWith(color: CONFIRM_TEXT_COLOR)),
           ),
         ),
       ],
     );
-  
+
     return _dialog;
   }
 }
@@ -1082,7 +1192,7 @@ class ProductCard extends StatelessWidget {
   final Image imageUrl;
   final String title;
   final int points;
-  final VoidCallback onLoveIconTap;
+  //final VoidCallback onLoveIconTap;
   final Gradient gradient;
 
   const ProductCard({
@@ -1090,11 +1200,9 @@ class ProductCard extends StatelessWidget {
     required this.imageUrl,
     required this.title,
     required this.points,
-    required this.onLoveIconTap,
+    //required this.onLoveIconTap,
     required this.gradient,
   });
-
-// letak stack atas gmbr bawah container
 
   @override
   Widget build(BuildContext context) {
@@ -1124,7 +1232,10 @@ class ProductCard extends StatelessWidget {
               style: Theme.of(context)
                   .textTheme
                   .titleLarge!
-                  .copyWith(fontWeight: FontWeight.w500,fontSize: 16),
+                  .copyWith(fontWeight: FontWeight.w500, fontSize: 16),
+              maxLines: 1, // Restrict to a single line
+              overflow:
+                  TextOverflow.ellipsis, // Adds "..." when the text overflows
             ),
             const SizedBox(height: 4.0),
             Row(
@@ -1135,15 +1246,15 @@ class ProductCard extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
-                      .copyWith(fontWeight: FontWeight.w300,fontSize: 14),
+                      .copyWith(fontWeight: FontWeight.w300, fontSize: 14),
                 ),
-                IconButton(
-                  icon: Icon(
-                    Icons.favorite_outline_rounded,
-                    color: Theme.of(context).colorScheme.onTertiary,
-                    ),
-                  onPressed: onLoveIconTap,
-                ),
+                // IconButton(
+                //   icon: Icon(
+                //     Icons.favorite_outline_rounded,
+                //     color: Theme.of(context).colorScheme.onTertiary,
+                //   ),
+                //   onPressed: onLoveIconTap,
+                // ),
               ],
             ),
           ],
@@ -1160,135 +1271,152 @@ class GradientSearchBar extends StatelessWidget {
   final List<Widget> items;
   final List<String> filtersApplied;
   final List<List<Map<dynamic, dynamic>>> datas;
-  
 
   void Function(void Function()) pageSetState;
   void Function()? onSearch;
-  void Function(BuildContext, {
-    required String data, dynamic key}) applyFilters;
+  void Function(BuildContext, {required String data, dynamic key}) applyFilters;
 
   GradientSearchBar({
     super.key,
     required this.controller,
     required this.focusNode,
-
     required this.items,
     required this.filtersApplied,
     required this.datas,
-    
     this.onSearch,
     required this.pageSetState,
     required this.applyFilters,
   });
 
   static Widget filterContainer(BuildContext context,
-    {
-      key, required String data,
+      {key,
+      required String data,
       required List<List<Map<dynamic, dynamic>>> datas,
       required void Function(void Function()) pageSetState,
-      required void Function(BuildContext, {required String data, dynamic key}) applyFilters
-    }
-  ) {
+      required void Function(BuildContext, {required String data, dynamic key})
+          applyFilters}) {
     final Color FILTER_CONTAINERDATA_COLOR = Theme.of(context).primaryColor;
 
-    final _widget = Padding( padding: const EdgeInsets.only(right: 12.0),
-      child: Material( elevation: 0,
-        borderRadius: BorderRadius.circular(100),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            gradient: LinearGradient( begin: Alignment.topLeft, end: Alignment.bottomRight,
-              colors: [ Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary, ],
+    final _widget = Padding(
+      padding: const EdgeInsets.only(right: 12.0),
+      child: Material(
+          elevation: 0,
+          borderRadius: BorderRadius.circular(100),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.secondary,
+                ],
+              ),
             ),
-          ),
-      
-          child: StatefulBuilder(
-            builder: (context, setState) {
-              return Row( children: [
+            child: StatefulBuilder(builder: (context, setState) {
+              return Row(
+                children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Text(data, style: Theme.of(context).textTheme.bodySmall!.copyWith( color: FILTER_CONTAINERDATA_COLOR)),
+                    child: Text(data,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall!
+                            .copyWith(color: FILTER_CONTAINERDATA_COLOR)),
                   ),
                   IconButton(
-                    onPressed: () {
-                      print('x pressed');
+                      onPressed: () {
+                        print('x pressed');
 
-                      for (var i = 0; i < datas.length; i++) {
-                        final dataMap = datas[i];
-                        setState(() {
-                          for (var i = 0; i < dataMap.length; i++) {
-                            if (dataMap[i]['data'] == data) {dataMap[i]['filter'] = false; return;}
-                          }
-                        });
-                      }
-                      
-                      pageSetState(() => applyFilters(context, data: data));
-                    },
-                    icon: Icon(Icons.close, color: FILTER_CONTAINERDATA_COLOR, size: MySize.Width(context, 0.03),)
-                  ),
+                        for (var i = 0; i < datas.length; i++) {
+                          final dataMap = datas[i];
+                          setState(() {
+                            for (var i = 0; i < dataMap.length; i++) {
+                              if (dataMap[i]['data'] == data) {
+                                dataMap[i]['filter'] = false;
+                                return;
+                              }
+                            }
+                          });
+                        }
+
+                        pageSetState(() => applyFilters(context, data: data));
+                      },
+                      icon: Icon(
+                        Icons.close,
+                        color: FILTER_CONTAINERDATA_COLOR,
+                        size: MySize.Width(context, 0.03),
+                      )),
                 ],
               );
-            }
-          ),
-        )
-      ),
+            }),
+          )),
     );
-  
+
     return _widget;
   }
 
   static Widget filterMenu(BuildContext context,
-    {
-      key, required String title, bool first = false, bool single = false,
+      {key,
+      required String title,
+      bool first = false,
+      bool single = false,
       required List<Map<dynamic, dynamic>> data,
       required void Function(void Function()) pageSetState,
       required void Function() clearFilters,
-      required void Function(BuildContext, {required String data, dynamic key}) applyFilters
-    }
-  ) {
+      required void Function(BuildContext, {required String data, dynamic key})
+          applyFilters}) {
     final Color ICON_COLOR = Theme.of(context).colorScheme.secondary;
-    
-    final _widget = StatefulBuilder(
-      builder: (context, setState) {
-        return InkWell( onTap: () => setState(() {}),
-          child: Column( children: [
-            Row( mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              first ? IconButton( onPressed: () => Navigator.pop(context, true),
-                icon: Icon(Icons.close, color: ICON_COLOR, size: MySize.Width(context, 0.05),)
-              ) : IconButton( onPressed: null, icon: PLACEHOLDER_ICON),
-          
-              Text(title, style: Theme.of(context).textTheme.bodyMedium ),
-            ]),
-          
-            Column( children: 
-            data.map((singleData) => 
-              Row( mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text( singleData['data'], style: Theme.of(context).textTheme.bodyMedium ),
-                  SizedBox(width: 12),
-          
-                  Checkbox( value: singleData['filter'],
-                    onChanged: (value) {
-                      if (single) {
-                        for (var aData in data) {
-                          aData.update('filter', (e) => false );
-                        }
-                        clearFilters();
-                      }
 
-                      setState(() { singleData['filter'] = value; });
-                      pageSetState(() => applyFilters(context, data: singleData['data']));
-                      
-                    },
-                  )
-                ],
-              )).toList()
-            )
+    final _widget = StatefulBuilder(builder: (context, setState) {
+      return InkWell(
+        onTap: () => setState(() {}),
+        child: Column(children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            first
+                ? IconButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    icon: Icon(
+                      Icons.close,
+                      color: ICON_COLOR,
+                      size: MySize.Width(context, 0.05),
+                    ))
+                : IconButton(onPressed: null, icon: PLACEHOLDER_ICON),
+            Text(title, style: Theme.of(context).textTheme.bodyMedium),
           ]),
-        );
-      }
-    );
-  
+          Column(
+              children: data
+                  .map((singleData) => Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(singleData['data'],
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          SizedBox(width: 12),
+                          Checkbox(
+                            value: singleData['filter'],
+                            onChanged: (value) {
+                              if (single) {
+                                for (var aData in data) {
+                                  aData.update('filter', (e) => false);
+                                }
+                                clearFilters();
+                              }
+
+                              setState(() {
+                                singleData['filter'] = value;
+                              });
+                              pageSetState(() => applyFilters(context,
+                                  data: singleData['data']));
+                            },
+                          )
+                        ],
+                      ))
+                  .toList())
+        ]),
+      );
+    });
+
     return _widget;
   }
 
@@ -1296,7 +1424,7 @@ class GradientSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final Color ICON_COLOR = Theme.of(context).colorScheme.secondary;
     final ScrollController filterController = ScrollController();
-    
+
     return Column(
       children: [
         Padding(
@@ -1306,7 +1434,10 @@ class GradientSearchBar extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [ Theme.of(context).colorScheme.tertiary, Theme.of(context).colorScheme.onPrimary, ],
+                colors: [
+                  Theme.of(context).colorScheme.tertiary,
+                  Theme.of(context).colorScheme.onPrimary,
+                ],
               ),
               borderRadius: BorderRadius.circular(24.0),
             ),
@@ -1314,28 +1445,38 @@ class GradientSearchBar extends StatelessWidget {
               controller: controller,
               focusNode: focusNode,
               decoration: InputDecoration(
-        
                 // search and filter
                 prefixIcon: IconButton(
                   icon: Icon(Icons.search, color: ICON_COLOR),
                   onPressed: onSearch,
                 ),
                 suffixIcon: PopupMenuButton(
-                  color: Colors.transparent, elevation: 0,
-                  constraints: BoxConstraints( minWidth: MySize.Width(context, 0.65)),
-        
+                  color: Colors.transparent,
+                  elevation: 0,
+                  constraints:
+                      BoxConstraints(minWidth: MySize.Width(context, 0.65)),
                   itemBuilder: (context) {
-                    return [ PopupMenuItem(child: Material( elevation: 5, child: Container(
-                      decoration: BoxDecoration( color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
-                      child: Padding(padding: EdgeInsets.all(12), child: Column( children: items )
-                      ),
-                    ),)
-                  ) ];
+                    return [
+                      PopupMenuItem(
+                          child: Material(
+                        elevation: 5,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Padding(
+                              padding: EdgeInsets.all(12),
+                              child: Column(children: items)),
+                        ),
+                      ))
+                    ];
                   },
-                  child: Icon(Icons.tune_rounded, color: ICON_COLOR,),
+                  child: Icon(
+                    Icons.tune_rounded,
+                    color: ICON_COLOR,
+                  ),
                 ),
-        
-        
+
                 // decoration
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24.0),
@@ -1347,7 +1488,6 @@ class GradientSearchBar extends StatelessWidget {
                   vertical: 0.0,
                   horizontal: 20.0,
                 ),
-        
               ),
               style: Theme.of(context).textTheme.labelLarge!.copyWith(
                     fontWeight: FontWeight.w500,
@@ -1355,17 +1495,19 @@ class GradientSearchBar extends StatelessWidget {
             ),
           ),
         ),
-
-        SizedBox( height: filtersApplied.isNotEmpty ? 50 : 0,
+        SizedBox(
+          height: filtersApplied.isNotEmpty ? 50 : 0,
           child: ListView.builder(
-            controller: filterController,
-            scrollDirection: Axis.horizontal,
-            
-            itemCount: filtersApplied.length,
-            itemBuilder: (context, index) {
-              return filterContainer(context, data: filtersApplied[index], datas: datas, applyFilters: applyFilters, pageSetState: pageSetState);
-            }
-          ),
+              controller: filterController,
+              scrollDirection: Axis.horizontal,
+              itemCount: filtersApplied.length,
+              itemBuilder: (context, index) {
+                return filterContainer(context,
+                    data: filtersApplied[index],
+                    datas: datas,
+                    applyFilters: applyFilters,
+                    pageSetState: pageSetState);
+              }),
         )
       ],
     );
@@ -1379,42 +1521,57 @@ class Breadcrumb extends StatelessWidget {
   bool refresh;
   Future<dynamic> Function()? popDialog;
 
-  Breadcrumb({super.key, required this.paths, this.canPop = true, this.refresh = false, this.popDialog});
+  Breadcrumb(
+      {super.key,
+      required this.paths,
+      this.canPop = true,
+      this.refresh = false,
+      this.popDialog});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: paths.map((path) => Row(
-        children: [
-          GestureDetector(
-            onTap: () {
-              if (path == paths.last) { return; }
-              else {
-                int index = paths.indexOf(path);
-                if (!canPop) {
-                  popDialog!().then((res) async { print('appbar_res: $res');
-                    canPop = res; if (res) for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context, refresh); }
-                  });
-                } else { for (var i = paths.length - 1; i > index; i--) { Navigator.pop(context, refresh); } }
-              }
-            },
-            child: Text(
-              path.clean(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(fontWeight: FontWeight.normal),
-            ),
-          ),
-          if (path != paths.last)
-            Icon(
-              Icons.chevron_right,
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-        ],
-      )).toList(),
+      children: paths
+          .map((path) => Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (path == paths.last) {
+                        return;
+                      } else {
+                        int index = paths.indexOf(path);
+                        if (!canPop) {
+                          popDialog!().then((res) async {
+                            print('appbar_res: $res');
+                            canPop = res;
+                            if (res)
+                              for (var i = paths.length - 1; i > index; i--) {
+                                Navigator.pop(context, refresh);
+                              }
+                          });
+                        } else {
+                          for (var i = paths.length - 1; i > index; i--) {
+                            Navigator.pop(context, refresh);
+                          }
+                        }
+                      }
+                    },
+                    child: Text(
+                      path.clean(),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                  if (path != paths.last)
+                    Icon(
+                      Icons.chevron_right,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                ],
+              ))
+          .toList(),
     );
   }
 }
-
-

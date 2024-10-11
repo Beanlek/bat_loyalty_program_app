@@ -178,7 +178,8 @@ class _ManageOutletPageState extends State<ManageOutletPage> with ManageOutletCo
                                     return Padding( padding: const EdgeInsets.only(bottom: 8.0), child: Stack(
                                       children: [
                                         // switch button
-                                        Opacity( opacity: outlet['active'] ? 1 : 0.5, child: Card(
+                                        Opacity( opacity: outlet['active'] ? 1 : 0.5, 
+                                        child: Card(
                                           elevation: 2,
                                           color: Theme.of(context).primaryColor,
                                           shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(12.0), 

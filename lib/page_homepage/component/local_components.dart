@@ -1,5 +1,8 @@
 import 'package:bat_loyalty_program_app/model/product.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
+import 'package:bat_loyalty_program_app/services/global_widgets.dart';
+import 'package:bat_loyalty_program_app/services/global_components.dart';
+import 'package:carousel_slider/carousel_options.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -16,9 +19,12 @@ mixin HomeComponents {
   bool imageTaken = false;
   bool imageRetake = false;
   int loyaltyPoints = 2000;
+  bool imageRetakeSuccessful = false;
+  
 
   
-    
+    int carouselIndex = 0;
+  late CarouselOptions carouselOptions;
 
   String token = '';
 
@@ -75,16 +81,44 @@ mixin HomeComponents {
   
   
   late XFile receiptImage;
-
-  Future<bool> takeImage() async {
+  late String urlOriginal;
+  late String urlOcr;
+  late String receiptImageId = '';
+  
+ 
+    Future<bool> takeImage(String domainName, void Function(void Function()) setState) async {
+    print("OCR:: takeImage init start");
     bool imageTaken = false;
     final imagePicker = ImagePicker();
-    await imagePicker.pickImage(source: ImageSource.camera).then((img) {
-      if (img != null) {receiptImage = img; imageTaken = true;}
+    await imagePicker.pickImage(source: ImageSource.camera).then((img) async {
+      if (img != null) { receiptImage = img;
+        await Api.uploadImageReceipt(domainName, token, receipt: receiptImage, outletId: 'ECO13003').then((res) {
+          print("OCR:: Api.uploadImageReceipt call then");
+          final int statusCode = res['status_code'];
+          List<dynamic> results = List.from(res['result']);
+
+          setState(() {
+            if (statusCode == 200) {
+              print('OCR: results $results');
+              urlOriginal = results[0]["data"]["url_original"];
+              urlOcr = results[0]["data"]["url_ocr"];
+              receiptImageId = results[1];                                         
+              imageTaken = true;
+            } else {
+              print("OCR:: api call failed $statusCode");
+              imageTaken = false;
+            }
+          });
+
+          print('urlOriginal: $urlOriginal');
+          print('urlOcr: $urlOcr');
+          print('receiptImageId: $receiptImageId');
+
+        });
+      }
     });
 
     return imageTaken;
   }
-
   
 }

@@ -47,7 +47,7 @@ class CartPageState extends State<CartPage> with MyComponents {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final Localizations = AppLocalizations.of(context)!;
 
-    if (!launchLoading)setPath(prevPath: args.prevPath, routeName: CartPage.routeName);
+    if (!launchLoading) setPath(prevPath: args.prevPath, routeName: CartPage.routeName);
 
     return PopScope(
         canPop: canPop,
@@ -88,27 +88,28 @@ class CartPageState extends State<CartPage> with MyComponents {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Lot 2R-37, Jalan Yap Ah Shak 2C, Rantau Abang 71464, Bentong Pahang Malaysia',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium!
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimaryContainer,
-                                                fontWeight: FontWeight.w400),
-                                        maxLines:
-                                            2, // Allow the text to wrap to a second line if needed
-                                        overflow: TextOverflow
-                                            .ellipsis, // Clips the text if it exceeds the max lines
-                                      ),
-                                    ),
+                                    // Expanded(
+                                    //   child: Text(
+                                    //     'Lot 2R-37, Jalan Yap Ah Shak 2C, Rantau Abang 71464, Bentong Pahang Malaysia',
+                                    //     style: Theme.of(context)
+                                    //         .textTheme
+                                    //         .titleMedium!
+                                    //         .copyWith(
+                                    //             color: Theme.of(context)
+                                    //                 .colorScheme
+                                    //                 .onPrimaryContainer,
+                                    //             fontWeight: FontWeight.w400),
+                                    //     maxLines:
+                                    //         2, // Allow the text to wrap to a second line if needed
+                                    //     overflow: TextOverflow
+                                    //         .ellipsis, // Clips the text if it exceeds the max lines
+                                    //   ),
+                                    // ),
+
                                     SizedBox(
                                       width: 5,
                                     ),
-                                    Icon(Icons.arrow_forward_ios, size: 15),
+                                    // Icon(Icons.arrow_forward_ios, size: 15),
                                   ],
                                 )
                               ],
@@ -124,131 +125,37 @@ class CartPageState extends State<CartPage> with MyComponents {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 12),
                                 itemCount: 10,
-                                physics: AlwaysScrollableScrollPhysics(),
+                                physics: const AlwaysScrollableScrollPhysics(),
                                 itemBuilder: (context, index) {
-                                  return Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Row(
-                                      children: [
-                                        // Column to show image
-                                        Column(
-                                          children: [
-                                            //Image.asset(imagePath),
-                                            Container(
-                                              width: 100,
-                                              height: 100,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(24),
-                                                border: Border.all(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary,
-                                                    width: 1),
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(23),
-                                                child: Image.asset(
-                                                  'assets/images_examples/headphone.jpeg', // Replace with your image path
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-
-                                        SizedBox(
-                                          width: 12,
-                                        ),
-
-                                        // Column for product details
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              //title
-                                              Text('Headphone X200',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleSmall!
-                                                      .copyWith(
-                                                          fontWeight:
-                                                              FontWeight.w600)),
-                                              // brand
-                                              Text(
-                                                'Logitech',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onPrimaryContainer,
-                                                ),
-                                              ),
-                                              SizedBox(height: 5),
-                                              // points
-                                              Text(' 500 PTS',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium!
-                                                      .copyWith(
-                                                          fontWeight:
-                                                              FontWeight.w600)),
-                                            ],
-                                          ),
-                                        ),
-
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        // count button
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    // + button
-                                                    IconButton(
-                                                      icon: Icon(
-                                                          Icons.add_circle),
-                                                      onPressed:
-                                                          () {}, // Calls the increment method from the mixin
-                                                      iconSize: 30,
-                                                    ),
-                                                    // count
-                                                    Text(
-                                                      '1',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleMedium!
-                                                          .copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                          ),
-                                                    ),
-
-                                                    // - button
-                                                    IconButton(
-                                                      icon: Icon(
-                                                          Icons.remove_circle),
-                                                      onPressed:
-                                                          () {}, // Calls the decrement method from the mixin
-                                                      iconSize: 30,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                  // Example data for each item (replace with real data)
+                                  String imagePath = 'assets/images_examples/headphone.jpeg';
+                                  String productName = 'Headphone X200';
+                                  String brandName = 'Logitech';
+                                  String points = '500 PTS';
+                                  int count = 1;
+                                  // isLoading = true;                                                                    
+                                  return isLoading
+                                  ?CartWidget.buildProductListItemShimmer(context: context, imageWidth: 100, imageHeight:100,)                                  
+                                  :CartWidget.buildProductListItem(
+                                    context,
+                                    imagePath: imagePath,
+                                    productName: productName,
+                                    brandName: brandName,
+                                    points: points,
+                                    count: count,
+                                    onAddPressed: () {
+                                      setState(() {
+                                        // Increment logic here
+                                      });
+                                    },
+                                    onRemovePressed: () {
+                                      setState(() {
+                                        // Decrement logic here
+                                      });
+                                    },
+                                    onClearPressed: () {
+                                      // Clear action
+                                    },
                                   );
                                 },
                               ),
@@ -258,7 +165,6 @@ class CartPageState extends State<CartPage> with MyComponents {
                         Divider(
                           color: Theme.of(context).colorScheme.onTertiary,
                         ),
-                       
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
@@ -292,7 +198,8 @@ class CartPageState extends State<CartPage> with MyComponents {
                                   ),
                                   Column(
                                     children: [
-                                      CartWidget.MyButton1(context, 150, 'Redeem', () {}),                                  
+                                      CartWidget.MyButton1(
+                                          context, 150, 'Redeem', () {}),
                                     ],
                                   ),
                                 ],
@@ -302,7 +209,6 @@ class CartPageState extends State<CartPage> with MyComponents {
                         ),
                       ],
                     ),
-                    
                   ]),
                 ),
               ));

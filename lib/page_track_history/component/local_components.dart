@@ -23,4 +23,21 @@ mixin TrackComponents {
       "filter": false
     },
   ];
+
+   final List<Map<dynamic, dynamic>> products = [
+      {
+        'title': 'Product 1',
+        'imagePath': 'assets/images_examples/headphone.jpeg',
+        'code': '123ABC',
+        'redeemedDate': '8/10/2024 6:00 AM',
+        'points': 1000
+      },
+      {
+        'title': 'Product 2',
+        'imagePath': 'assets/images_examples/headphone.jpeg',
+        'code': '456DEF',
+        'redeemedDate': '7/10/2024 10:00 AM',
+        'points': 1500
+      },
+    ];
 }

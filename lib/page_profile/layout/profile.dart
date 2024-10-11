@@ -59,7 +59,6 @@ class _ProfilePageState extends State<ProfilePage> with ProfileComponents, MyCom
     super.initParam(context);
     
     dateTime = DateFormat('dd/MM/yyyy').add_Hms();
-
      futureLocale = getFutureLocale(context);
   }
 
