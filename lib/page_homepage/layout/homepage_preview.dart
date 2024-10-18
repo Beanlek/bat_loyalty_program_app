@@ -1,8 +1,6 @@
 
 import 'package:amplify_core/amplify_core.dart';
 import 'package:bat_loyalty_program_app/page_homepage/component/local_components.dart';
-import 'package:bat_loyalty_program_app/services/api.dart';
-import 'package:bat_loyalty_program_app/services/awss3.dart';
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
@@ -115,25 +113,27 @@ class _HomepagePreviewState extends State<HomepagePreview> with HomeComponents, 
                         MyWidgets.MyTileButton(context, 'Submit', icon: Icons.send, textStyle: Theme.of(context).textTheme.bodyLarge,
                           iconSize: MySize.Width(context, 0.06),
                           onPressed: () async {
-                            setState(() { isLoading = true; });
+                            
                             
                             try {
-                               
+                                setState(() { isLoading = true; });                                                                                           
+                               print('inside submit function');
+                              // final result = await AwsS3.uploadImageReceipt(
+                              //    userId: args.username,
+                              //   receipt: receiptImage
+                              // );
 
-                              final result = await AwsS3.uploadImageReceipt(
-                                 userId: args.username,
-                                receipt: receiptImage
-                              );
+                              // print('result: $result');
 
-                              print('result: $result');
-
-                              if (result == true) {
-                                Navigator.pop(context, true);
-                                FloatingSnackBar(message: 'Receipt submitted!', context: context);
-                              }else{
-                                 FloatingSnackBar(message: 'Error: $result', context: context);
-                              }
-
+                              // if (result == true) {
+                              //   Navigator.pop(context, true);
+                              //   FloatingSnackBar(message: 'Receipt submitted!', context: context);
+                              // }else{
+                              //    FloatingSnackBar(message: 'Error: $result', context: context);
+                              // }
+                              FloatingSnackBar(message: 'Receipts Successfully Submitted', context: context);                              
+                              Navigator.pop(context,{'action': 'calculate'});     
+                              setState(() { isLoading = false; });
 
                             } catch (e) {
                               safePrint(e);

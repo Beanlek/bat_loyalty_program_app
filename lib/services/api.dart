@@ -330,6 +330,7 @@ class Api {
       "status_code": statusCode,
       "result": []
     };
+    
 
     String url_string_uploadReceipt = '${domainName}/a/s3/uploadReceipt/${outletId}';
     final Uri url_uploadReceipt = Uri.parse(url_string_uploadReceipt);
@@ -750,7 +751,154 @@ static Future<int> deleteImage(String domainName,String token, String receiptIma
     return statusCode;
   }
 
+static Future<Map<String, dynamic>> calculatePointReceipts(String domainName, String token, String receiptImageId) async {
+    final Dio dio = Dio();
+    int statusCode = 0;
+    String url = '${domainName}/a/ocr/calculatePoints';    
+    try {
+      final response = await dio.post(
+        url,
+        data: {
+          "receiptImageId": receiptImageId,
+        },
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+      statusCode = response.statusCode!;
 
-}
+      if(statusCode == 200){           
+      return {
+        'status': response.data['status'] ?? 'Failed',
+        'collected_point': response.data['collected_point'] ?? 0,
+      };
+      } else {
+      return {
+        'status': 'Error',
+        'collected_point': 0,
+      };
+    }   
+    } catch (e) {
+      return {
+        "status": "Failed",
+        "collected_point": 0,
+      };
+    }
+  }
+
+static Future<List<Map<String, dynamic>>> fetchReceiptList1(String domainName, String token) async {
+    final dio = Dio();
+    final url = '$domainName/api/receipt/app/list';
+    final options = Options(headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    try {
+      final response = await dio.get<List<dynamic>>(url, options: options);
+      final statusCode = response.statusCode!;
+      if (statusCode == 200) {
+        return response.data?.cast<Map<String, dynamic>>() ?? <Map<String, dynamic>>[];
+      } else {
+        return [];
+      }
+    } on DioException catch (e) {
+      print(e);
+      return [];
+    }
+  }
+  
+static Future<Map<String, List<Map<String, dynamic>>>> fetchReceiptList(String domainName, String token, String userId, int page, int limit) async {
+    final dio = Dio();
+   
+    final url = '$domainName/api/receipt/app/list';
+    final options = Options(headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    try {
+      final response = await dio.get<Map<String, dynamic>>(
+        url,
+        queryParameters: {
+          'user_id': userId,
+          'page': page,
+          'limit': limit,
+          },
+
+        options: options,
+      );
+
+        // print('API Response Status Code: ${response.statusCode}');
+        // print('API Response Data: ${response.data}');
+
+      if (response.statusCode == 200 && response.data != null) {
+        // Convert the response data to the expected format
+        Map<String, List<Map<String, dynamic>>> formattedData = {};
+        
+        response.data!.forEach((date, receipts) {
+          if (receipts is List) {
+            formattedData[date] = List<Map<String, dynamic>>.from(receipts);
+          }
+        });
+
+        return formattedData;
+      } else {
+        print('Error: ${response.statusCode}');
+        return {};
+      }
+    } on DioException catch (e) {
+      print('DioException: ${e.message}');
+      return {};
+    }
+  }
+
+  static Future<Map<String, dynamic>> getReceiptImageUrl(String domainName, String token, String receiptImageId) async {
+    final dio = Dio();
+    String url = '${domainName}/a/s3/getReceiptImageUrl';
+    int statusCode = 0;
+
+    Map<String, dynamic> resultImage = {
+      "status_code": statusCode,
+      "result": []
+    };
+
+    try {
+      final response = await dio.get(
+        url,
+        data: {          
+          'receiptImageId': receiptImageId,
+        },
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      statusCode = response.statusCode!;
+      if (statusCode == 200) {
+        resultImage.update("result", (value) => [ response.data, receiptImageId ]);
+        
+      } else {
+        print('Error: ${response.statusCode}');
+        return {
+          'status': 'Error',
+          'data': 'null',
+        };
+      }
+    } on DioException catch (e) {
+      print('DioException: ${e.message}');
+      return {
+        'status': 'Error',
+        'data': 'null',
+      };
+    }
+
+    return resultImage;
+  }
+  
+  
+  }
 
 

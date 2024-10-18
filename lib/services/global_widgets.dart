@@ -1544,10 +1544,11 @@ class Breadcrumb extends StatelessWidget {
                           popDialog!().then((res) async {
                             print('appbar_res: $res');
                             canPop = res;
-                            if (res)
+                            if (res) {
                               for (var i = paths.length - 1; i > index; i--) {
                                 Navigator.pop(context, refresh);
                               }
+                            }
                           });
                         } else {
                           for (var i = paths.length - 1; i > index; i--) {

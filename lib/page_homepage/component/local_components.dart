@@ -1,7 +1,5 @@
 import 'package:bat_loyalty_program_app/model/product.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
-import 'package:bat_loyalty_program_app/services/global_widgets.dart';
-import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

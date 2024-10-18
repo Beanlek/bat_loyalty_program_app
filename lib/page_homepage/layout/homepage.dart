@@ -231,6 +231,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                                                     children: [
                                                                                       MyWidgets.MyTileButton(context, Localizations.tracking_history, icon: Icons.history, onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
                                                                                       MyWidgets.MyTileButton(context, Localizations.image_status, icon: Icons.image, onPressed: () => myPushNamed(context, setState, ImageStatusPage.routeName, arguments: MyArguments(token, prevPath: "/home", username: user['id']))),
+                                                                                      //MyWidgets.MyTileButton(context, Localizations.image_status, icon: Icons.image, onPressed: () => myPushNamed(context, setState, ImageStatusBackupPage.routeName, arguments: MyArguments(token, prevPath: "/home", username: user['id']))),
                                                                                     ],
                                                                                   )),
                                                                                 ],
@@ -383,6 +384,26 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                         print('OCR:: Failed to delete image');
                                         FloatingSnackBar(message: 'Failed to retake!', context: context);
                                       }
+                                    } else if(submit is Map<String, dynamic> && submit['action'] == 'calculate') {
+                                        // add api here 
+
+                                      final result = await Api.calculatePointReceipts(domainName, token, receiptImageId);
+
+                                          // Check the result and display appropriate messages
+                                          if (result['status'] == 'Success') {
+                                            FloatingSnackBar(
+                                              message: 'Receipts Successfully Submitted. Collected Points: ${result['collected_point']}', 
+                                              context: context
+                                            );
+                                          } else {
+                                            FloatingSnackBar(
+                                              message: 'Error: ${result['status']}', 
+                                              context: context
+                                            );
+                                          }
+
+                                          print('API result: $result');
+
                                     }
                                     else{
                                       print('OCR:: Unexpected result from HomepagePreview: $submit');

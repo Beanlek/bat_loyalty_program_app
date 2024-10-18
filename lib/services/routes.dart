@@ -89,6 +89,7 @@ class MyRoutes {
 
     Dummy.routeName: (context) => Dummy(),
     ImageStatusPage.routeName: (context) => ImageStatusPage(),
+    //ImageStatusBackupPage.routeName: (context) => ImageStatusBackupPage(),
     TrackingHistoryPage.routeName: (context) => TrackingHistoryPage(),
   };
 }
