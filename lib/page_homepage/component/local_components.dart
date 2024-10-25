@@ -1,7 +1,5 @@
 import 'package:bat_loyalty_program_app/model/product.dart';
 import 'package:bat_loyalty_program_app/services/api.dart';
-import 'package:bat_loyalty_program_app/services/global_widgets.dart';
-import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,6 +18,7 @@ mixin HomeComponents {
   bool imageRetake = false;
   int loyaltyPoints = 2000;
   bool imageRetakeSuccessful = false;
+
   
 
   
@@ -31,8 +30,11 @@ mixin HomeComponents {
   late Map<String, dynamic> user;
   late Map<String, dynamic> outlets;
   late Future<List<Product>> futureProduct;
- late Future<List<Product>> _futureProducts;
-   late Locale _currentLocale;
+  late Future<List<Product>> _futureProducts;
+  late Future<int> futureUnopenedCount;
+  
+  late Locale _currentLocale;
+  
 
 
   final List<Product> _filteredDataList = [];
@@ -84,7 +86,8 @@ mixin HomeComponents {
   late String urlOriginal;
   late String urlOcr;
   late String receiptImageId = '';
-  
+
+
  
     Future<bool> takeImage(String domainName, void Function(void Function()) setState) async {
     print("OCR:: takeImage init start");

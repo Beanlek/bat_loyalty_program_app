@@ -41,6 +41,7 @@ class MyArguments {
       this.currentOutlet = '{}',
       this.productId = '',
       this.imageReceiptId = '',  
+      this.unopened_count,
     }     
   );
 
@@ -57,11 +58,11 @@ class MyArguments {
   final String? urlOcr;
   final String? imageReceiptId;
   
-
   final String user;
   final String outlets;
   final String currentOutlet;
   final String productId;
+  final int? unopened_count;
 
 }
 
@@ -89,6 +90,7 @@ class MyRoutes {
 
     Dummy.routeName: (context) => Dummy(),
     ImageStatusPage.routeName: (context) => ImageStatusPage(),
+    //ImageStatusBackupPage.routeName: (context) => ImageStatusBackupPage(),
     TrackingHistoryPage.routeName: (context) => TrackingHistoryPage(),
   };
 }

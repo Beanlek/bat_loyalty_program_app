@@ -80,4 +80,13 @@ class MyPrefs {
     return prefs.getBool('isRefresh');
   }
 
+  // unopened count data
+  static void setOpenedCount(int unopenedCount, {required SharedPreferences prefs}) {
+    prefs.setInt('unopenedCount', unopenedCount);
+  }
+  static int? getOpenedCount({required SharedPreferences prefs}) {
+    return prefs.getInt('unopenedCount');
+  }
+
+
 }

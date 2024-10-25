@@ -1,90 +1,83 @@
-import 'package:bat_loyalty_program_app/services/global_components.dart';
+import 'dart:convert';
+
+import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
+import 'package:bat_loyalty_program_app/services/routes.dart';
+import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 
-class ImageStatusWidgets {
+class ImageStatusWidgets  {
 
-  static Widget ReceiptSections(BuildContext context, String date,
-    {key, required List<Map<dynamic, dynamic>> receipt, required String userId }
-  ) {
-    final IMAGE_DIMENSION = MySize.Width(context, 0.3);
-    
-    final _widget = Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(date, style: Theme.of(context).textTheme.bodyMedium,),
-        SizedBox(height: 12,),
+      static Widget receiptCard({
+          required BuildContext context,
+          required String outlet_image,
+          required String imagePath,
+          required String status,
+          required String createdAt,
+          required String userId,
+          required String domainName,
+          required String token,
+     
 
-        GridView.builder(
-          padding: const EdgeInsets.only(right: 12, bottom: 12),
-          shrinkWrap: true, physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount( crossAxisCount: 3,
-            mainAxisSpacing: 8, crossAxisSpacing: 8,
-          ),
+        }) {
+      
+      
+          String formattedDate = createdAt.substring(0, 19);
 
-          itemCount: receipt.length,
-          itemBuilder: (context, index) {
-            
-            return InkWell(
-              onTap: () async => await showDialog(context: context, builder: (context) => 
-                ImageStatusWidgets.ReceiptPopUp(context, path: receipt[index]['image'], takenAt: receipt[index]['created_at'], userId: userId)
-              ),
-              child: Material(
-                elevation: 0,
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.transparent,
-                child: Container(
-                  height: IMAGE_DIMENSION,
-                  width: IMAGE_DIMENSION,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Theme.of(context).colorScheme.primary),
-                    color: Colors.transparent
-                  ),
-                  child: Center(child: SizedBox.square( dimension: IMAGE_DIMENSION,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(receipt[index]['image'], fit: BoxFit.cover,)),
-                  )
-                  )
+          Color statusColor = Theme.of(context).primaryColor;                          
+         
+          if (status.contains('In Process')) {
+              statusColor = MyColors.biruImran2;
+          }else if(status.contains('Success')){
+            statusColor = MyColors.hijauImran2;
+          }else if(status.contains('Failed')){
+            statusColor = MyColors.merahImran;
+          }
+
+
+
+          return GestureDetector(
+      
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => FutureBuilder<Map<String, dynamic>>(
+                  future: Api.getReceiptImageUrl(domainName,token,imagePath),
+                  builder: (context, snapshot) {                                                
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                          return ReceiptShimmerPopUp(context);
+                        } else if (snapshot.hasData && snapshot.data != null) {
+
+                          
+              Api.markAsOpened(imagePath, domainName, token).then((_) {               
+                
+              }).catchError((error) {
+                print('Error marking receipt as opened: $error');              
+              });
+
+
+
+                          String url = snapshot.data!['result'][0]['data']['url_original'];
+                          return ReceiptPopUp(
+                            context,
+                            path: url,
+                            takenAt: createdAt,
+                            userId: userId,
+                            status: status,
+                            points: '1400',
+                          );
+                        } else if (snapshot.hasError) {
+                          return AlertDialog(content: Text('Error: ${snapshot.error}'));
+                        } else {
+                          return AlertDialog(content: Text('No image found'));
+                        }                      
+                   },
                 ),
-              ),
-            );
-          },
-        ),
-        
-        SizedBox(height: 12,),
-      ],
-    );
-    
-  
-    return _widget;
-  }
-
-// add widget for card receipt image 
-
-
-
-  static Widget receiptCard({
-    required BuildContext context,
-    required String date,
-    required String imagePath,
-    required String status,
-    required String createdAt,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end, // Align the entire column to the right
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align date to the left
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                date,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-            Card(
+              );
+            },
+            child: Card(
               color: Theme.of(context).primaryColor,
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -93,47 +86,47 @@ class ImageStatusWidgets {
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: SizedBox(
+                        width: MySize.Width(context, 0.15),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Image.asset(outlet_image),
+                        ),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Image on the left
-                        Padding( padding: const EdgeInsets.only(right: 8.0), 
-                          child: SizedBox(
-                            width: MySize.Width(context, 0.15),
-                              child: Padding(padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Image.asset( imagePath ),
-                                  ),
-                                )
-                              ),
-                        // Status and timestamp in the center and right
                         Text(
-                          'Status:\n$status',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          'Status:',
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith( color: Theme.of(context).colorScheme.onPrimaryContainer),
                         ),
                         Text(
-                          createdAt,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          status,
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: statusColor,fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    Text(
+                      formattedDate,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-      ],
-    );
-  }
-
-
+          );
+        }
 
   static AlertDialog ReceiptPopUp(BuildContext context,
-    {key, required String path, required String takenAt, required String userId}
+    {key, required String path, required String takenAt, required String userId,required String status, required String points}
   ) {
     final Color BACKGROUND_COLOR = Theme.of(context).primaryColor;
 
@@ -147,33 +140,473 @@ class ImageStatusWidgets {
     final _dialog = AlertDialog(
       backgroundColor: BACKGROUND_COLOR,
       
-      content: Column( crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+      content: Column( crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min,
+       children: [
         Align( alignment: Alignment.center, child: Center(child: SizedBox( width: double.infinity,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(path, fit: BoxFit.cover,)),
-        ))),
-        SizedBox(height: 12,),
+          child: FutureBuilder<String>(
+          future: Future.value(path),
+          builder: (context, snapshot) {                          
+             if(snapshot.hasData) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  snapshot.data!,
+                   fit: BoxFit.cover,
+                   loadingBuilder: (context, child, loadingProgress) {
+                     if (loadingProgress == null) {
+                      return child;
+                     }else {
+                       return Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        width: double.infinity,
+                        height: 200.0, // You can adjust this to match the image size
+                        color: Colors.grey,
+                      ),
+                    );
+                     }
+                   },),
+              );
 
-        Text(path.split('/')[2].capitalize(), style: Theme.of(context).textTheme.titleMedium!.copyWith( fontWeight: FontWeight.bold)),
-        SizedBox(height: 12,),
+              // return ClipRRect(
+              //   borderRadius: BorderRadius.circular(12),
+              //   child: Image.network(snapshot.data!, fit: BoxFit.cover,),
+              // );
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              return CircularProgressIndicator();
+            }
+          },
+        ),
+        ))),
         
+        SizedBox(height: 12,),        
         infoField('Image Taken At', takenAt),
         SizedBox(height: 12,),
         infoField('By', userId),
+        SizedBox(height: 12,),
+        infoField('Status', status),
+        SizedBox(height: 12,),
+        infoField('Points', points),
       ],),
 
       actionsAlignment: MainAxisAlignment.spaceBetween,
       actions: [
-        SizedBox(
-          child: TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text( "Back" ),
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+              onPressed: () {},
+              child: Text( "Report",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error
+                ),
+               ),
+            ),
+            TextButton(
+              onPressed: () {},
+              child: Text( "Retake"),
+            ),
+            Expanded(
+              child: Card(
+               elevation: 2,
+               color: MyColors.hijauImran2,               
+                 child: InkWell(
+                   onTap: () {},
+                   child: Padding(                    
+                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 3.0),                     
+                     child: Text('Claim' , style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor),
+                     textAlign: TextAlign.center, ),
+                   ),
+                 )
+                   ),
+            ),
+          ],
         )
       ],
     );
   
     return _dialog;
+  }
+
+  static AlertDialog ReceiptShimmerPopUp(BuildContext context) {
+    final Color BACKGROUND_COLOR = Theme.of(context).primaryColor;
+
+    final _dialog = AlertDialog(
+      backgroundColor: BACKGROUND_COLOR,
+      
+      content: Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: Column( crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+          Align( alignment: Alignment.center, child: Center(child: SizedBox( width: double.infinity,
+            child: Container(
+              height: 200,
+              color: Colors.white,
+            ),
+          ))),
+          
+          SizedBox(height: 12,),        
+          Container(
+            height: 16,
+            color: Colors.white,
+          ),
+          SizedBox(height: 12,),
+          Container(
+            height: 16,
+            color: Colors.white,
+          ),
+          SizedBox(height: 12,),
+          Container(
+            height: 16,
+            color: Colors.white,
+          ),
+          SizedBox(height: 12,),
+          Container(
+            height: 16,
+            color: Colors.white,
+          ),
+        ],),
+      ),
+      
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+              onPressed: () {},
+              child: Text( "Report",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error
+                ),
+               ),
+            ),
+            TextButton(
+              onPressed: () {},
+              child: Text( "Retake"),
+            ),
+            Expanded(
+              child: Card(
+               elevation: 2,
+               color: MyColors.hijauImran2,               
+                 child: InkWell(
+                   onTap: () {},
+                   child: Padding(                    
+                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 3.0),                     
+                     child: Text('Claim' , style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).primaryColor),
+                     textAlign: TextAlign.center, ),
+                   ),
+                 )
+                   ),
+            ),
+          ],
+        )
+      ],
+    );
+  
+    return _dialog;
+  }
+
+
+  // Modified receiptCard with shimmer effect
+static Widget receiptShimmerCard(BuildContext context) {    
+  return Shimmer.fromColors(
+    baseColor: Colors.grey[300]!,
+    highlightColor: Colors.grey[100]!,
+    child: Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: MySize.Width(context, 0.15),
+                  height: MySize.Width(context, 0.15),
+                  color: Colors.grey[300],
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 20,
+                        color: Colors.grey[300],
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: 150,
+                        height: 20,
+                        color: Colors.grey[300],
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 80,
+                  height: 20,
+                  color: Colors.grey[300],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+
+static Widget buildDateGroup(BuildContext context, String date, List<Map<String, dynamic>> receipts, MyArguments args, String domainName, String token) {
+    String imagePath = 'assets/account_images/company.png';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(date, style: Theme.of(context).textTheme.bodyMedium),
+        ),
+        ...receipts.map((receipt) => ImageStatusWidgets.receiptCard(
+          context: context,
+          outlet_image: imagePath,
+          imagePath: receipt['id'],
+          status: receipt['status'],
+          createdAt: receipt['created_at'],
+          userId: args.username,
+          domainName: domainName,
+          token: token,
+         
+        )),
+      ],
+    );
+  }
+}
+
+
+// to save the url for 30 minute expiration
+
+// class CachedUrl {
+//   final String url;
+//   final DateTime expirationTime;
+
+//   CachedUrl({
+//     required this.url,
+//     required this.expirationTime,
+//   });
+
+//   // Convert to JSON for storage
+//   Map<String, dynamic> toJson() => {
+//     'url': url,
+//     'expirationTime': expirationTime.toIso8601String(),
+//   };
+
+//   // Create from JSON
+//   factory CachedUrl.fromJson(Map<String, dynamic> json) => CachedUrl(
+//     url: json['url'],
+//     expirationTime: DateTime.parse(json['expirationTime']),
+//   );
+
+//   bool get isExpired => DateTime.now().isAfter(expirationTime);
+// }
+
+//  class SharedPrefsUrlCache {
+//   static const String _keyPrefix = 'url_cache_';
+//   static final SharedPrefsUrlCache _instance = SharedPrefsUrlCache._internal();
+  
+//   factory SharedPrefsUrlCache() => _instance;
+//   SharedPrefsUrlCache._internal();
+
+//   late SharedPreferences _prefs;
+//   bool _initialized = false;
+
+//   // Initialize SharedPreferences
+//   Future<void> init() async {
+//     if (!_initialized) {
+//       _prefs = await SharedPreferences.getInstance();
+//       _initialized = true;
+//     }
+//   }
+
+//   // Get cached URL
+//   Future<String?> getUrl(String imageId) async {
+//     await init();
+//     final jsonString = _prefs.getString('$_keyPrefix$imageId');
+//     if (jsonString != null) {
+//       try {
+//         final cachedUrl = CachedUrl.fromJson(json.decode(jsonString));
+//         if (!cachedUrl.isExpired) {
+//           return cachedUrl.url;
+//         } else {
+//           // Remove expired entry
+//           await _prefs.remove('$_keyPrefix$imageId');
+//         }
+//       } catch (e) {
+//         print('Error parsing cached URL: $e');
+//         await _prefs.remove('$_keyPrefix$imageId');
+//       }
+//     }
+//     return null;
+//   }
+
+//   // Cache new URL
+//   Future<void> cacheUrl(String imageId, String url) async {
+//     await init();
+//     final cachedUrl = CachedUrl(
+//       url: url,
+//       expirationTime: DateTime.now().add(const Duration(minutes: 30)),
+//     );
+//     await _prefs.setString(
+//       '$_keyPrefix$imageId',
+//       json.encode(cachedUrl.toJson()),
+//     );
+//   }
+
+//   // Clear all cached URLs
+//   Future<void> clearCache() async {
+//     await init();
+//     final keys = _prefs.getKeys().where((key) => key.startsWith(_keyPrefix));
+//     for (final key in keys) {
+//       await _prefs.remove(key);
+//     }
+//   }
+
+//   // Remove expired entries
+//   Future<void> removeExpiredEntries() async {
+//     await init();
+//     final keys = _prefs.getKeys().where((key) => key.startsWith(_keyPrefix));
+//     for (final key in keys) {
+//       final jsonString = _prefs.getString(key);
+//       if (jsonString != null) {
+//         try {
+//           final cachedUrl = CachedUrl.fromJson(json.decode(jsonString));
+//           if (cachedUrl.isExpired) {
+//             await _prefs.remove(key);
+//           }
+//         } catch (e) {
+//           print('Error parsing cached URL: $e');
+//           await _prefs.remove(key);
+//         }
+//       }
+//     }
+//   }
+// }
+
+
+class ReceiptUrls {
+  final String urlOriginal;
+  final String urlOcr;
+  final DateTime expirationTime;
+
+  ReceiptUrls({
+    required this.urlOriginal,
+    required this.urlOcr,
+    required this.expirationTime,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'url_original': urlOriginal,
+    'url_ocr': urlOcr,
+    'expirationTime': expirationTime.toIso8601String(),
+  };
+
+  factory ReceiptUrls.fromJson(Map<String, dynamic> json) => ReceiptUrls(
+    urlOriginal: json['url_original'],
+    urlOcr: json['url_ocr'],
+    expirationTime: DateTime.parse(json['expirationTime']),
+  );
+
+  bool get isExpired => DateTime.now().isAfter(expirationTime);
+
+  Map<String, dynamic> toApiResponse() => {
+    "status_code": 200,
+    "result": [{
+      "data": {
+        "url_original": urlOriginal,
+        "url_ocr": urlOcr
+      }
+    }]
+  };
+}
+
+class ReceiptUrlCache {
+  static const String _keyPrefix = 'receipt_url_cache_';
+  static final ReceiptUrlCache _instance = ReceiptUrlCache._internal();
+  
+  factory ReceiptUrlCache() => _instance;
+  ReceiptUrlCache._internal();
+
+  late SharedPreferences _prefs;
+  bool _initialized = false;
+
+  Future<void> init() async {
+    if (!_initialized) {
+      _prefs = await SharedPreferences.getInstance();
+      _initialized = true;
+    }
+  }
+
+  Future<ReceiptUrls?> getUrls(String receiptId) async {
+    await init();
+    final jsonString = _prefs.getString('$_keyPrefix$receiptId');
+    if (jsonString != null) {
+      try {
+        final cachedUrls = ReceiptUrls.fromJson(json.decode(jsonString));
+        if (!cachedUrls.isExpired) {
+          return cachedUrls;
+        } else {
+          // Remove expired entry
+          await _prefs.remove('$_keyPrefix$receiptId');
+        }
+      } catch (e) {
+        print('Error parsing cached URLs: $e');
+        await _prefs.remove('$_keyPrefix$receiptId');
+      }
+    }
+    return null;
+  }
+
+  Future<void> cacheUrls(String receiptId, String urlOriginal, String urlOcr) async {
+    await init();
+    final cachedUrls = ReceiptUrls(
+      urlOriginal: urlOriginal,
+      urlOcr: urlOcr,
+      // Set expiration to 25 minutes to be safe (since S3 URLs expire in 30 minutes)
+      expirationTime: DateTime.now().add(const Duration(minutes: 25)),
+    );
+    await _prefs.setString(
+      '$_keyPrefix$receiptId',
+      json.encode(cachedUrls.toJson()),
+    );
+  }
+
+  Future<void> clearCache() async {
+    await init();
+    final keys = _prefs.getKeys().where((key) => key.startsWith(_keyPrefix));
+    for (final key in keys) {
+      await _prefs.remove(key);
+    }
+  }
+
+  Future<void> removeExpiredEntries() async {
+    await init();
+    final keys = _prefs.getKeys().where((key) => key.startsWith(_keyPrefix));
+    for (final key in keys) {
+      final jsonString = _prefs.getString(key);
+      if (jsonString != null) {
+        try {
+          final cachedUrls = ReceiptUrls.fromJson(json.decode(jsonString));
+          if (cachedUrls.isExpired) {
+            await _prefs.remove(key);
+          }
+        } catch (e) {
+          print('Error parsing cached URLs: $e');
+          await _prefs.remove(key);
+        }
+      }
+    }
   }
 }

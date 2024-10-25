@@ -18,7 +18,6 @@ import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:bat_loyalty_program_app/streams/general_stream.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
-
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:floating_snackbar/floating_snackbar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -36,11 +35,31 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
-  
+
+VoidCallback? _refreshListener;
 
   @override
   void initState() {
     super.initState();
+
+  void refreshListener() async {
+    print('Homepage: Refresh notifier triggered');
+    if (mounted) {
+      // Load the new count first
+      final newCount = await loadUnopenedCount();
+      print('New unopened count: $newCount');
+      
+      if (mounted) {
+        setState(() {
+          futureUnopenedCount = Future.value(newCount);  // Use the already loaded value
+        });
+      }
+    }
+  }
+
+  ImageStatusNotifier.refreshNotifier.addListener(refreshListener);
+
+  _refreshListener = refreshListener; 
 
     initParam(context).whenComplete(() {
       setState(() {
@@ -49,12 +68,15 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
               currentLocale = locale;
             }));
         futureProduct = _loadProducts();
+        futureUnopenedCount = loadUnopenedCount();                
+
         print("currentLocale: $currentLocale");
         launchLoading = false;
       });
     });
-
+     
     setState(() {
+    //  futureUnopenedCount = loadUnopenedCount();  
       isRefresh = getIsRefresh();
     });
   }
@@ -67,38 +89,45 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
     await MyPrefs.init().then((prefs) async {
       prefs!;
       final _user = MyPrefs.getUser(prefs: prefs) ?? '{}';
-      final _outlets = MyPrefs.getOutlets(prefs: prefs) ?? '{}';
+      final _outlets = MyPrefs.getOutlets(prefs: prefs) ?? '{}';     
       user = jsonDecode(_user);
       outlets = jsonDecode(_outlets);
+     
     });
 
     futureLocale = getFutureLocale(context);
   }
 
   Future<List<Product>> _loadProducts() async {
-    dataList = await Api.fetchProducts(domainName, token);    
+    dataList = await Api.fetchProducts(domainName, token);      
     filteredDataList = dataList;
     print("dataList: $dataList");
     return dataList;
   }
 
-
+  Future<int> loadUnopenedCount() async {    
+    unopened_count = await Api.fetchUnopenedCount(domainName, token,user['id']);
+    print('unopened_count: $unopened_count');
+    return unopened_count;
+  }
 
 
   @override
   void dispose() {
     GeneralStreams.languageStream.close();
     searchController.dispose();
-    super.dispose();
 
     mainScrollController.dispose();
     searchController.dispose();
 
     stickyController.dispose();
     productController.dispose();
-
+    
+    if (_refreshListener != null) {
+    ImageStatusNotifier.refreshNotifier.removeListener(_refreshListener!);
+  }
     super.dispose();
-    futureLocale = getFutureLocale(context);
+    futureLocale = getFutureLocale(context);    
   }
 
   @override
@@ -137,11 +166,9 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                               initialData: false,
                               future: isRefresh,
                               builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.done) {
+                                if (snapshot.connectionState == ConnectionState.done) {
                                   if (snapshot.hasError) {
-                                    return MyWidgets.MyErrorPage(
-                                        context, isDarkMode);
+                                    return MyWidgets.MyErrorPage(context, isDarkMode);
                                   } else if (snapshot.hasData) {
                                     isRefresing = snapshot.data!;
                                     print('snapshot has data: $isRefresing');
@@ -158,40 +185,25 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                             setState(() {
                                               isLoading = true;
                                             });
-                                            await refreshPage(context, setState)
-                                                .whenComplete(
-                                                    () => setState(() {
-                                                          isLoading = false;
-                                                        }));
-                                          },
-                                          indicatorBuilder:
-                                              (context, controller) => Icon(
-                                            FontAwesomeIcons.rotateRight,
-                                            size: MySize.Width(context, 0.08),
-                                          ),
+                                            await refreshPage(context, setState).whenComplete(() => setState(() {isLoading = false;}));},
+                                          indicatorBuilder: (context, controller) => Icon(FontAwesomeIcons.rotateRight,size: MySize.Width(context, 0.08),),
                                           child: SizedBox.expand(
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(3.0),
+                                              padding:const EdgeInsets.all(3.0),
                                               child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment:  CrossAxisAlignment.start,
                                                 children: [
                                                   // product list
                                                   Expanded(
                                                     child: MyWidgets.MyScrollBar1(
                                                         context,
-                                                        controller:
-                                                            mainScrollController,
+                                                        controller: mainScrollController,
                                                         child: ListView.builder(
                                                             padding: EdgeInsets.all(9),
-                                                            controller:
-                                                                mainScrollController,
+                                                            controller:mainScrollController,
                                                             itemCount: 2,
-                                                            itemBuilder:
-                                                                (context,index) {
+                                                            itemBuilder:(context,index) {
                                                               if (index == 0) {
                                                                 return Column(
                                                                   mainAxisAlignment:MainAxisAlignment.start,
@@ -229,8 +241,72 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                                                     mainAxisAlignment: MainAxisAlignment.end,
                                                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                                                     children: [
-                                                                                      MyWidgets.MyTileButton(context, Localizations.tracking_history, icon: Icons.history, onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),
-                                                                                      MyWidgets.MyTileButton(context, Localizations.image_status, icon: Icons.image, onPressed: () => myPushNamed(context, setState, ImageStatusPage.routeName, arguments: MyArguments(token, prevPath: "/home", username: user['id']))),
+                                                                                    MyWidgets.MyTileButton(context, Localizations.tracking_history, icon: Icons.history, onPressed: () => Navigator.pushNamed(context, TrackingHistoryPage.routeName, arguments: MyArguments(token, prevPath: "/home"))),                                                                                                                                                                                                                                                                                                                                                                                                                                        
+
+                                                                                    ValueListenableBuilder<bool>(
+                                                                                      valueListenable: ImageStatusNotifier.refreshNotifier,
+                                                                                      builder: (context, value, child) {
+                                                                                        print('value listenable: $value');
+                                                                                        return FutureBuilder(
+                                                                                          future: futureUnopenedCount,
+                                                                                          builder: (context, snapshot) {
+                                                                                            int count = 0;
+                                                                                            print('snapshot.data: in value listenable: ${snapshot.data}');
+                                                                                            
+                                                                                            if (snapshot.hasData) {
+                                                                                              count = snapshot.data as int;
+                                                                                            } else if (snapshot.hasError) {
+                                                                                              print('snapshot.error: ${snapshot.error}');
+                                                                                            }
+
+                                                                                            return MyWidgets.MyTileButton(context,Localizations.image_status,icon: Icons.image,onPressed: () async {
+                                                                                                print('Navigating to ImageStatusPage');
+                                                                                                await myPushNamed(context,setState,ImageStatusPage.routeName,arguments: MyArguments(token,prevPath: "/home",username: user['id'],unopened_count: count,),);
+                                                                                                // No need to handle result anymore
+                                                                                              },
+                                                                                              showBage: count > 0,
+                                                                                              BadgeContent: count.toString(),
+                                                                                              badgeColor: Theme.of(context).colorScheme.onPrimary,
+                                                                                              badgeTextColor: Theme.of(context).colorScheme.primary,
+                                                                                            );
+                                                                                          },
+                                                                                        );
+                                                                                      },
+                                                                                    ),
+                          
+
+                                                                                //     FutureBuilder(
+                                                                                //     future: futureUnopenedCount,
+                                                                                //     builder: (context, snapshot) {
+                                                                                //     int count = 0;                                                                                    
+                                                                                //     if (snapshot.hasData) {
+                                                                                //       count = snapshot.data as int;
+                                                                                //     } else if (snapshot.hasError) {
+                                                                                //       print('snapshot.error: ${snapshot.error}');
+                                                                                //     }
+                                                                                //     return MyWidgets.MyTileButton(context,Localizations.image_status,icon: Icons.image,onPressed: () async {
+                                                                                //        print('Navigating to ImageStatusPage'); 
+                                                                                //         final result = await myPushNamed(context,setState,ImageStatusPage.routeName,arguments: MyArguments(token,prevPath: "/home",username: user['id'],unopened_count: count,),);
+                                                                                //         print('Navigation result from ImageStatusPage: $result');
+                                                                                //         if (result == true) {
+                                                                                //           setState(() {
+                                                                                //             futureUnopenedCount = loadUnopenedCount();
+                                                                                //           });
+                                                                                //             // unopened_count = await loadUnopenedCount();
+                                                                                //             // if(mounted){
+                                                                                //             //   setState(() {});
+                                                                                //             // }                                                                                                                                                                                             
+                                                                                //         await loadUnopenedCount();                                                                                         
+                                                                                //         }
+                                                                                //       },
+                                                                                //       showBage: count > 0,
+                                                                                //       BadgeContent: count.toString(),
+                                                                                //       badgeColor: Theme.of(context).colorScheme.onPrimary,
+                                                                                //       badgeTextColor: Theme.of(context).colorScheme.primary,
+                                                                                //     );
+                                                                                //   },
+                                                                                // ),
+                                                                                   
                                                                                     ],
                                                                                   )),
                                                                                 ],
@@ -279,8 +355,7 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                                                         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                                                                           return SnackBar(content:Text('No product found.'),
                                                                           );
-                                                                        } else {
-                                                                          return isSearching || isLoading
+                                                                        } else { return isSearching || isLoading
                                                                               ? MyWidgets.MyLoading2(context, isDarkMode)
                                                                               : filteredDataList.isEmpty
                                                                                   ? Center(child: Text("No matching products"))
@@ -383,6 +458,26 @@ class _HomepageState extends State<Homepage> with HomeComponents, MyComponents {
                                         print('OCR:: Failed to delete image');
                                         FloatingSnackBar(message: 'Failed to retake!', context: context);
                                       }
+                                    } else if(submit is Map<String, dynamic> && submit['action'] == 'calculate') {
+                                        // add api here 
+
+                                      final result = await Api.calculatePointReceipts(domainName, token, receiptImageId);
+
+                                          // Check the result and display appropriate messages
+                                          if (result['status'] == 'Success') {
+                                            FloatingSnackBar(
+                                              message: 'Receipts Successfully Submitted. Collected Points: ${result['collected_point']}', 
+                                              context: context
+                                            );
+                                          } else {
+                                            FloatingSnackBar(
+                                              message: 'Error: ${result['status']}', 
+                                              context: context
+                                            );
+                                          }
+
+                                          print('API result: $result');
+
                                     }
                                     else{
                                       print('OCR:: Unexpected result from HomepagePreview: $submit');

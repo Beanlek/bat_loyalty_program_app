@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bat_loyalty_program_app/page_imagestatus/widget/local_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -330,6 +331,7 @@ class Api {
       "status_code": statusCode,
       "result": []
     };
+    
 
     String url_string_uploadReceipt = '${domainName}/a/s3/uploadReceipt/${outletId}';
     final Uri url_uploadReceipt = Uri.parse(url_string_uploadReceipt);
@@ -750,7 +752,240 @@ static Future<int> deleteImage(String domainName,String token, String receiptIma
     return statusCode;
   }
 
+static Future<Map<String, dynamic>> calculatePointReceipts(String domainName, String token, String receiptImageId) async {
+    final Dio dio = Dio();
+    int statusCode = 0;
+    String url = '${domainName}/a/ocr/calculatePoints';    
+    try {
+      final response = await dio.post(
+        url,
+        data: {
+          "receiptImageId": receiptImageId,
+        },
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+      statusCode = response.statusCode!;
 
+      if(statusCode == 200){           
+      return {
+        'status': response.data['status'] ?? 'Failed',
+        'collected_point': response.data['collected_point'] ?? 0,
+      };
+      } else {
+      return {
+        'status': 'Error',
+        'collected_point': 0,
+      };
+    }   
+    } catch (e) {
+      return {
+        "status": "Failed",
+        "collected_point": 0,
+      };
+    }
+  }
+
+static Future<List<Map<String, dynamic>>> fetchReceiptList1(String domainName, String token) async {
+    final dio = Dio();
+    final url = '$domainName/api/receipt/app/list';
+    final options = Options(headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    try {
+      final response = await dio.get<List<dynamic>>(url, options: options);
+      final statusCode = response.statusCode!;
+      if (statusCode == 200) {
+        return response.data?.cast<Map<String, dynamic>>() ?? <Map<String, dynamic>>[];
+      } else {
+        return [];
+      }
+    } on DioException catch (e) {
+      print(e);
+      return [];
+    }
+  }
+  
+static Future<int> fetchUnopenedCount(String domainName, String token, String userId) async {
+    final dio = Dio();
+    final url = '$domainName/api/receipt/app/list';
+    final options = Options(headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    try {
+      final response = await dio.get<Map<String, dynamic>>(
+        url,
+        queryParameters: {
+          'user_id': userId,
+        },
+        options: options,
+      );
+
+      if (response.statusCode == 200 && response.data != null) {                            
+        int unopenedCount = 0;        
+        response.data!.forEach((date, receipts) {          
+          if(date =='unopened_count'){
+            unopenedCount = receipts as int;
+          }
+          
+        });
+        return (unopenedCount);      
+      } else {
+        print('Error: ${response.statusCode}');
+       return 0;
+      }
+    } on DioException catch (e) {
+      print('DioException: ${e.message}');
+      return 0;
+    }
+  }
+
+static Future<(Map<String, List<Map<String, dynamic>>>,int)> fetchReceiptList(String domainName, String token, String userId, int page, int limit) async {
+    final dio = Dio();
+   
+    final url = '$domainName/api/receipt/app/list';
+    final options = Options(headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    try {
+      final response = await dio.get<Map<String, dynamic>>(
+        url,
+        queryParameters: {
+          'user_id': userId,
+          'page': page,
+          'limit': limit,
+          },
+
+        options: options,
+      );
+
+        // print('API Response Status Code: ${response.statusCode}');
+        // print('API Response Data: ${response.data}');
+
+      if (response.statusCode == 200 && response.data != null) {
+        // Convert the response data to the expected format
+        Map<String, List<Map<String, dynamic>>> formattedData = {};                
+        int unopenedCount = 0;
+        response.data!.forEach((date, receipts) {          
+          if(date =='unopened_count'){
+            unopenedCount = receipts as int;
+          }
+
+          if (receipts is List) {
+            formattedData[date] = List<Map<String, dynamic>>.from(receipts);                                           
+          }
+        });
+
+        return (formattedData,unopenedCount);
+      } else {
+        print('Error: ${response.statusCode}');
+        return ({} as Map<String, List<Map<String, dynamic>>>,0);
+      }
+    } on DioException catch (e) {
+      print('DioException: ${e.message}');
+      return ({} as Map<String, List<Map<String, dynamic>>>,0);
+    }
+  }
+
+static Future<Map<String, dynamic>> getReceiptImageUrl(String domainName, String token, String receiptImageId) async {
+    
+    final cacheManager = ReceiptUrlCache();
+
+    final cachedUrls = await cacheManager.getUrls(receiptImageId);
+    if (cachedUrls != null) {
+      return cachedUrls.toApiResponse();       
+    }
+      
+    final dio = Dio();
+    String url = '${domainName}/a/s3/getReceiptImageUrl';
+    int statusCode = 0;
+
+    try {
+      final response = await dio.get(
+        url,
+        data: {          
+          'receiptImageId': receiptImageId,
+        },
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      statusCode = response.statusCode!;
+      if (statusCode == 200) {
+      
+      //resultImage.update("result", (value) => [ response.data, receiptImageId ]);
+
+      final urlOriginal = response.data['data']['url_original'];
+      final urlOcr = response.data['data']['url_ocr'];
+
+      await cacheManager.cacheUrls(receiptImageId, urlOriginal, urlOcr);
+
+      return {
+        "status_code": 200,
+        "result": [{
+          "data":{
+            "url_original": urlOriginal,
+            "url_ocr": urlOcr
+          }
+        }],
+      };
+      } else {
+        print('Error: ${response.statusCode}');
+        return {
+          'status': 'Error',
+          'data': 'null',
+        };
+      }
+    } on DioException catch (e) {
+      print('DioException: ${e.message}');
+      return {
+        'status': 'Error',
+        'data': 'null',
+      };
+    }
+
+    //return resultImage;
+  }
+
+static Future<void> markAsOpened(String receiptId, String domainName, String token) async {
+  final url = '$domainName/api/receipt/app/markAsOpened';
+
+  final dio = Dio();
+
+  try {
+    final response = await dio.post(
+      url,
+      data: {'receipt_id': receiptId},
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      print('Receipt marked as opened');
+    } else {
+      print('Error marking receipt as opened: ${response.statusCode}');
+      throw Exception('Error marking receipt as opened');
+    }
+  } on DioException catch (e) {
+    print('DioException: ${e.message}');
+    rethrow;
+  }
+}
+   
 }
 
 

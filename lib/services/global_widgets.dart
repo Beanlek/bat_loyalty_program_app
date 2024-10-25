@@ -1,6 +1,9 @@
+
 import 'package:bat_loyalty_program_app/services/global_components.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:badges/badges.dart';
 
 import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,7 +12,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 const PLACEHOLDER_ICON = Icon(Icons.abc, color: Colors.transparent);
 
 class MyWidgets {
-
 
   static Widget MyCarouselIndicator({
     required int currentPage,
@@ -846,22 +848,42 @@ class MyWidgets {
       IconData? icon,
       double? iconSize,
       TextStyle? textStyle,
-      double buttonHeight = 35}) {
+      double buttonHeight = 35,
+      
+      // badge parameter
+      bool showBage = false,
+      String BadgeContent = '',
+      Color? badgeColor,
+      Color? badgeTextColor,
+      BadgePosition? badgePosition,
+      double? badgeSize,
+     
+
+      }) {
     final _widget = SizedBox(
       height: buttonHeight,
-      child: TextButton.icon(
-        style: ButtonStyle(visualDensity: VisualDensity.compact),
-        onPressed: onPressed,
-        label: Text(label,
-            style:
-                (textStyle ?? Theme.of(context).textTheme.bodySmall)!.copyWith(
-              fontWeight: FontWeight.w500,
-              color: color ?? Theme.of(context).colorScheme.primary,
-            )),
-        icon: Icon(
-          icon ?? Icons.abc,
-          size: iconSize ?? MySize.Width(context, 0.05),
-          color: color ?? Theme.of(context).colorScheme.primary,
+      child: badges.Badge(
+        showBadge: showBage,
+        position: badgePosition ?? badges.BadgePosition.topEnd(),
+        badgeContent: Text(BadgeContent,style: Theme.of(context).textTheme.bodySmall!.copyWith(color: badgeTextColor ?? Theme.of(context).colorScheme.onSecondary)),
+        badgeStyle: badges.BadgeStyle(
+        badgeColor: badgeColor ??  Theme.of(context).colorScheme.onSecondary,
+        padding: const EdgeInsets.all(6),
+        ),
+        child: TextButton.icon(
+          style: ButtonStyle(visualDensity: VisualDensity.compact),
+          onPressed: onPressed,
+          label: Text(label,
+              style:
+                  (textStyle ?? Theme.of(context).textTheme.bodySmall)!.copyWith(
+                fontWeight: FontWeight.w500,
+                color: color ?? Theme.of(context).colorScheme.primary,
+              )),
+          icon: Icon(
+            icon ?? Icons.abc,
+            size: iconSize ?? MySize.Width(context, 0.05),
+            color: color ?? Theme.of(context).colorScheme.primary,
+          ),
         ),
       ),
     );
@@ -943,6 +965,49 @@ class MyWidgets {
 
     return _widget;
   }
+  static PreferredSizeWidget MyAppBarImageStatus(
+      BuildContext context, bool isDarkMode, String title,
+      {key,
+      required String appVersion,
+      bool canPop = true,
+      bool refresh = false,
+      Future<bool> Function()? popDialog}) {
+    final Color DATA_COLOR = Theme.of(context).colorScheme.secondary;
+
+    final _widget = AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
+      leading: IconButton(
+          onPressed: () async{
+            if (!canPop && popDialog != null) {
+              final res = await popDialog();
+              print('appbar_res: $res');
+              if (res) Navigator.pop(context, refresh);  
+            } 
+            else {
+              Navigator.pop(context, refresh);
+            }
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: DATA_COLOR,
+          )),
+      leadingWidth: MySize.Width(context, 0.15),
+      title: Text(
+        title,
+        style: Theme.of(context)
+            .textTheme
+            .titleMedium!
+            .copyWith(fontWeight: FontWeight.normal, color: DATA_COLOR),
+      ),
+      actions: [MyLogoBar(context, isDarkMode, appVersion: appVersion)],
+    );
+
+    return _widget;
+  }
+
+
+
+
 
   static PreferredSizeWidget MyAppBarCart(
       BuildContext context, bool isDarkMode, String title,
@@ -1544,10 +1609,11 @@ class Breadcrumb extends StatelessWidget {
                           popDialog!().then((res) async {
                             print('appbar_res: $res');
                             canPop = res;
-                            if (res)
+                            if (res) {
                               for (var i = paths.length - 1; i > index; i--) {
                                 Navigator.pop(context, refresh);
                               }
+                            }
                           });
                         } else {
                           for (var i = paths.length - 1; i > index; i--) {

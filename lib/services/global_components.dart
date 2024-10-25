@@ -9,6 +9,8 @@ import 'package:bat_loyalty_program_app/services/shared_preferences.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
+import 'package:flutter/foundation.dart';
+
 extension StringExtension on String {
   String capitalize() {
     String _string = '';
@@ -49,6 +51,8 @@ mixin MyComponents {
 
   DateFormat? monthYear;
   DateFormat? monthYear2;
+
+
   
   // product indicator
   int currentPage = 0;
@@ -67,8 +71,11 @@ mixin MyComponents {
   late Future<bool> isRefresh;
   List<Product> filteredDataList = [];
   List<Product> dataList = [];
-
+  int unopened_count = 0;
   
+  ValueNotifier<int> unopenedCountNotifier = ValueNotifier<int>(0); // Initial unopened count
+ 
+ 
   late Locale currentLocale = L10n.locals[0]; // Initialize with the first locale
   bool isnitialized = false;
   
@@ -87,7 +94,8 @@ mixin MyComponents {
     await Navigator.pushNamed( context, routeName , arguments: arguments).then((res) async {
       _res = res as bool;
 
-      if (res == true) { print('pushNamed res == true');
+      if (res == true) { 
+        print('pushNamed res == true');
         await setIsRefreshTrue().whenComplete(() => setState((){isRefresh = getIsRefresh();}) );
 
         return res;
@@ -172,5 +180,13 @@ mixin MyComponents {
     filtersApplied.clear();
   }
   
+}
 
+class ImageStatusNotifier {
+  static final ValueNotifier<bool> refreshNotifier = ValueNotifier<bool>(false);
+  
+  static void refresh() {
+    print('ImageStatusNotifier: Triggering refresh');
+    refreshNotifier.value = !refreshNotifier.value;
+  }
 }
