@@ -66,6 +66,7 @@ void dispose() {
   pagingController.dispose();
   super.dispose();
 }
+
   
   @override
   Widget build(BuildContext context) {
@@ -81,6 +82,7 @@ void dispose() {
     if (!launchLoading){
       setPath(prevPath: args.prevPath, routeName: ImageStatusPage.routeName);
     } 
+
     
     return PopScope(
       canPop: true,

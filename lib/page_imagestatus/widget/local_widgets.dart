@@ -4,9 +4,12 @@ import 'package:bat_loyalty_program_app/services/api.dart';
 import 'package:bat_loyalty_program_app/services/global_widgets.dart';
 import 'package:bat_loyalty_program_app/services/routes.dart';
 import 'package:bat_loyalty_program_app/services/theme.dart';
+import 'package:bat_loyalty_program_app/services/routes.dart';
+import 'package:bat_loyalty_program_app/services/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+
 
 class ImageStatusWidgets  {
 
@@ -385,115 +388,6 @@ static Widget buildDateGroup(BuildContext context, String date, List<Map<String,
     );
   }
 }
-
-
-// to save the url for 30 minute expiration
-
-// class CachedUrl {
-//   final String url;
-//   final DateTime expirationTime;
-
-//   CachedUrl({
-//     required this.url,
-//     required this.expirationTime,
-//   });
-
-//   // Convert to JSON for storage
-//   Map<String, dynamic> toJson() => {
-//     'url': url,
-//     'expirationTime': expirationTime.toIso8601String(),
-//   };
-
-//   // Create from JSON
-//   factory CachedUrl.fromJson(Map<String, dynamic> json) => CachedUrl(
-//     url: json['url'],
-//     expirationTime: DateTime.parse(json['expirationTime']),
-//   );
-
-//   bool get isExpired => DateTime.now().isAfter(expirationTime);
-// }
-
-//  class SharedPrefsUrlCache {
-//   static const String _keyPrefix = 'url_cache_';
-//   static final SharedPrefsUrlCache _instance = SharedPrefsUrlCache._internal();
-  
-//   factory SharedPrefsUrlCache() => _instance;
-//   SharedPrefsUrlCache._internal();
-
-//   late SharedPreferences _prefs;
-//   bool _initialized = false;
-
-//   // Initialize SharedPreferences
-//   Future<void> init() async {
-//     if (!_initialized) {
-//       _prefs = await SharedPreferences.getInstance();
-//       _initialized = true;
-//     }
-//   }
-
-//   // Get cached URL
-//   Future<String?> getUrl(String imageId) async {
-//     await init();
-//     final jsonString = _prefs.getString('$_keyPrefix$imageId');
-//     if (jsonString != null) {
-//       try {
-//         final cachedUrl = CachedUrl.fromJson(json.decode(jsonString));
-//         if (!cachedUrl.isExpired) {
-//           return cachedUrl.url;
-//         } else {
-//           // Remove expired entry
-//           await _prefs.remove('$_keyPrefix$imageId');
-//         }
-//       } catch (e) {
-//         print('Error parsing cached URL: $e');
-//         await _prefs.remove('$_keyPrefix$imageId');
-//       }
-//     }
-//     return null;
-//   }
-
-//   // Cache new URL
-//   Future<void> cacheUrl(String imageId, String url) async {
-//     await init();
-//     final cachedUrl = CachedUrl(
-//       url: url,
-//       expirationTime: DateTime.now().add(const Duration(minutes: 30)),
-//     );
-//     await _prefs.setString(
-//       '$_keyPrefix$imageId',
-//       json.encode(cachedUrl.toJson()),
-//     );
-//   }
-
-//   // Clear all cached URLs
-//   Future<void> clearCache() async {
-//     await init();
-//     final keys = _prefs.getKeys().where((key) => key.startsWith(_keyPrefix));
-//     for (final key in keys) {
-//       await _prefs.remove(key);
-//     }
-//   }
-
-//   // Remove expired entries
-//   Future<void> removeExpiredEntries() async {
-//     await init();
-//     final keys = _prefs.getKeys().where((key) => key.startsWith(_keyPrefix));
-//     for (final key in keys) {
-//       final jsonString = _prefs.getString(key);
-//       if (jsonString != null) {
-//         try {
-//           final cachedUrl = CachedUrl.fromJson(json.decode(jsonString));
-//           if (cachedUrl.isExpired) {
-//             await _prefs.remove(key);
-//           }
-//         } catch (e) {
-//           print('Error parsing cached URL: $e');
-//           await _prefs.remove(key);
-//         }
-//       }
-//     }
-//   }
-// }
 
 
 class ReceiptUrls {
