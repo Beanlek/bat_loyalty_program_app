@@ -49,6 +49,8 @@ class CartPageState extends State<CartPage> with MyComponents {
 
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: CartPage.routeName);
 
+    bool show = false;
+
     return PopScope(
         canPop: canPop,
         child: launchLoading
@@ -62,7 +64,11 @@ class CartPageState extends State<CartPage> with MyComponents {
                     "Cart",
                     appVersion: appVersion,
                   ),
-                  body: Stack(children: [
+                  body: !show ? Center(child: Text('Cart Page\nComming Soon',textAlign: TextAlign.center,),) 
+                  :
+                  // for reference below here is the cart page 
+                  // just delete the show variable to get the date here 
+                  Stack(children: [
                     Column(
                       children: [
                         Padding(
@@ -70,7 +76,7 @@ class CartPageState extends State<CartPage> with MyComponents {
                                 horizontal: 24.0, vertical: 12.0),
                             child: Column(
                               children: [
-                                Breadcrumb(paths: paths),
+                                Breadcrumb(paths: paths),                                 
                                 Row(
                                   children: [
                                     const Icon(Icons.location_on_outlined,

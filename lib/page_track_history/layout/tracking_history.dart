@@ -57,7 +57,9 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
 
     if (!launchLoading) setPath(prevPath: args.prevPath, routeName: TrackingHistoryPage.routeName);
 
-    return PopScope(
+    bool show = false;
+   
+        return PopScope(
         child: launchLoading
             ? MyWidgets.MyLoading2(context, isDarkMode)
             : GestureDetector(
@@ -70,7 +72,8 @@ class _TrackingHistoryPageState extends State<TrackingHistoryPage>
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(12.0),
-                        child: Column(
+                        child: !show ? Center(child: Text('Tracking History\nComming Soon'))
+                        :Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [

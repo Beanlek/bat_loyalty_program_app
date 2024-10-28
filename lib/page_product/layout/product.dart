@@ -90,9 +90,7 @@ class ProductPageState extends State<ProductPage>
                     isDarkMode,
                     "Product",
                     appVersion: appVersion,
-                    onCartTap: () => Navigator.pushNamed(
-                        context, CartPage.routeName,
-                        arguments: MyArguments(token, prevPath: "/product")),
+                    onCartTap: () => Navigator.pushNamed(context, CartPage.routeName,arguments: MyArguments(token, prevPath: "/product")),
                   ),
                   body: FutureBuilder<bool?>(
                       initialData: false,

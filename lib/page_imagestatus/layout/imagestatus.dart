@@ -100,7 +100,7 @@ void dispose() {
       ? MyWidgets.MyLoading2(context, isDarkMode) 
       : GestureDetector( onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
        child: Scaffold(
-        appBar: MyWidgets.MyAppBarImageStatus(context, isDarkMode, Localizations!.image_status, appVersion: appVersion,refresh: true ,canPop: true,
+        appBar: MyWidgets.MyAppBarImageStatus(context, isDarkMode, Localizations!.image_status, appVersion: appVersion,canPop: true,
         popDialog: (){
           print('ImageStatusPage: About to pop and refresh');
           //ImageStatusNotifier.refresh();       
